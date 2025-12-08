@@ -1,0 +1,399 @@
+[00:01:05.884] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:06.692] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:33.633] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:33.633] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:34.067] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:34.067] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:37.067] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:37.069] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:38.065] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:38.066] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:39.366] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:39.661] Browser ERROR   uncaughtError: Error: ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+
+
+[00:01:40.059] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:40.059] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:40.059] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:40.061] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:40.061] Browser ERROR   ./app/dashboard/pos/page.tsx:1429:14
+Parsing ecmascript source code failed
+  1427 |                         )}
+  1428 |                 </div>
+> 1429 |             );
+       |              ^
+  1430 | }
+  1431 | 
+
+Expected '</', got ';'
+[00:01:55.984] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:04:53.459] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:05:43.466] Browser ERROR   ./app/dashboard/pos/page.tsx:1510:5
+Parsing ecmascript source code failed
+  1508 |     );
+  1509 | }
+> 1510 |     );
+       |     ^
+  1511 | }
+  1512 | 
+
+Expression expected
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/pos/page.tsx [Client Component Browser]
+    ./app/dashboard/pos/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/pos/page.tsx [Client Component SSR]
+    ./app/dashboard/pos/page.tsx [Server Component]
+[00:05:44.064] Browser ERROR   ./app/dashboard/pos/page.tsx:1510:5
+Parsing ecmascript source code failed
+  1508 |     );
+  1509 | }
+> 1510 |     );
+       |     ^
+  1511 | }
+  1512 | 
+
+Expression expected
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/pos/page.tsx [Client Component Browser]
+    ./app/dashboard/pos/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/pos/page.tsx [Client Component SSR]
+    ./app/dashboard/pos/page.tsx [Server Component]
+[00:06:37.775] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:06:51.805] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:08:05.727] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:09:42.666] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:10:28.883] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:11:57.967] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:12:07.265] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:12:15.024] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:12:35.823] Browser ERROR   uncaughtError: TypeError: item.toLowerCase is not a function
+[00:13:14.296] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:15.070] Browser ERROR   uncaughtError: Error: Objects are not valid as a React child (found: object with keys {name, price, quantity}). If you meant to render a collection of children, use an array instead.
+[00:29:13.349] Browser ERROR   unhandledRejection: undefined
+[00:29:13.349] Browser ERROR   unhandledRejection: undefined
+[00:29:13.349] Browser ERROR   unhandledRejection: undefined
+[00:29:13.349] Browser ERROR   unhandledRejection: undefined
+[00:29:17.759] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:29:27.922] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:29:37.942] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:30:28.444] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:32:04.225] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:32:31.758] Browser WARN    Image with src "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:48:55.195] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:50:51.556] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:51:03.654] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:52:38.528] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:53:21.561] Browser ERROR   ./app/lib/storage.ts:414:15
+Parsing ecmascript source code failed
+  412 |         image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+  413 |         date: new Date().toLocaleDateString(),
+> 414 |         const stored = localStorage.getItem(BLOG_STORAGE_KEY);
+      |               ^^^^^^
+  415 |         if(!stored) {
+  416 |             localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(INITIAL_POSTS));
+  417 |             return INITIAL_POSTS;
+
+Unexpected token `stored`. Expected ... , *,  (, [, :, , ?, =, an identifier, public, protected, private, readonly, <.
+
+Import traces:
+  Client Component Browser:
+    ./app/lib/storage.ts [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/lib/storage.ts [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[00:53:21.578] Browser ERROR   ./app/lib/storage.ts:414:15
+Parsing ecmascript source code failed
+  412 |         image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+  413 |         date: new Date().toLocaleDateString(),
+> 414 |         const stored = localStorage.getItem(BLOG_STORAGE_KEY);
+      |               ^^^^^^
+  415 |         if(!stored) {
+  416 |             localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(INITIAL_POSTS));
+  417 |             return INITIAL_POSTS;
+
+Unexpected token `stored`. Expected ... , *,  (, [, :, , ?, =, an identifier, public, protected, private, readonly, <.
+
+Import traces:
+  Client Component Browser:
+    ./app/lib/storage.ts [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/lib/storage.ts [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[00:53:21.592] Browser ERROR   ./app/lib/storage.ts:414:15
+Parsing ecmascript source code failed
+  412 |         image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+  413 |         date: new Date().toLocaleDateString(),
+> 414 |         const stored = localStorage.getItem(BLOG_STORAGE_KEY);
+      |               ^^^^^^
+  415 |         if(!stored) {
+  416 |             localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(INITIAL_POSTS));
+  417 |             return INITIAL_POSTS;
+
+Unexpected token `stored`. Expected ... , *,  (, [, :, , ?, =, an identifier, public, protected, private, readonly, <.
+
+Import traces:
+  Client Component Browser:
+    ./app/lib/storage.ts [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/lib/storage.ts [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[00:53:21.657] Browser ERROR   ./app/lib/storage.ts:414:15
+Parsing ecmascript source code failed
+  412 |         image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+  413 |         date: new Date().toLocaleDateString(),
+> 414 |         const stored = localStorage.getItem(BLOG_STORAGE_KEY);
+      |               ^^^^^^
+  415 |         if(!stored) {
+  416 |             localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(INITIAL_POSTS));
+  417 |             return INITIAL_POSTS;
+
+Unexpected token `stored`. Expected ... , *,  (, [, :, , ?, =, an identifier, public, protected, private, readonly, <.
+
+Import traces:
+  Client Component Browser:
+    ./app/lib/storage.ts [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/lib/storage.ts [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[00:53:22.064] Browser ERROR   ./app/lib/storage.ts:414:15
+Parsing ecmascript source code failed
+  412 |         image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+  413 |         date: new Date().toLocaleDateString(),
+> 414 |         const stored = localStorage.getItem(BLOG_STORAGE_KEY);
+      |               ^^^^^^
+  415 |         if(!stored) {
+  416 |             localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(INITIAL_POSTS));
+  417 |             return INITIAL_POSTS;
+
+Unexpected token `stored`. Expected ... , *,  (, [, :, , ?, =, an identifier, public, protected, private, readonly, <.
+
+Import traces:
+  Client Component Browser:
+    ./app/lib/storage.ts [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/lib/storage.ts [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[00:53:22.065] Browser ERROR   ./app/lib/storage.ts:414:15
+Parsing ecmascript source code failed
+  412 |         image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+  413 |         date: new Date().toLocaleDateString(),
+> 414 |         const stored = localStorage.getItem(BLOG_STORAGE_KEY);
+      |               ^^^^^^
+  415 |         if(!stored) {
+  416 |             localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(INITIAL_POSTS));
+  417 |             return INITIAL_POSTS;
+
+Unexpected token `stored`. Expected ... , *,  (, [, :, , ?, =, an identifier, public, protected, private, readonly, <.
+
+Import traces:
+  Client Component Browser:
+    ./app/lib/storage.ts [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/lib/storage.ts [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[00:53:22.065] Browser ERROR   ./app/lib/storage.ts:414:15
+Parsing ecmascript source code failed
+  412 |         image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+  413 |         date: new Date().toLocaleDateString(),
+> 414 |         const stored = localStorage.getItem(BLOG_STORAGE_KEY);
+      |               ^^^^^^
+  415 |         if(!stored) {
+  416 |             localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(INITIAL_POSTS));
+  417 |             return INITIAL_POSTS;
+
+Unexpected token `stored`. Expected ... , *,  (, [, :, , ?, =, an identifier, public, protected, private, readonly, <.
+
+Import traces:
+  Client Component Browser:
+    ./app/lib/storage.ts [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/lib/storage.ts [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[00:53:22.066] Browser ERROR   ./app/lib/storage.ts:414:15
+Parsing ecmascript source code failed
+  412 |         image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+  413 |         date: new Date().toLocaleDateString(),
+> 414 |         const stored = localStorage.getItem(BLOG_STORAGE_KEY);
+      |               ^^^^^^
+  415 |         if(!stored) {
+  416 |             localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(INITIAL_POSTS));
+  417 |             return INITIAL_POSTS;
+
+Unexpected token `stored`. Expected ... , *,  (, [, :, , ?, =, an identifier, public, protected, private, readonly, <.
+
+Import traces:
+  Client Component Browser:
+    ./app/lib/storage.ts [Client Component Browser]
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/lib/storage.ts [Client Component SSR]
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[01:11:53.266] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:18:37.512] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:54:26.176] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

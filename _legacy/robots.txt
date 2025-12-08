@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Prevent indexing of admin area
+Disallow: /admin/
+
+# Allow indexing of service pages
+Allow: /services/
+
+# Allow indexing of menu
+Allow: /menu/
+
+# Allow both language versions
+Allow: /hi/
+
+# Sitemap location
+Sitemap: https://oyechatoro.com/sitemap.xml

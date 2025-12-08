@@ -1,0 +1,184 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ==================== ORDERS ====================
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  customer      String
+  items         Json        // Array of items as JSON
+  total         Float
+  status        OrderStatus @default(Pending)
+  type          OrderType   @default(DineIn)
+  table         String?
+  userId        String?
+  mobile        String?
+  paymentStatus PaymentStatus @default(Unpaid)
+  paymentMethod PaymentMethod?
+  discount      Json?       // { type, value, amount }
+  tip           Float?
+  waiterName    String?
+  waiterCalled  Boolean     @default(false)
+  dietary       String[]    // ['veg', 'spicy', etc]
+  trainDetails  Json?       // { pnr, trainNo, coachSeat }
+  cookingStartedAt DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+enum OrderStatus {
+  Pending
+  Cooking
+  Ready
+  Completed
+  Cancelled
+}
+
+enum OrderType {
+  DineIn
+  Takeaway
+  Delivery
+}
+
+enum PaymentStatus {
+  Paid
+  Unpaid
+}
+
+enum PaymentMethod {
+  Cash
+  UPI
+  Card
+  Online
+}
+
+// ==================== CUSTOMERS ====================
+
+model Customer {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String   @unique
+  email         String?
+  totalOrders   Int      @default(0)
+  totalSpent    Float    @default(0)
+  loyaltyPoints Int      @default(0)
+  lastVisit     DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ==================== MENU ====================
+
+model MenuCategory {
+  id    String     @id @default(cuid())
+  name  String
+  items MenuItem[]
+}
+
+model MenuItem {
+  id            String       @id @default(cuid())
+  name          String
+  price         Float
+  description   String?
+  veg           Boolean      @default(true)
+  status        ItemStatus   @default(Active)
+  image         String?
+  isDigitalMenu Boolean      @default(true)
+  isTrainMenu   Boolean      @default(false)
+  isFeatured    Boolean      @default(false)
+  costPrice     Float?
+  recipe        Json?        // [{ inventoryItemId, quantity }]
+  category      MenuCategory @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+enum ItemStatus {
+  Active
+  OutOfStock
+}
+
+// ==================== BLOG ====================
+
+model BlogPost {
+  id             String      @id @default(cuid())
+  title          String
+  slug           String      @unique
+  excerpt        String?
+  content        String      @db.Text
+  image          String?
+  author         String      @default("Admin")
+  category       String      @default("News")
+  tags           String[]
+  seoTitle       String?
+  seoDescription String?
+  readingTime    String?
+  status         PostStatus  @default(Draft)
+  isRecipe       Boolean     @default(false)
+  featured       Boolean     @default(false)
+  views          Int         @default(0)
+  likes          Int         @default(0)
+  canonicalUrl   String?
+  recipeDetails  Json?       // { prepTime, cookTime, servings, ingredients, calories }
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+enum PostStatus {
+  Draft
+  Published
+}
+
+// ==================== SETTINGS ====================
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
+}
+
+// ==================== STAFF ====================
+
+model Staff {
+  id        String   @id @default(cuid())
+  name      String
+  role      String   @default("Waiter")
+  phone     String?
+  pin       String?  // For quick login
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// ==================== INVENTORY ====================
+
+model InventoryItem {
+  id          Int      @id @default(autoincrement())
+  name        String
+  unit        String
+  currentStock Float   @default(0)
+  lowStockAlert Float  @default(10)
+  costPerUnit Float    @default(0)
+  category    String   @default("General")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== EXPENSES ====================
+
+model Expense {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  category    String
+  description String?
+  amount      Float
+  createdAt   DateTime @default(now())
+}

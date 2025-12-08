@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Oye Chatoro Menu | Restaurants in Abu Road</title>
+    <meta name="description" content="Digital menu for Oye Chatoro - 100% vegetarian restaurant in Abu Road. Browse our full menu of pizzas, pasta, chaat and more." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css?v=5" />
+    <link rel="canonical" href="https://oyechatoro.com/menu.html" />
+    <style>
+      .menu-page { padding: 20px; max-width: 800px; margin: 0 auto; }
+      .menu-page .menu-grid { grid-auto-flow: row; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+      .menu-category { grid-column: 1/-1; }
+      @media (max-width: 600px) {
+        .menu-page .menu-grid { gap: 10px; }
+        .menu-card { margin-bottom: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="menu-page">
+      <header class="topbar">
+        <span class="badge">🌱 100% Vegetarian</span>
+        <span class="badge">🇮🇳 Authentic Street Food</span>
+        <span class="badge">📍 Abu Road, Rajasthan</span>
+      </header>
+
+      <section class="card">
+        <img src="./logowhite.PNG" alt="Oye Chatoro Logo" class="logo" style="width:120px" />
+        <h1 class="title">Our Menu</h1>
+        
+        <div class="menu-grid" id="menu-grid">
+          <div class="menu-category">🍕 Pizzas</div>
+          <article class="menu-card">
+            <div class="menu-media"><div class="emoji">🍕</div></div>
+            <h4 class="menu-name">Classic Margherita</h4>
+            <p class="menu-desc">Fresh tomato, basil, mozzarella on hand‑tossed base.</p>
+            <div class="menu-bottom"><span class="price">₹199</span><span class="tag-new">NEW</span></div>
+          </article>
+          
+          <article class="menu-card">
+            <div class="menu-media"><div class="emoji">🍕</div></div>
+            <h4 class="menu-name">Garden Feast</h4>
+            <p class="menu-desc">Onion, capsicum, tomato, olives, sweet corn.</p>
+            <div class="menu-bottom"><span class="price">₹239</span></div>
+          </article>
+
+          <div class="menu-category">🥣 Chaat & Snacks</div>
+          <article class="menu-card">
+            <div class="menu-media"><div class="emoji">🥣</div></div>
+            <h4 class="menu-name">Dahi Papdi Chaat</h4>
+            <p class="menu-desc">Crispy papdi with creamy yogurt & chutneys.</p>
+            <div class="menu-bottom"><span class="price">₹49</span></div>
+          </article>
+
+          <article class="menu-card">
+            <div class="menu-media"><div class="emoji">🥗</div></div>
+            <h4 class="menu-name">Bhel Puri</h4>
+            <p class="menu-desc">Crunchy, tangy, bursting with flavor.</p>
+            <div class="menu-bottom"><span class="price">₹49</span></div>
+          </article>
+
+          <div class="menu-category">🍝 Pasta</div>
+          <article class="menu-card">
+            <div class="menu-media"><div class="emoji">🍝</div></div>
+            <h4 class="menu-name">Red Sauce Pasta</h4>
+            <p class="menu-desc">Tomato sauce, herbs, al dente pasta.</p>
+            <div class="menu-bottom"><span class="price">₹149</span></div>
+          </article>
+
+          <article class="menu-card">
+            <div class="menu-media"><div class="emoji">🍝</div></div>
+            <h4 class="menu-name">White Sauce Pasta</h4>
+            <p class="menu-desc">Creamy white sauce, cheese, pepper.</p>
+            <div class="menu-bottom"><span class="price">₹149</span></div>
+          </article>
+        </div>
+
+        <div class="cta" style="margin-top:30px">
+          <a href="tel:+919509913792">Call to Order</a>
+          <a href="https://wa.me/919509913792">WhatsApp Order</a>
+        </div>
+
+        <p class="menu-hint">Menu and prices are subject to change. All prices are inclusive of GST.</p>
+      </section>
+    </main>
+  </body>
+</html>

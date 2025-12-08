@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oye Chatoro | Premium Vegetarian Restaurant in Abu Road</title>
+  <meta name="description"
+    content="Experience the best 100% vegetarian food in Abu Road at Oye Chatoro. Authentic Indian street food, pizzas, pastas, and more. Dine-in or Order Online." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./styles.css?v=6" />
+  <link rel="icon" href="/favicon.ico" />
+
+  <!-- SEO & Analytics (Preserved) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0YZ84FV5VQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-0YZ84FV5VQ');
+  </script>
+
+  <!-- Schema -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Restaurant",
+      "name": "Oye Chatoro",
+      "servesCuisine": "Indian Vegetarian",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Abu Central Mall, G-5, Riico Road",
+        "addressLocality": "Abu Road",
+        "addressRegion": "Rajasthan",
+        "postalCode": "307026",
+        "addressCountry": "IN"
+      },
+      "telephone": "+91-9509913792",
+      "priceRange": "₹"
+    }
+    </script>
+</head>
+
+<body>
+  <div class="bg-decor"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="#" class="logo-container">
+        <img src="./logowhite.PNG" onerror="this.src='./logo.svg'" alt="Oye Chatoro" class="logo-img" />
+        <span class="logo-text">Oye Chatoro</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#home" class="nav-link">Home</a>
+        <a href="#menu" class="nav-link">Menu</a>
+        <a href="#reviews" class="nav-link">Reviews</a>
+        <a href="#contact" class="nav-link">Contact</a>
+        <a href="https://wa.me/919509913792" class="btn btn-primary" target="_blank">Order Now</a>
+      </nav>
+      <button class="mobile-menu-btn" aria-label="Menu">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+      <div class="container">
+        <span class="hero-badge">🌱 100% Pure Vegetarian</span>
+        <h1 class="hero-title">Authentic Flavors,<br>Unforgettable Memories</h1>
+        <p class="hero-subtitle">
+          Discover the best street food in Abu Road. From crispy Chaats to cheesy Pizzas, we serve happiness on every
+          plate.
+        </p>
+        <div class="hero-actions">
+          <a href="#menu" class="btn btn-primary">View Full Menu</a>
+          <a href="tel:+919509913792" class="btn btn-outline">Call +91-9509913792</a>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <span class="feature-icon">🥗</span>
+            <h3 class="feature-title">Fresh Ingredients</h3>
+            <p class="feature-desc">We use only the freshest locally sourced veggies.</p>
+          </div>
+          <div class="feature-card">
+            <span class="feature-icon">🔥</span>
+            <h3 class="feature-title">Live Kitchen</h3>
+            <p class="feature-desc">Watch your food being prepared with hygiene & love.</p>
+          </div>
+          <div class="feature-card">
+            <span class="feature-icon">⭐</span>
+            <h3 class="feature-title">Top Rated</h3>
+            <p class="feature-desc">Rated 5 Stars by our lovely customers on Google.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="section menu-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Our Menu Highlights</h2>
+          <p class="section-subtitle">Handpicked favorites just for you</p>
+        </div>
+
+        <div class="menu-categories">
+          <button class="category-btn active" onclick="filterMenu('all')">All</button>
+          <button class="category-btn" onclick="filterMenu('pizza')">Pizzas</button>
+          <button class="category-btn" onclick="filterMenu('chaat')">Chaat</button>
+          <button class="category-btn" onclick="filterMenu('pasta')">Pasta</button>
+        </div>
+
+        <div class="menu-grid-display" id="menu-container">
+
+          <!-- Pizza -->
+          <div class="menu-item" data-category="pizza">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Classic Margherita</h3>
+                <span class="menu-item-price">₹199</span>
+              </div>
+              <p class="menu-item-desc">Fresh tomato, basil, mozzarella on hand-tossed base.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Classic Margherita', 199)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="pizza">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Garden Feast</h3>
+                <span class="menu-item-price">₹239</span>
+              </div>
+              <p class="menu-item-desc">Onion, capsicum, tomato, olives, sweet corn.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Garden Feast', 239)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="pizza">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Paneer Tikka Pizza</h3>
+                <span class="menu-item-price">₹249</span>
+              </div>
+              <p class="menu-item-desc">Spiced paneer, onions, capsicum, and tandoori sauce.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Paneer Tikka Pizza', 249)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="pizza">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Veggie Supreme</h3>
+                <span class="menu-item-price">₹239</span>
+              </div>
+              <p class="menu-item-desc">Loaded with veggies and extra cheese.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Veggie Supreme', 239)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="pizza">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Makhani Paneer Supreme</h3>
+                <span class="menu-item-price">₹279</span>
+              </div>
+              <p class="menu-item-desc">Butter masala sauce, paneer, capsicum, onion.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Makhani Paneer Supreme', 279)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chaat -->
+          <div class="menu-item" data-category="chaat">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Dahi Papdi Chaat</h3>
+                <span class="menu-item-price">₹49</span>
+              </div>
+              <p class="menu-item-desc">Crispy papdi topped with chilled yogurt and chutneys.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Dahi Papdi Chaat', 49)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="chaat">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Bhel Puri</h3>
+                <span class="menu-item-price">₹49</span>
+              </div>
+              <p class="menu-item-desc">Crunchy, tangy, bursting with flavor.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Bhel Puri', 49)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="chaat">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Crispy Aloo Chaat</h3>
+                <span class="menu-item-price">₹49</span>
+              </div>
+              <p class="menu-item-desc">Potato chaat (Delhi style).</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Crispy Aloo Chaat', 49)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="chaat">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Basket Chaat</h3>
+                <span class="menu-item-price">₹89</span>
+              </div>
+              <p class="menu-item-desc">Edible basket filled with sprouts, potatoes and tangy sauces.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Basket Chaat', 89)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="chaat">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Nachos Chaat</h3>
+                <span class="menu-item-price">₹99</span>
+              </div>
+              <p class="menu-item-desc">Indian cheesy style nachos.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Nachos Chaat', 99)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pasta -->
+          <div class="menu-item" data-category="pasta">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">White Sauce Pasta</h3>
+                <span class="menu-item-price">₹149</span>
+              </div>
+              <p class="menu-item-desc">Creamy cheesy sauce with exotic vegetables.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('White Sauce Pasta', 149)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="pasta">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Red Sauce Pasta</h3>
+                <span class="menu-item-price">₹149</span>
+              </div>
+              <p class="menu-item-desc">Tangy tomato basil sauce with italian herbs.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Red Sauce Pasta', 149)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="pasta">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Pink Sauce Pasta</h3>
+                <span class="menu-item-price">₹149</span>
+              </div>
+              <p class="menu-item-desc">Blend of red and white sauce.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Pink Sauce Pasta', 149)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-item" data-category="pasta">
+            <div class="menu-item-content">
+              <div class="menu-item-header">
+                <h3 class="menu-item-title">Peri Peri Pasta</h3>
+                <span class="menu-item-price">₹149</span>
+              </div>
+              <p class="menu-item-desc">Spicy peri peri sauce with veggies.</p>
+              <div class="menu-item-footer">
+                <span class="veg-icon">Veg</span>
+                <button class="btn-outline" onclick="addToCart('Peri Peri Pasta', 149)"
+                  style="padding: 6px 12px; font-size: 12px; border-radius: 8px;">Add +</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+          <a href="/menu" class="btn btn-primary">View Full Menu PDF</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Customer Love</h2>
+          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px;">
+            <span style="font-size: 24px; font-weight: 700; color: var(--brand-dark);">5.0</span>
+            <div style="color: #f59e0b; font-size: 20px;">⭐⭐⭐⭐⭐</div>
+            <span style="color: var(--text-muted);">(30 Google Reviews)</span>
+          </div>
+          <p class="section-subtitle">What people are saying about Oye Chatoro</p>
+          <a href="https://www.google.com/search?q=Oye+Chatoro+Abu+Road#lrd=0x395c5b0042401a9d:0x633535252873130,3,,,,"
+            target="_blank" class="btn btn-outline" style="margin-top: 16px;">Write a Review</a>
+        </div>
+        <div class="reviews-scroller" id="reviews-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact / Location -->
+    <section id="contact" class="section" style="background: #fff;">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Visit Us</h2>
+          <p class="section-subtitle">We are waiting to serve you!</p>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center;">
+          <div style="flex: 1; min-width: 300px; max-width: 500px;">
+            <div class="feature-card" style="text-align: left; height: 100%;">
+              <h3 style="margin-bottom: 16px; color: var(--brand-primary);">Oye Chatoro</h3>
+              <p style="margin-bottom: 12px;"><strong>📍 Address:</strong><br>Abu Central Mall, G-5, Riico Check Post
+                Road, Abu Road, Rajasthan 307026</p>
+              <p style="margin-bottom: 12px;"><strong>🕒 Hours:</strong><br>Daily 5:00 PM – 11:00 PM</p>
+              <p style="margin-bottom: 24px;"><strong>📞 Phone:</strong><br><a href="tel:+919509913792"
+                  style="color: var(--brand-primary);">+91-9509913792</a></p>
+
+              <a href="https://share.google/JVyw8Lyd9XfsMw3m1" target="_blank" class="btn btn-primary"
+                style="width: 100%;">Get Directions</a>
+            </div>
+          </div>
+
+          <!-- Promo for Website Dev (Preserved as requested) -->
+          <div style="flex: 1; min-width: 300px; max-width: 500px;">
+            <div class="feature-card"
+              style="text-align: left; height: 100%; border-color: var(--brand-secondary); background: #fff7ed;">
+              <span
+                style="background: #000; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px; float: right;">AD</span>
+              <h3 style="margin-bottom: 8px;">Need a Website?</h3>
+              <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">Get a premium business website
+                like this one.</p>
+              <div style="font-size: 24px; font-weight: 800; color: var(--brand-secondary); margin-bottom: 16px;">
+                ₹9,999 <span
+                  style="font-size: 14px; text-decoration: line-through; color: var(--text-light);">₹24,999</span>
+              </div>
+              <a href="https://wa.me/919509913792?text=I am interested in Website Development" target="_blank"
+                class="btn btn-outline" style="width: 100%;">Contact Developer</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>Oye Chatoro</h4>
+          <p style="color: var(--text-muted); font-size: 14px;">Authentic Indian Vegetarian Street Food in Abu Road.
+            Fresh, Hygienic, and Delicious.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="https://wa.me/919509913792">WhatsApp Order</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <ul class="footer-links">
+            <li><a href="https://instagram.com/oyechatoro" target="_blank">Instagram</a></li>
+            <li><a href="https://facebook.com/oyechatoro" target="_blank">Facebook</a></li>
+            <li><a href="https://share.google/i1ls8jxzjEOxQ5gd8" target="_blank">Google Maps</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        &copy; <span id="year">2024</span> Oye Chatoro. All rights reserved. • Website by Akshay Tiwari
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cart UI -->
+  <div class="cart-floating-btn" id="cart-btn" onclick="toggleCart()">
+    <span class="cart-icon">🛒</span>
+    <span class="cart-count" id="cart-count">0</span>
+  </div>
+
+  <div class="cart-modal-backdrop" id="cart-modal">
+    <div class="cart-sidebar">
+      <div class="cart-header">
+        <h3>Your Order</h3>
+        <button class="close-cart" onclick="toggleCart()">×</button>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <!-- Items will be populated here -->
+        <div class="empty-cart-msg">Your cart is empty 😕</div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total:</span>
+          <span id="cart-total-price">₹0</span>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="checkout()">Place Order on WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./script.js?v=7"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Simple Menu Filter
+    function filterMenu(category) {
+      const items = document.querySelectorAll('.menu-item');
+      const buttons = document.querySelectorAll('.category-btn');
+
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      items.forEach(item => {
+        if (category === 'all' || item.dataset.category === category) {
+          item.style.display = 'flex';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

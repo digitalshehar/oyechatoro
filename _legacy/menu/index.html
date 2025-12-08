@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | Oye Chatoro</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="menu-header">
+        <div class="container">
+            <img src="../logowhite.PNG" alt="Oye Chatoro" class="brand-logo">
+            <h1 class="brand-name">Oye Chatoro</h1>
+            <p class="brand-tagline">Premium Vegetarian Dining</p>
+        </div>
+    </header>
+
+    <nav class="category-nav">
+        <a href="#starters" class="nav-item active">Starters</a>
+        <a href="#main-course" class="nav-item">Main Course</a>
+        <a href="#pizzas" class="nav-item">Pizzas</a>
+        <a href="#beverages" class="nav-item">Beverages</a>
+    </nav>
+
+    <main class="container">
+
+        <!-- Starters -->
+        <section id="starters" class="menu-section">
+            <h2 class="section-title">Starters & Chaat</h2>
+
+            <div class="menu-item">
+                <div class="item-info">
+                    <h3 class="item-name">Dahi Papdi Chaat</h3>
+                    <p class="item-desc">Crispy wafers topped with chilled yogurt, tamarind chutney, and spices.</p>
+                </div>
+                <div class="item-action">
+                    <span class="item-price">₹49</span>
+                    <button class="add-btn" onclick="addToCart('Dahi Papdi Chaat', 49)">Add</button>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <div class="item-info">
+                    <h3 class="item-name">Basket Chaat</h3>
+                    <p class="item-desc">Edible potato basket filled with sprouts, pomegranate, and chutneys.</p>
+                </div>
+                <div class="item-action">
+                    <span class="item-price">₹89</span>
+                    <button class="add-btn" onclick="addToCart('Basket Chaat', 89)">Add</button>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <div class="item-info">
+                    <h3 class="item-name">Nachos Chaat</h3>
+                    <p class="item-desc">Mexican tortilla chips served with an Indian street style twist.</p>
+                </div>
+                <div class="item-action">
+                    <span class="item-price">₹99</span>
+                    <button class="add-btn" onclick="addToCart('Nachos Chaat', 99)">Add</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pizzas -->
+        <section id="pizzas" class="menu-section">
+            <h2 class="section-title">Artisan Pizzas</h2>
+
+            <div class="menu-item">
+                <div class="item-info">
+                    <h3 class="item-name">Classic Margherita</h3>
+                    <p class="item-desc">San Marzano tomato sauce, fresh mozzarella, basil, extra virgin olive oil.</p>
+                </div>
+                <div class="item-action">
+                    <span class="item-price">₹199</span>
+                    <button class="add-btn" onclick="addToCart('Classic Margherita', 199)">Add</button>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <div class="item-info">
+                    <h3 class="item-name">Paneer Tikka Pizza</h3>
+                    <p class="item-desc">Tandoori spiced paneer, onions, capsicum, coriander.</p>
+                </div>
+                <div class="item-action">
+                    <span class="item-price">₹249</span>
+                    <button class="add-btn" onclick="addToCart('Paneer Tikka Pizza', 249)">Add</button>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <div class="item-info">
+                    <h3 class="item-name">Makhani Paneer Supreme</h3>
+                    <p class="item-desc">Rich buttery makhani sauce base, paneer cubes, bell peppers.</p>
+                </div>
+                <div class="item-action">
+                    <span class="item-price">₹279</span>
+                    <button class="add-btn" onclick="addToCart('Makhani Paneer Supreme', 279)">Add</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Course -->
+        <section id="main-course" class="menu-section">
+            <h2 class="section-title">Pasta & Mains</h2>
+
+            <div class="menu-item">
+                <div class="item-info">
+                    <h3 class="item-name">White Sauce Pasta</h3>
+                    <p class="item-desc">Penne tossed in a rich, creamy béchamel sauce with exotic veggies.</p>
+                </div>
+                <div class="item-action">
+                    <span class="item-price">₹149</span>
+                    <button class="add-btn" onclick="addToCart('White Sauce Pasta', 149)">Add</button>
+                </div>
+            </div>
+
+            <div class="menu-item">
+                <div class="item-info">
+                    <h3 class="item-name">Pink Sauce Pasta</h3>
+                    <p class="item-desc">A perfect blend of tangy tomato and creamy white sauce.</p>
+                </div>
+                <div class="item-action">
+                    <span class="item-price">₹149</span>
+                    <button class="add-btn" onclick="addToCart('Pink Sauce Pasta', 149)">Add</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="cart-fab" onclick="toggleCart()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <div class="cart-count" id="cart-count">0</div>
+    </div>
+
+    <div class="cart-overlay" id="cart-overlay">
+        <div class="cart-panel">
+            <div class="cart-header">
+                <h3>Your Selection</h3>
+                <button onclick="toggleCart()"
+                    style="background:none;border:none;color:var(--text-gold);font-size:24px;">×</button>
+            </div>
+            <div class="cart-items" id="cart-items">
+                <!-- Items -->
+            </div>
+            <div class="cart-footer">
+                <div
+                    style="display:flex;justify-content:space-between;margin-top:20px;font-family:var(--font-serif);font-size:20px;color:var(--text-gold);">
+                    <span>Total</span>
+                    <span id="cart-total">₹0</span>
+                </div>
+                <button class="checkout-btn" onclick="checkout()">Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

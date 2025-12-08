@@ -1,0 +1,2165 @@
+module.exports = [
+"[externals]/next/dist/compiled/next-server/app-page-turbo.runtime.dev.js [external] (next/dist/compiled/next-server/app-page-turbo.runtime.dev.js, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("next/dist/compiled/next-server/app-page-turbo.runtime.dev.js", () => require("next/dist/compiled/next-server/app-page-turbo.runtime.dev.js"));
+
+module.exports = mod;
+}),
+"[externals]/next/dist/server/app-render/action-async-storage.external.js [external] (next/dist/server/app-render/action-async-storage.external.js, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("next/dist/server/app-render/action-async-storage.external.js", () => require("next/dist/server/app-render/action-async-storage.external.js"));
+
+module.exports = mod;
+}),
+"[externals]/next/dist/server/app-render/work-unit-async-storage.external.js [external] (next/dist/server/app-render/work-unit-async-storage.external.js, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("next/dist/server/app-render/work-unit-async-storage.external.js", () => require("next/dist/server/app-render/work-unit-async-storage.external.js"));
+
+module.exports = mod;
+}),
+"[externals]/next/dist/server/app-render/work-async-storage.external.js [external] (next/dist/server/app-render/work-async-storage.external.js, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("next/dist/server/app-render/work-async-storage.external.js", () => require("next/dist/server/app-render/work-async-storage.external.js"));
+
+module.exports = mod;
+}),
+"[externals]/fs [external] (fs, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("fs", () => require("fs"));
+
+module.exports = mod;
+}),
+"[externals]/url [external] (url, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("url", () => require("url"));
+
+module.exports = mod;
+}),
+"[externals]/child_process [external] (child_process, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("child_process", () => require("child_process"));
+
+module.exports = mod;
+}),
+"[externals]/http [external] (http, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("http", () => require("http"));
+
+module.exports = mod;
+}),
+"[externals]/https [external] (https, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("https", () => require("https"));
+
+module.exports = mod;
+}),
+"[externals]/tty [external] (tty, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("tty", () => require("tty"));
+
+module.exports = mod;
+}),
+"[externals]/util [external] (util, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("util", () => require("util"));
+
+module.exports = mod;
+}),
+"[externals]/os [external] (os, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("os", () => require("os"));
+
+module.exports = mod;
+}),
+"[externals]/stream [external] (stream, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("stream", () => require("stream"));
+
+module.exports = mod;
+}),
+"[externals]/zlib [external] (zlib, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("zlib", () => require("zlib"));
+
+module.exports = mod;
+}),
+"[externals]/buffer [external] (buffer, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("buffer", () => require("buffer"));
+
+module.exports = mod;
+}),
+"[externals]/crypto [external] (crypto, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("crypto", () => require("crypto"));
+
+module.exports = mod;
+}),
+"[externals]/events [external] (events, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("events", () => require("events"));
+
+module.exports = mod;
+}),
+"[externals]/net [external] (net, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("net", () => require("net"));
+
+module.exports = mod;
+}),
+"[externals]/tls [external] (tls, cjs)", ((__turbopack_context__, module, exports) => {
+
+const mod = __turbopack_context__.x("tls", () => require("tls"));
+
+module.exports = mod;
+}),
+"[project]/app/lib/socket.ts [app-ssr] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "getSocket",
+    ()=>getSocket
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$socket$2e$io$2d$client$2f$build$2f$esm$2d$debug$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/socket.io-client/build/esm-debug/index.js [app-ssr] (ecmascript) <locals>");
+'use client';
+;
+let socket;
+const getSocket = ()=>{
+    if (!socket) {
+        socket = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$socket$2e$io$2d$client$2f$build$2f$esm$2d$debug$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["io"])({
+            path: '/socket.io',
+            addTrailingSlash: false
+        });
+    }
+    return socket;
+};
+}),
+"[project]/app/lib/storage.ts [app-ssr] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "INITIAL_PREP_LIST",
+    ()=>INITIAL_PREP_LIST,
+    "addServiceRequest",
+    ()=>addServiceRequest,
+    "createOrder",
+    ()=>createOrder,
+    "deductStockForOrder",
+    ()=>deductStockForOrder,
+    "deleteBlogPost",
+    ()=>deleteBlogPost,
+    "deleteMenuCategory",
+    ()=>deleteMenuCategory,
+    "deleteMenuItem",
+    ()=>deleteMenuItem,
+    "deleteOffer",
+    ()=>deleteOffer,
+    "exportData",
+    ()=>exportData,
+    "getAnalyticsData",
+    ()=>getAnalyticsData,
+    "getBlogPosts",
+    ()=>getBlogPosts,
+    "getCurrentUser",
+    ()=>getCurrentUser,
+    "getCustomers",
+    ()=>getCustomers,
+    "getDailyStats",
+    ()=>getDailyStats,
+    "getInventory",
+    ()=>getInventory,
+    "getMenuCategories",
+    ()=>getMenuCategories,
+    "getMenuEngineeringData",
+    ()=>getMenuEngineeringData,
+    "getMenuItems",
+    ()=>getMenuItems,
+    "getOffers",
+    ()=>getOffers,
+    "getOrders",
+    ()=>getOrders,
+    "getServiceRequests",
+    ()=>getServiceRequests,
+    "getSettings",
+    ()=>getSettings,
+    "getStockLogs",
+    ()=>getStockLogs,
+    "getWastageLogs",
+    ()=>getWastageLogs,
+    "importData",
+    ()=>importData,
+    "loginUser",
+    ()=>loginUser,
+    "logoutUser",
+    ()=>logoutUser,
+    "registerUser",
+    ()=>registerUser,
+    "saveBlogPost",
+    ()=>saveBlogPost,
+    "saveCustomer",
+    ()=>saveCustomer,
+    "saveMenuCategory",
+    ()=>saveMenuCategory,
+    "saveMenuItem",
+    ()=>saveMenuItem,
+    "saveOffer",
+    ()=>saveOffer,
+    "saveSettings",
+    ()=>saveSettings,
+    "toggleWaiterCall",
+    ()=>toggleWaiterCall,
+    "updateOrderStatus",
+    ()=>updateOrderStatus,
+    "updateServiceRequestStatus",
+    ()=>updateServiceRequestStatus,
+    "useAllUsers",
+    ()=>useAllUsers,
+    "useAuth",
+    ()=>useAuth,
+    "useBlog",
+    ()=>useBlog,
+    "useCart",
+    ()=>useCart,
+    "useCustomers",
+    ()=>useCustomers,
+    "useFavorites",
+    ()=>useFavorites,
+    "useInventory",
+    ()=>useInventory,
+    "useMenu",
+    ()=>useMenu,
+    "useOffers",
+    ()=>useOffers,
+    "useOrders",
+    ()=>useOrders,
+    "usePrepList",
+    ()=>usePrepList,
+    "useServiceRequests",
+    ()=>useServiceRequests,
+    "useSettings",
+    ()=>useSettings,
+    "useUsers",
+    ()=>useUsers
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$socket$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/lib/socket.ts [app-ssr] (ecmascript)");
+'use client';
+;
+;
+const INITIAL_ORDERS = [
+    {
+        id: 1006,
+        customer: 'Rajesh Kumar',
+        items: [
+            'Standard Veg Thali (2)',
+            'Sweet Lassi (2)'
+        ],
+        total: 640,
+        status: 'Pending',
+        time: 'Just now',
+        type: 'Delivery',
+        createdAt: Date.now(),
+        paymentStatus: 'Unpaid',
+        paymentMethod: 'Cash',
+        trainDetails: {
+            pnr: '1234567890',
+            trainNo: '12956',
+            coachSeat: 'B2-45'
+        }
+    },
+    {
+        id: 1001,
+        customer: 'Rahul Sharma',
+        items: [
+            'Classic Margherita (1)',
+            'Coke (2)'
+        ],
+        total: 299,
+        status: 'Pending',
+        time: '10 mins ago',
+        type: 'Dine-in',
+        table: 'T-4',
+        createdAt: Date.now() - 10 * 60000,
+        waiterName: 'Rahul',
+        dietary: [
+            'veg',
+            'spicy'
+        ]
+    },
+    {
+        id: 1002,
+        customer: 'Priya Singh',
+        items: [
+            'Paneer Tikka Pizza (1)',
+            'White Sauce Pasta (1)'
+        ],
+        total: 398,
+        status: 'Cooking',
+        time: '25 mins ago',
+        type: 'Dine-in',
+        table: 'T-2',
+        createdAt: Date.now() - 25 * 60000,
+        waiterName: 'Amit',
+        dietary: [
+            'veg'
+        ]
+    },
+    {
+        id: 1003,
+        customer: 'Amit Patel',
+        items: [
+            'Dahi Papdi Chaat (2)'
+        ],
+        total: 98,
+        status: 'Completed',
+        time: '45 mins ago',
+        type: 'Takeaway',
+        createdAt: Date.now() - 45 * 60000
+    },
+    {
+        id: 1004,
+        customer: 'Sneha Gupta',
+        items: [
+            'Veggie Supreme (1)',
+            'Garlic Bread (1)'
+        ],
+        total: 349,
+        status: 'Ready',
+        time: '1 hour ago',
+        type: 'Delivery',
+        createdAt: Date.now() - 60 * 60000
+    },
+    {
+        id: 1005,
+        customer: 'Vikram Malhotra',
+        items: [
+            'Makhani Paneer Supreme (1)'
+        ],
+        total: 279,
+        status: 'Cancelled',
+        time: '2 hours ago',
+        type: 'Dine-in',
+        table: 'T-8',
+        createdAt: Date.now() - 120 * 60000
+    }
+];
+const INITIAL_PREP_LIST = [
+    {
+        id: 1,
+        task: 'Chop Onions',
+        completed: false,
+        station: 'Vegetable Prep'
+    },
+    {
+        id: 2,
+        task: 'Marinate Paneer',
+        completed: false,
+        station: 'Tandoor'
+    },
+    {
+        id: 3,
+        task: 'Prepare Pizza Dough',
+        completed: true,
+        station: 'Pizza Station'
+    },
+    {
+        id: 4,
+        task: 'Chop Coriander',
+        completed: false,
+        station: 'Vegetable Prep'
+    },
+    {
+        id: 5,
+        task: 'Check Gas Levels',
+        completed: false,
+        station: 'Safety'
+    }
+];
+const STORAGE_KEY = 'oye_chatoro_orders';
+const getOrders = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return INITIAL_ORDERS;
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const updateOrderStatus = (orderId, newStatus)=>{
+    const orders = getOrders();
+    const updatedOrders = orders.map((order)=>{
+        if (order.id === orderId) {
+            const updates = {
+                status: newStatus
+            };
+            if (newStatus === 'Cooking' && !order.cookingStartedAt) {
+                updates.cookingStartedAt = Date.now();
+            }
+            return {
+                ...order,
+                ...updates
+            };
+        }
+        return order;
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedOrders));
+    // Dispatch a custom event to notify other components/tabs
+    window.dispatchEvent(new Event('ordersUpdated'));
+    // Emit socket event
+    const socket = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$socket$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSocket"])();
+    socket.emit('update-status', {
+        orderId,
+        status: newStatus
+    });
+};
+const toggleWaiterCall = (orderId, isCalled)=>{
+    const orders = getOrders();
+    const updatedOrders = orders.map((order)=>order.id === orderId ? {
+            ...order,
+            waiterCalled: isCalled
+        } : order);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedOrders));
+    window.dispatchEvent(new Event('ordersUpdated'));
+    const socket = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$socket$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSocket"])();
+    socket.emit('waiter-call', {
+        orderId,
+        isCalled
+    });
+};
+const createOrder = (orderData)=>{
+    const orders = getOrders();
+    const newOrder = {
+        id: Math.floor(1000 + Math.random() * 9000),
+        ...orderData,
+        status: 'Pending',
+        time: 'Just now',
+        createdAt: Date.now(),
+        paymentStatus: orderData.paymentStatus || 'Unpaid',
+        paymentMethod: orderData.paymentMethod || 'Online',
+        mobile: orderData.mobile
+    };
+    const updatedOrders = [
+        newOrder,
+        ...orders
+    ];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedOrders));
+    window.dispatchEvent(new Event('ordersUpdated'));
+    // Deduct Stock
+    deductStockForOrder(newOrder.items);
+    // Update Customer Loyalty
+    const customers = getCustomers();
+    // Try to find by phone if available, else name
+    let customer = customers.find((c)=>newOrder.mobile && c.phone === newOrder.mobile || !newOrder.mobile && c.name.toLowerCase() === newOrder.customer.toLowerCase());
+    if (customer) {
+        const pointsEarned = Math.floor(newOrder.total / 100); // 1 point per 100
+        customer = {
+            ...customer,
+            totalOrders: customer.totalOrders + 1,
+            totalSpent: customer.totalSpent + newOrder.total,
+            loyaltyPoints: customer.loyaltyPoints + pointsEarned,
+            lastVisit: new Date().toISOString()
+        };
+        saveCustomer(customer);
+    } else if (newOrder.mobile) {
+        // Create new customer only if mobile is provided (reliable ID)
+        const newCustomer = {
+            id: `cust_${Date.now()}`,
+            name: newOrder.customer,
+            phone: newOrder.mobile,
+            totalOrders: 1,
+            totalSpent: newOrder.total,
+            loyaltyPoints: Math.floor(newOrder.total / 100),
+            lastVisit: new Date().toISOString()
+        };
+        saveCustomer(newCustomer);
+    }
+    // Emit socket event
+    const socket = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$socket$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSocket"])();
+    socket.emit('new-order', newOrder);
+    return newOrder;
+};
+const getDailyStats = ()=>{
+    const orders = getOrders();
+    const today = new Date().toDateString();
+    const todayOrders = orders.filter((order)=>{
+        return new Date(order.createdAt || Date.now()).toDateString() === today;
+    });
+    const totalOrders = todayOrders.length;
+    const totalSales = todayOrders.reduce((sum, order)=>sum + order.total, 0);
+    const cashSales = todayOrders.filter((o)=>o.paymentMethod === 'Cash').reduce((sum, order)=>sum + order.total, 0);
+    const onlineSales = todayOrders.filter((o)=>o.paymentMethod === 'Online' || o.paymentMethod === 'UPI' || o.paymentMethod === 'Card').reduce((sum, order)=>sum + order.total, 0);
+    return {
+        totalOrders,
+        totalSales,
+        cashSales,
+        onlineSales
+    };
+};
+const useOrders = ()=>{
+    const [orders, setOrders] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        // Initial load
+        setOrders(getOrders());
+        // Listen for updates
+        const handleStorageChange = ()=>{
+            setOrders(getOrders());
+        };
+        window.addEventListener('ordersUpdated', handleStorageChange);
+        window.addEventListener('storage', handleStorageChange); // For cross-tab sync
+        // Socket listeners
+        const socket = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$socket$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSocket"])();
+        socket.on('order-received', (newOrder)=>{
+            // Update local storage to reflect the new order from another device
+            const currentOrders = getOrders();
+            // Avoid duplicates
+            if (!currentOrders.find((o)=>o.id === newOrder.id)) {
+                const updated = [
+                    newOrder,
+                    ...currentOrders
+                ];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+                setOrders(updated);
+            }
+        });
+        socket.on('status-updated', ({ orderId, status })=>{
+            const currentOrders = getOrders();
+            const updated = currentOrders.map((o)=>o.id === orderId ? {
+                    ...o,
+                    status
+                } : o);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+            setOrders(updated);
+        });
+        return ()=>{
+            window.removeEventListener('ordersUpdated', handleStorageChange);
+            window.removeEventListener('storage', handleStorageChange);
+            socket.off('order-received');
+            socket.off('status-updated');
+        };
+    }, []);
+    return {
+        orders,
+        updateStatus: updateOrderStatus,
+        createOrder,
+        toggleWaiterCall
+    };
+};
+function usePrepList() {
+    const [prepList, setPrepList] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(()=>{
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
+        return INITIAL_PREP_LIST;
+    });
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+        ;
+    }, [
+        prepList
+    ]);
+    const togglePrepItem = (id)=>{
+        setPrepList((prev)=>prev.map((item)=>item.id === id ? {
+                    ...item,
+                    completed: !item.completed
+                } : item));
+    };
+    const resetPrepList = ()=>{
+        setPrepList(INITIAL_PREP_LIST.map((item)=>({
+                ...item,
+                completed: false
+            })));
+    };
+    return {
+        prepList,
+        togglePrepItem,
+        resetPrepList
+    };
+}
+const BLOG_STORAGE_KEY = 'oye_chatoro_blog_posts';
+const INITIAL_POSTS = [
+    {
+        id: '1',
+        title: 'Welcome to Oye Chatoro!',
+        slug: 'welcome-to-oye-chatoro',
+        excerpt: 'We are excited to announce the grand opening of our new outlet in Abu Road.',
+        content: 'Welcome to Oye Chatoro! We are thrilled to bring the authentic flavors of street food to Abu Road. Our mission is to serve happiness on every plate with our fresh ingredients and live kitchen concept. Come visit us and try our famous Paneer Tikka Pizza and refreshing beverages.',
+        image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+        date: new Date().toLocaleDateString(),
+        author: 'Admin',
+        category: 'News',
+        tags: [
+            'Grand Opening',
+            'Abu Road',
+            'Street Food'
+        ],
+        seoTitle: 'Welcome to Oye Chatoro - Best Street Food in Abu Road',
+        seoDescription: 'Oye Chatoro is now open in Abu Road! Experience authentic street food, live kitchen, and fresh ingredients. Visit us today.',
+        readingTime: '2 min read'
+    },
+    {
+        id: '2',
+        title: 'Top 5 Must-Try Dishes',
+        slug: 'top-5-must-try-dishes',
+        excerpt: 'Discover the customer favorites that you absolutely cannot miss.',
+        content: '1. **Paneer Tikka Pizza**: A fusion delight.\n2. **White Sauce Pasta**: Creamy and delicious.\n3. **Dahi Papdi Chaat**: The perfect balance of sweet and tangy.\n4. **Veggie Supreme**: Loaded with fresh veggies.\n5. **Masala Chai**: The perfect end to your meal.',
+        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80',
+        date: new Date(Date.now() - 86400000).toLocaleDateString(),
+        author: 'Chef',
+        category: 'Food Guide',
+        tags: [
+            'Pizza',
+            'Pasta',
+            'Chaat',
+            'Recommendations'
+        ],
+        seoTitle: 'Top 5 Must-Try Dishes at Oye Chatoro',
+        seoDescription: 'From Paneer Tikka Pizza to Dahi Papdi Chaat, discover the top 5 dishes you must try at Oye Chatoro Abu Road.',
+        readingTime: '3 min read'
+    }
+];
+const getBlogPosts = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return INITIAL_POSTS;
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const saveBlogPost = (post)=>{
+    const posts = getBlogPosts();
+    const existingIndex = posts.findIndex((p)=>p.id === post.id);
+    let updatedPosts;
+    if (existingIndex >= 0) {
+        updatedPosts = posts.map((p)=>p.id === post.id ? post : p);
+    } else {
+        updatedPosts = [
+            post,
+            ...posts
+        ];
+    }
+    localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(updatedPosts));
+    window.dispatchEvent(new Event('blogUpdated'));
+};
+const deleteBlogPost = (id)=>{
+    const posts = getBlogPosts();
+    const updatedPosts = posts.filter((p)=>p.id !== id);
+    localStorage.setItem(BLOG_STORAGE_KEY, JSON.stringify(updatedPosts));
+    window.dispatchEvent(new Event('blogUpdated'));
+};
+// --- CATEGORIES & TAGS ---
+const CATEGORY_STORAGE_KEY = 'oye_chatoro_blog_categories';
+const TAG_STORAGE_KEY = 'oye_chatoro_blog_tags';
+const useBlog = ()=>{
+    const [posts, setPosts] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [categories, setCategories] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [tags, setTags] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        const loadData = ()=>{
+            setPosts(getBlogPosts());
+            const storedCategories = localStorage.getItem(CATEGORY_STORAGE_KEY);
+            if (storedCategories) {
+                setCategories(JSON.parse(storedCategories));
+            } else {
+                const defaults = [
+                    {
+                        id: '1',
+                        name: 'News',
+                        slug: 'news',
+                        count: 0
+                    },
+                    {
+                        id: '2',
+                        name: 'Recipes',
+                        slug: 'recipes',
+                        count: 0
+                    },
+                    {
+                        id: '3',
+                        name: 'Food Guide',
+                        slug: 'food-guide',
+                        count: 0
+                    },
+                    {
+                        id: '4',
+                        name: 'Offers',
+                        slug: 'offers',
+                        count: 0
+                    },
+                    {
+                        id: '5',
+                        name: 'Events',
+                        slug: 'events',
+                        count: 0
+                    }
+                ];
+                setCategories(defaults);
+                localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(defaults));
+            }
+            const storedTags = localStorage.getItem(TAG_STORAGE_KEY);
+            if (storedTags) setTags(JSON.parse(storedTags));
+        };
+        loadData();
+        const handleStorageChange = ()=>loadData();
+        window.addEventListener('blogUpdated', handleStorageChange);
+        window.addEventListener('storage', handleStorageChange);
+        return ()=>{
+            window.removeEventListener('blogUpdated', handleStorageChange);
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+    const saveCategory = (category)=>{
+        const current = [
+            ...categories
+        ];
+        const index = current.findIndex((c)=>c.id === category.id);
+        if (index >= 0) current[index] = category;
+        else current.push(category);
+        localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(current));
+        setCategories(current);
+    };
+    const deleteCategory = (id)=>{
+        const updated = categories.filter((c)=>c.id !== id);
+        localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(updated));
+        setCategories(updated);
+    };
+    const saveTag = (tag)=>{
+        const current = [
+            ...tags
+        ];
+        if (!current.find((t)=>t.name.toLowerCase() === tag.name.toLowerCase())) {
+            current.push(tag);
+            localStorage.setItem(TAG_STORAGE_KEY, JSON.stringify(current));
+            setTags(current);
+        }
+    };
+    return {
+        posts,
+        categories,
+        tags,
+        savePost: saveBlogPost,
+        deletePost: deleteBlogPost,
+        saveCategory,
+        deleteCategory,
+        saveTag
+    };
+};
+const MENU_CATS_KEY = 'oye_chatoro_menu_cats';
+const MENU_ITEMS_KEY = 'oye_chatoro_menu_items';
+const INITIAL_CATS = [
+    {
+        id: 'cat_train',
+        name: 'Train Specials 🚂'
+    },
+    {
+        id: 'cat_1',
+        name: 'Pizza'
+    },
+    {
+        id: 'cat_2',
+        name: 'Pasta'
+    },
+    {
+        id: 'cat_3',
+        name: 'Chaat'
+    }
+];
+const INITIAL_MENU_ITEMS = [
+    // Train Specials
+    {
+        id: 'item_t1',
+        name: 'Standard Veg Thali',
+        price: 240,
+        description: 'Dal Fry, Seasonal Veg, 4 Roti, Rice, Salad, Pickle. Perfect for a hearty train meal.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        isFeatured: true,
+        image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_t2',
+        name: 'Maharaja Premium Thali',
+        price: 320,
+        description: 'Paneer Butter Masala, Dal Makhani, Mix Veg, Jeera Rice, 2 Butter Naan, Sweet, Raita, Salad.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        isFeatured: true,
+        image: 'https://images.unsplash.com/photo-1585937421612-70a008356f36?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_t3',
+        name: 'Jain Special Thali',
+        price: 260,
+        description: 'No Onion/Garlic. Paneer Sabzi, Dal, Rice, 4 Roti, Sweet. Pure & Sattvic.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        image: 'https://images.unsplash.com/photo-1514516872020-25ce539541d3?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_t4',
+        name: 'Dal Makhani Rice Bowl',
+        price: 180,
+        description: 'Creamy Dal Makhani served with aromatic Jeera Rice. Comfort food on the go.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        image: 'https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_t5',
+        name: 'Chole Kulcha Combo',
+        price: 160,
+        description: 'Spicy Amritsari Chole served with 2 soft Kulchas and pickle.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        image: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_t6',
+        name: 'Aloo Paratha (2 pcs)',
+        price: 120,
+        description: 'Stuffed potato parathas served with fresh curd and pickle.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_t7',
+        name: 'Paneer Paratha (2 pcs)',
+        price: 150,
+        description: 'Stuffed paneer parathas served with fresh curd and pickle.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        image: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_t8',
+        name: 'Sweet Lassi',
+        price: 80,
+        description: 'Thick, creamy sweet yogurt drink topped with dry fruits.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_t9',
+        name: 'Masala Chaas',
+        price: 50,
+        description: 'Spiced buttermilk, refreshing and perfect for digestion.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_t10',
+        name: 'Gulab Jamun (2 pcs)',
+        price: 60,
+        description: 'Soft, melt-in-your-mouth fried dumplings soaked in sugar syrup.',
+        categoryId: 'cat_train',
+        veg: true,
+        status: 'Active',
+        isDigitalMenu: false,
+        isTrainMenu: true,
+        image: 'https://images.unsplash.com/photo-1593701478530-bfde71cf52dd?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 'item_1',
+        name: 'Classic Margherita',
+        price: 199,
+        description: 'Tomato, basil, mozzarella',
+        categoryId: 'cat_1',
+        veg: true,
+        status: 'Active'
+    },
+    {
+        id: 'item_2',
+        name: 'Paneer Tikka Pizza',
+        price: 249,
+        description: 'Spiced paneer chunks',
+        categoryId: 'cat_1',
+        veg: true,
+        status: 'Active'
+    },
+    {
+        id: 'item_3',
+        name: 'White Sauce Pasta',
+        price: 149,
+        description: 'Creamy cheese sauce',
+        categoryId: 'cat_2',
+        veg: true,
+        status: 'Active'
+    },
+    {
+        id: 'item_4',
+        name: 'Dahi Papdi Chaat',
+        price: 49,
+        description: 'Sweet and tangy yogurt',
+        categoryId: 'cat_3',
+        veg: true,
+        status: 'Active'
+    }
+];
+const getMenuCategories = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return INITIAL_CATS;
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const saveMenuCategory = (category)=>{
+    const cats = getMenuCategories();
+    const index = cats.findIndex((c)=>c.id === category.id);
+    let updated;
+    if (index >= 0) {
+        updated = cats.map((c)=>c.id === category.id ? category : c);
+    } else {
+        updated = [
+            ...cats,
+            category
+        ];
+    }
+    localStorage.setItem(MENU_CATS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('menuUpdated'));
+};
+const deleteMenuCategory = (id)=>{
+    const cats = getMenuCategories();
+    const updated = cats.filter((c)=>c.id !== id);
+    localStorage.setItem(MENU_CATS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('menuUpdated'));
+};
+const getMenuItems = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return INITIAL_MENU_ITEMS;
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const saveMenuItem = (item)=>{
+    const items = getMenuItems();
+    const index = items.findIndex((i)=>i.id === item.id);
+    let updated;
+    if (index >= 0) {
+        updated = items.map((i)=>i.id === item.id ? item : i);
+    } else {
+        updated = [
+            ...items,
+            item
+        ];
+    }
+    localStorage.setItem(MENU_ITEMS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('menuUpdated'));
+};
+const deleteMenuItem = (id)=>{
+    const items = getMenuItems();
+    const updated = items.filter((i)=>i.id !== id);
+    localStorage.setItem(MENU_ITEMS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('menuUpdated'));
+};
+const useMenu = ()=>{
+    const [categories, setCategories] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [items, setItems] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const refresh = ()=>{
+        setCategories(getMenuCategories());
+        setItems(getMenuItems());
+    };
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        refresh();
+        window.addEventListener('menuUpdated', refresh);
+        window.addEventListener('storage', refresh);
+        return ()=>{
+            window.removeEventListener('menuUpdated', refresh);
+            window.removeEventListener('storage', refresh);
+        };
+    }, []);
+    return {
+        categories,
+        items,
+        saveCategory: saveMenuCategory,
+        deleteCategory: deleteMenuCategory,
+        saveItem: saveMenuItem,
+        deleteItem: deleteMenuItem
+    };
+};
+const USERS_KEY = 'oye_chatoro_users';
+const CURRENT_USER_KEY = 'oye_chatoro_current_user';
+const registerUser = (user)=>{
+    const users = getUsers();
+    if (users.find((u)=>u.email === user.email)) {
+        throw new Error('Email already exists');
+    }
+    const newUser = {
+        id: `user_${Date.now()}`,
+        ...user,
+        favorites: [],
+        addresses: [],
+        preferences: {
+            dietary: [],
+            language: 'en'
+        },
+        paymentMethods: [],
+        dates: {
+            birthday: '',
+            anniversary: ''
+        },
+        loyalty: {
+            points: 0,
+            tier: 'Bronze',
+            streak: 0,
+            badges: []
+        },
+        referralCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+        notifications: []
+    };
+    localStorage.setItem(USERS_KEY, JSON.stringify([
+        ...users,
+        newUser
+    ]));
+    return newUser;
+};
+const loginUser = (email, password)=>{
+    const users = getUsers();
+    const user = users.find((u)=>u.email === email && u.password === password);
+    if (!user) {
+        throw new Error('Invalid credentials');
+    }
+    const { password: _, ...safeUser } = user;
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(safeUser));
+    window.dispatchEvent(new Event('authUpdated'));
+    return safeUser;
+};
+const logoutUser = ()=>{
+    localStorage.removeItem(CURRENT_USER_KEY);
+    window.dispatchEvent(new Event('authUpdated'));
+};
+const getCurrentUser = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return null;
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const getUsers = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return [];
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const useAuth = ()=>{
+    const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        setUser(getCurrentUser());
+        const handleAuthChange = ()=>{
+            setUser(getCurrentUser());
+        };
+        window.addEventListener('authUpdated', handleAuthChange);
+        window.addEventListener('storage', handleAuthChange);
+        return ()=>{
+            window.removeEventListener('authUpdated', handleAuthChange);
+            window.removeEventListener('storage', handleAuthChange);
+        };
+    }, []);
+    const updateUser = (updates)=>{
+        if (!user) return;
+        const users = getUsers();
+        const index = users.findIndex((u)=>u.id === user.id);
+        if (index !== -1) {
+            const updatedUser = {
+                ...users[index],
+                ...updates
+            };
+            users[index] = updatedUser;
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+            localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+            window.dispatchEvent(new Event('authUpdated'));
+        }
+    };
+    return {
+        user,
+        login: loginUser,
+        register: registerUser,
+        logout: logoutUser,
+        updateUser
+    };
+};
+const useAllUsers = ()=>{
+    const [users, setUsers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        setUsers(getUsers());
+        const handleStorage = ()=>setUsers(getUsers());
+        window.addEventListener('storage', handleStorage);
+        window.addEventListener('authUpdated', handleStorage);
+        return ()=>{
+            window.removeEventListener('storage', handleStorage);
+            window.removeEventListener('authUpdated', handleStorage);
+        };
+    }, []);
+    return {
+        users
+    };
+};
+const CART_KEY = 'oye_chatoro_cart';
+const useCart = ()=>{
+    const [cart, setCart] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        const stored = localStorage.getItem(CART_KEY);
+        if (stored) setCart(JSON.parse(stored));
+        const handleStorage = ()=>{
+            const s = localStorage.getItem(CART_KEY);
+            if (s) setCart(JSON.parse(s));
+        };
+        window.addEventListener('storage', handleStorage);
+        window.addEventListener('cartUpdated', handleStorage);
+        return ()=>{
+            window.removeEventListener('storage', handleStorage);
+            window.removeEventListener('cartUpdated', handleStorage);
+        };
+    }, []);
+    const addToCart = (item)=>{
+        const newCart = [
+            ...cart
+        ];
+        const existing = newCart.find((i)=>i.name === item.name);
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            newCart.push(item);
+        }
+        setCart(newCart);
+        localStorage.setItem(CART_KEY, JSON.stringify(newCart));
+        window.dispatchEvent(new Event('cartUpdated'));
+    };
+    const removeFromCart = (name)=>{
+        const newCart = cart.filter((i)=>i.name !== name);
+        setCart(newCart);
+        localStorage.setItem(CART_KEY, JSON.stringify(newCart));
+        window.dispatchEvent(new Event('cartUpdated'));
+    };
+    const updateQuantity = (name, delta)=>{
+        const newCart = cart.map((item)=>{
+            if (item.name === name) {
+                return {
+                    ...item,
+                    quantity: Math.max(0, item.quantity + delta)
+                };
+            }
+            return item;
+        }).filter((i)=>i.quantity > 0);
+        setCart(newCart);
+        localStorage.setItem(CART_KEY, JSON.stringify(newCart));
+        window.dispatchEvent(new Event('cartUpdated'));
+    };
+    const clearCart = ()=>{
+        setCart([]);
+        localStorage.setItem(CART_KEY, JSON.stringify([]));
+        window.dispatchEvent(new Event('cartUpdated'));
+    };
+    return {
+        cart,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart
+    };
+};
+const useFavorites = ()=>{
+    const { user } = useAuth();
+    const [favorites, setFavorites] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        if (user && user.favorites) {
+            setFavorites(user.favorites);
+        } else {
+            setFavorites([]);
+        }
+    }, [
+        user
+    ]);
+    const toggleFavorite = (itemId)=>{
+        if (!user) return; // Should prompt login in UI
+        const users = JSON.parse(localStorage.getItem('oye_chatoro_users') || '[]');
+        const currentUserIndex = users.findIndex((u)=>u.email === user.email);
+        if (currentUserIndex === -1) return;
+        const currentUser = users[currentUserIndex];
+        const newFavorites = currentUser.favorites ? [
+            ...currentUser.favorites
+        ] : [];
+        const index = newFavorites.indexOf(itemId);
+        if (index === -1) {
+            newFavorites.push(itemId);
+        } else {
+            newFavorites.splice(index, 1);
+        }
+        currentUser.favorites = newFavorites;
+        users[currentUserIndex] = currentUser;
+        localStorage.setItem('oye_chatoro_users', JSON.stringify(users));
+        // Update current session user as well
+        const sessionUser = {
+            ...user,
+            favorites: newFavorites
+        };
+        localStorage.setItem('oye_chatoro_current_user', JSON.stringify(sessionUser));
+        window.dispatchEvent(new Event('authUpdated'));
+    };
+    return {
+        favorites,
+        toggleFavorite
+    };
+};
+const OFFERS_KEY = 'oye_chatoro_offers';
+const INITIAL_OFFERS = [
+    {
+        id: '1',
+        code: 'WELCOME50',
+        discount: '50%',
+        type: 'Percentage',
+        expiry: '2024-12-31',
+        status: 'Active',
+        usage: 145,
+        description: 'Get 50% off on your first order!',
+        bgColor: 'from-orange-400 to-red-500'
+    },
+    {
+        id: '2',
+        code: 'PIZZALOVER',
+        discount: '₹100',
+        type: 'Flat',
+        expiry: '2024-11-30',
+        status: 'Active',
+        usage: 89,
+        description: 'Flat ₹100 off on all Pizzas',
+        bgColor: 'from-blue-400 to-indigo-500'
+    },
+    {
+        id: '3',
+        code: 'FREEDRINK',
+        discount: 'FREE',
+        type: 'Free Item',
+        expiry: '2024-10-15',
+        status: 'Expired',
+        usage: 342,
+        description: 'Free Coke with any Pasta',
+        bgColor: 'from-green-400 to-emerald-500'
+    }
+];
+const getOffers = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return INITIAL_OFFERS;
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const saveOffer = (offer)=>{
+    const offers = getOffers();
+    const index = offers.findIndex((o)=>o.id === offer.id);
+    let updated;
+    if (index >= 0) {
+        updated = offers.map((o)=>o.id === offer.id ? offer : o);
+    } else {
+        updated = [
+            offer,
+            ...offers
+        ];
+    }
+    localStorage.setItem(OFFERS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('offersUpdated'));
+};
+const deleteOffer = (id)=>{
+    const offers = getOffers();
+    const updated = offers.filter((o)=>o.id !== id);
+    localStorage.setItem(OFFERS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('offersUpdated'));
+};
+const useOffers = ()=>{
+    const [offers, setOffers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const refresh = ()=>{
+        setOffers(getOffers());
+    };
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        refresh();
+        window.addEventListener('offersUpdated', refresh);
+        window.addEventListener('storage', refresh);
+        return ()=>{
+            window.removeEventListener('offersUpdated', refresh);
+            window.removeEventListener('storage', refresh);
+        };
+    }, []);
+    return {
+        offers,
+        saveOffer,
+        deleteOffer
+    };
+};
+const INVENTORY_KEY = 'oye_chatoro_inventory';
+const STOCK_LOGS_KEY = 'oye_chatoro_stock_logs';
+const WASTAGE_LOGS_KEY = 'oye_chatoro_wastage_logs';
+const INITIAL_INVENTORY = [
+    {
+        id: 1,
+        name: 'Pizza Base',
+        quantity: 45,
+        unit: 'pcs',
+        minLevel: 50,
+        status: 'Low Stock',
+        category: 'Raw Material'
+    },
+    {
+        id: 2,
+        name: 'Mozzarella Cheese',
+        quantity: 12,
+        unit: 'kg',
+        minLevel: 5,
+        status: 'In Stock',
+        category: 'Dairy'
+    },
+    {
+        id: 3,
+        name: 'Tomato Sauce',
+        quantity: 8,
+        unit: 'kg',
+        minLevel: 10,
+        status: 'Low Stock',
+        category: 'Sauces'
+    },
+    {
+        id: 4,
+        name: 'Sweet Corn',
+        quantity: 5,
+        unit: 'kg',
+        minLevel: 2,
+        status: 'In Stock',
+        category: 'Vegetables'
+    },
+    {
+        id: 5,
+        name: 'Paneer',
+        quantity: 15,
+        unit: 'kg',
+        minLevel: 5,
+        status: 'In Stock',
+        category: 'Dairy'
+    },
+    {
+        id: 6,
+        name: 'Disposable Plates',
+        quantity: 200,
+        unit: 'pcs',
+        minLevel: 100,
+        status: 'In Stock',
+        category: 'Packaging'
+    }
+];
+const getInventory = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return INITIAL_INVENTORY;
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const getStockLogs = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return [];
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const getWastageLogs = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return [];
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const useInventory = ()=>{
+    const [inventory, setInventory] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [stockLogs, setStockLogs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [wastageLogs, setWastageLogs] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const refresh = ()=>{
+        setInventory(getInventory());
+        setStockLogs(getStockLogs());
+        setWastageLogs(getWastageLogs());
+    };
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        refresh();
+        window.addEventListener('inventoryUpdated', refresh);
+        window.addEventListener('storage', refresh);
+        return ()=>{
+            window.removeEventListener('inventoryUpdated', refresh);
+            window.removeEventListener('storage', refresh);
+        };
+    }, []);
+    const logStockChange = (itemId, change, reason)=>{
+        const logs = getStockLogs();
+        const newLog = {
+            id: `log_${Date.now()}_${Math.random()}`,
+            itemId,
+            change,
+            reason,
+            timestamp: new Date().toISOString(),
+            userId: 'Admin' // In a real app, get from auth context
+        };
+        const updatedLogs = [
+            newLog,
+            ...logs
+        ];
+        localStorage.setItem(STOCK_LOGS_KEY, JSON.stringify(updatedLogs));
+        setStockLogs(updatedLogs);
+    };
+    const recordWastage = (itemId, quantity, reason)=>{
+        // 1. Reduce Stock
+        const currentInv = getInventory();
+        const updatedInv = currentInv.map((item)=>{
+            if (item.id === itemId) {
+                const newQty = Math.max(0, item.quantity - quantity);
+                return {
+                    ...item,
+                    quantity: newQty,
+                    status: newQty <= 0 ? 'Out of Stock' : newQty <= item.minLevel ? 'Low Stock' : 'In Stock',
+                    lastUpdated: new Date().toISOString()
+                };
+            }
+            return item;
+        });
+        localStorage.setItem(INVENTORY_KEY, JSON.stringify(updatedInv));
+        // 2. Log Wastage
+        const logs = getWastageLogs();
+        const newLog = {
+            id: `waste_${Date.now()}_${Math.random()}`,
+            itemId,
+            quantity,
+            reason,
+            timestamp: new Date().toISOString(),
+            userId: 'Admin'
+        };
+        const updatedLogs = [
+            newLog,
+            ...logs
+        ];
+        localStorage.setItem(WASTAGE_LOGS_KEY, JSON.stringify(updatedLogs));
+        // 3. Log Stock Change (for consistency)
+        logStockChange(itemId, -quantity, `Wastage: ${reason}`);
+        window.dispatchEvent(new Event('inventoryUpdated'));
+    };
+    const addItem = (item)=>{
+        const current = getInventory();
+        const newItem = {
+            ...item,
+            id: Date.now(),
+            status: item.quantity <= 0 ? 'Out of Stock' : item.quantity <= item.minLevel ? 'Low Stock' : 'In Stock',
+            lastUpdated: new Date().toISOString()
+        };
+        const updated = [
+            ...current,
+            newItem
+        ];
+        localStorage.setItem(INVENTORY_KEY, JSON.stringify(updated));
+        logStockChange(newItem.id, newItem.quantity, 'Initial Stock');
+        window.dispatchEvent(new Event('inventoryUpdated'));
+    };
+    const updateItem = (id, updates)=>{
+        const current = getInventory();
+        let quantityChange = 0;
+        const updated = current.map((item)=>{
+            if (item.id === id) {
+                if (updates.quantity !== undefined) {
+                    quantityChange = updates.quantity - item.quantity;
+                }
+                const updatedItem = {
+                    ...item,
+                    ...updates,
+                    lastUpdated: new Date().toISOString()
+                };
+                // Recalculate status
+                if (updates.quantity !== undefined || updates.minLevel !== undefined) {
+                    const q = updates.quantity !== undefined ? updates.quantity : item.quantity;
+                    const m = updates.minLevel !== undefined ? updates.minLevel : item.minLevel;
+                    updatedItem.status = q <= 0 ? 'Out of Stock' : q <= m ? 'Low Stock' : 'In Stock';
+                }
+                return updatedItem;
+            }
+            return item;
+        });
+        localStorage.setItem(INVENTORY_KEY, JSON.stringify(updated));
+        if (quantityChange !== 0) {
+            logStockChange(id, quantityChange, 'Manual Update');
+        }
+        window.dispatchEvent(new Event('inventoryUpdated'));
+    };
+    const deleteItem = (id)=>{
+        const current = getInventory();
+        const updated = current.filter((item)=>item.id !== id);
+        localStorage.setItem(INVENTORY_KEY, JSON.stringify(updated));
+        window.dispatchEvent(new Event('inventoryUpdated'));
+    };
+    return {
+        inventory,
+        stockLogs,
+        wastageLogs,
+        addItem,
+        updateItem,
+        deleteItem,
+        recordWastage
+    };
+};
+const deductStockForOrder = (orderItems)=>{
+    // Note: orderItems are strings like "Classic Margherita (1)"
+    // We need to parse this or change how orders are stored to link to MenuItems directly.
+    // For now, let's try to match by name.
+    const menuItems = getMenuItems();
+    const inventory = getInventory();
+    let inventoryUpdated = false;
+    const updatedInventory = inventory.map((invItem)=>{
+        let newQuantity = invItem.quantity;
+        orderItems.forEach((orderItemStr)=>{
+            // Parse "Name (Qty)"
+            const match = orderItemStr.match(/(.*) \((\d+)\)/);
+            if (match) {
+                const itemName = match[1];
+                const qty = parseInt(match[2]);
+                const menuItem = menuItems.find((m)=>m.name === itemName);
+                if (menuItem && menuItem.recipe) {
+                    const recipeItem = menuItem.recipe.find((r)=>r.inventoryItemId === invItem.id);
+                    if (recipeItem) {
+                        newQuantity -= recipeItem.quantity * qty;
+                        inventoryUpdated = true;
+                    }
+                }
+            }
+        });
+        if (newQuantity !== invItem.quantity) {
+            return {
+                ...invItem,
+                quantity: Math.max(0, newQuantity),
+                status: newQuantity <= 0 ? 'Out of Stock' : newQuantity <= invItem.minLevel ? 'Low Stock' : 'In Stock',
+                lastUpdated: new Date().toISOString()
+            };
+        }
+        return invItem;
+    });
+    if (inventoryUpdated) {
+        localStorage.setItem(INVENTORY_KEY, JSON.stringify(updatedInventory));
+        window.dispatchEvent(new Event('inventoryUpdated'));
+    }
+};
+const getAnalyticsData = (range)=>{
+    const orders = getOrders();
+    const now = new Date();
+    let startDate = new Date();
+    // 1. Determine Date Range
+    switch(range){
+        case '7d':
+            startDate.setDate(now.getDate() - 7);
+            break;
+        case '30d':
+            startDate.setDate(now.getDate() - 30);
+            break;
+        case 'month':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+        case 'year':
+            startDate = new Date(now.getFullYear(), 0, 1);
+            break;
+    }
+    // 2. Filter Orders
+    const filteredOrders = orders.filter((order)=>{
+        const orderDate = new Date(order.createdAt || 0);
+        return orderDate >= startDate && order.status !== 'Cancelled';
+    });
+    // 3. Calculate Summary
+    const totalRevenue = filteredOrders.reduce((sum, o)=>sum + o.total, 0);
+    const totalOrders = filteredOrders.length;
+    const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+    // 4. Revenue Trend (Group by Date)
+    const revenueTrendMap = new Map();
+    // Initialize last N days with 0
+    for(let d = new Date(startDate); d <= now; d.setDate(d.getDate() + 1)){
+        revenueTrendMap.set(d.toLocaleDateString(), 0);
+    }
+    filteredOrders.forEach((order)=>{
+        const dateStr = new Date(order.createdAt || 0).toLocaleDateString();
+        const current = revenueTrendMap.get(dateStr) || 0;
+        revenueTrendMap.set(dateStr, current + order.total);
+    });
+    const revenueTrend = Array.from(revenueTrendMap.entries()).map(([date, amount])=>({
+            date: date.split('/')[0] + '/' + date.split('/')[1],
+            amount
+        }));
+    // 5. Top Selling Items
+    const itemSales = new Map();
+    filteredOrders.forEach((order)=>{
+        order.items.forEach((itemStr)=>{
+            const match = itemStr.match(/(.*) \((\d+)\)/);
+            if (match) {
+                const name = match[1];
+                const qty = parseInt(match[2]);
+                const current = itemSales.get(name) || {
+                    quantity: 0,
+                    revenue: 0
+                };
+                // Estimate item price from total (not perfect but works for analytics demo)
+                // Ideally we should look up price from menuItems
+                itemSales.set(name, {
+                    quantity: current.quantity + qty,
+                    revenue: current.revenue // Revenue per item is hard to get without menu lookup, skipping for now
+                });
+            }
+        });
+    });
+    const topItems = Array.from(itemSales.entries()).map(([name, stats])=>({
+            name,
+            sales: stats.quantity,
+            pct: 0
+        })).sort((a, b)=>b.sales - a.sales).slice(0, 5);
+    // Calculate percentages for top items
+    const maxSales = topItems.length > 0 ? topItems[0].sales : 1;
+    topItems.forEach((item)=>item.pct = Math.round(item.sales / maxSales * 100));
+    // 6. Peak Hours
+    const hoursMap = new Array(24).fill(0);
+    filteredOrders.forEach((order)=>{
+        const hour = new Date(order.createdAt || 0).getHours();
+        hoursMap[hour]++;
+    });
+    const peakHours = hoursMap.map((count, hour)=>({
+            hour,
+            count
+        }));
+    return {
+        summary: {
+            totalRevenue,
+            totalOrders,
+            avgOrderValue
+        },
+        revenueTrend,
+        topItems,
+        peakHours
+    };
+};
+const SETTINGS_KEY = 'oye_chatoro_settings';
+const INITIAL_SETTINGS = {
+    name: 'Oye Chatoro',
+    address: 'Abu Road, Rajasthan',
+    phone: '+91 98765 43210',
+    email: 'contact@oyechatoro.com',
+    currency: '₹',
+    taxRate: 5,
+    serviceCharge: 0,
+    storeHours: {
+        Monday: {
+            open: '09:00',
+            close: '22:00',
+            closed: false
+        },
+        Tuesday: {
+            open: '09:00',
+            close: '22:00',
+            closed: false
+        },
+        Wednesday: {
+            open: '09:00',
+            close: '22:00',
+            closed: false
+        },
+        Thursday: {
+            open: '09:00',
+            close: '22:00',
+            closed: false
+        },
+        Friday: {
+            open: '09:00',
+            close: '23:00',
+            closed: false
+        },
+        Saturday: {
+            open: '10:00',
+            close: '23:00',
+            closed: false
+        },
+        Sunday: {
+            open: '10:00',
+            close: '23:00',
+            closed: false
+        }
+    },
+    receipt: {
+        header: 'Thank you for dining with us!',
+        footer: 'Visit us again soon.',
+        showLogo: true
+    },
+    digitalMenu: {
+        bannerImage: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+        theme: 'light',
+        isActive: true
+    }
+};
+const getSettings = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return INITIAL_SETTINGS;
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const saveSettings = (settings)=>{
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    window.dispatchEvent(new Event('settingsUpdated'));
+};
+const useSettings = ()=>{
+    const [settings, setSettings] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(INITIAL_SETTINGS);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        setSettings(getSettings());
+        const handleUpdate = ()=>setSettings(getSettings());
+        window.addEventListener('settingsUpdated', handleUpdate);
+        window.addEventListener('storage', handleUpdate);
+        return ()=>{
+            window.removeEventListener('settingsUpdated', handleUpdate);
+            window.removeEventListener('storage', handleUpdate);
+        };
+    }, []);
+    return {
+        settings,
+        updateSettings: saveSettings
+    };
+};
+const exportData = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return null;
+    //TURBOPACK unreachable
+    ;
+    const data = undefined;
+};
+const importData = (jsonString)=>{
+    try {
+        const data = JSON.parse(jsonString);
+        if (data.settings) localStorage.setItem(SETTINGS_KEY, data.settings);
+        if (data.orders) localStorage.setItem(STORAGE_KEY, data.orders);
+        if (data.menuItems) localStorage.setItem(MENU_ITEMS_KEY, data.menuItems);
+        if (data.menuCats) localStorage.setItem(MENU_CATS_KEY, data.menuCats);
+        if (data.inventory) localStorage.setItem(INVENTORY_KEY, data.inventory);
+        if (data.customers) localStorage.setItem(CUSTOMERS_KEY, data.customers);
+        if (data.users) localStorage.setItem(USERS_KEY, data.users);
+        // Trigger updates
+        window.dispatchEvent(new Event('settingsUpdated'));
+        window.dispatchEvent(new Event('ordersUpdated'));
+        window.dispatchEvent(new Event('menuUpdated'));
+        window.dispatchEvent(new Event('inventoryUpdated'));
+        window.dispatchEvent(new Event('customersUpdated'));
+        window.dispatchEvent(new Event('authUpdated'));
+        return {
+            success: true
+        };
+    } catch (e) {
+        console.error('Import failed', e);
+        return {
+            success: false,
+            error: 'Invalid data file'
+        };
+    }
+};
+const CUSTOMERS_KEY = 'oye_chatoro_customers';
+const INITIAL_CUSTOMERS = [
+    {
+        id: 'cust_1',
+        name: 'Rahul Sharma',
+        phone: '9876543210',
+        totalOrders: 12,
+        totalSpent: 4500,
+        loyaltyPoints: 45,
+        lastVisit: new Date().toISOString()
+    },
+    {
+        id: 'cust_2',
+        name: 'Priya Singh',
+        phone: '9876543211',
+        totalOrders: 5,
+        totalSpent: 1200,
+        loyaltyPoints: 12,
+        lastVisit: new Date(Date.now() - 86400000).toISOString()
+    }
+];
+const getCustomers = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return INITIAL_CUSTOMERS;
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const saveCustomer = (customer)=>{
+    const customers = getCustomers();
+    const index = customers.findIndex((c)=>c.id === customer.id);
+    let updated;
+    if (index >= 0) {
+        updated = customers.map((c)=>c.id === customer.id ? customer : c);
+    } else {
+        updated = [
+            ...customers,
+            customer
+        ];
+    }
+    localStorage.setItem(CUSTOMERS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('customersUpdated'));
+};
+const useCustomers = ()=>{
+    const [customers, setCustomers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        setCustomers(getCustomers());
+        const handleUpdate = ()=>setCustomers(getCustomers());
+        window.addEventListener('customersUpdated', handleUpdate);
+        window.addEventListener('storage', handleUpdate);
+        return ()=>{
+            window.removeEventListener('customersUpdated', handleUpdate);
+            window.removeEventListener('storage', handleUpdate);
+        };
+    }, []);
+    return {
+        customers,
+        saveCustomer
+    };
+};
+const useUsers = ()=>{
+    const [users, setUsers] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const refresh = ()=>setUsers(getUsers());
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        refresh();
+        window.addEventListener('authUpdated', refresh);
+        window.addEventListener('storage', refresh);
+        return ()=>{
+            window.removeEventListener('authUpdated', refresh);
+            window.removeEventListener('storage', refresh);
+        };
+    }, []);
+    const addUser = (userData)=>{
+        try {
+            registerUser(userData);
+            refresh();
+            return {
+                success: true
+            };
+        } catch (error) {
+            return {
+                success: false,
+                error: error.message
+            };
+        }
+    };
+    const deleteUser = (id)=>{
+        const currentUsers = getUsers();
+        const updated = currentUsers.filter((u)=>u.id !== id);
+        localStorage.setItem(USERS_KEY, JSON.stringify(updated));
+        window.dispatchEvent(new Event('authUpdated'));
+        refresh();
+    };
+    return {
+        users,
+        addUser,
+        deleteUser
+    };
+};
+const SERVICE_REQUESTS_KEY = 'oyechatoro_service_requests';
+const getServiceRequests = ()=>{
+    if ("TURBOPACK compile-time truthy", 1) return [];
+    //TURBOPACK unreachable
+    ;
+    const stored = undefined;
+};
+const addServiceRequest = (table, type)=>{
+    const requests = getServiceRequests();
+    const newRequest = {
+        id: Date.now(),
+        table,
+        type,
+        status: 'Pending',
+        time: new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    };
+    localStorage.setItem(SERVICE_REQUESTS_KEY, JSON.stringify([
+        ...requests,
+        newRequest
+    ]));
+    window.dispatchEvent(new Event('serviceRequestsUpdated'));
+    window.dispatchEvent(new Event('storage'));
+};
+const updateServiceRequestStatus = (id, status)=>{
+    const requests = getServiceRequests();
+    const updated = requests.map((r)=>r.id === id ? {
+            ...r,
+            status
+        } : r);
+    localStorage.setItem(SERVICE_REQUESTS_KEY, JSON.stringify(updated));
+    window.dispatchEvent(new Event('serviceRequestsUpdated'));
+    window.dispatchEvent(new Event('storage'));
+};
+const useServiceRequests = ()=>{
+    const [requests, setRequests] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const refresh = ()=>{
+        setRequests(getServiceRequests());
+    };
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
+        refresh();
+        window.addEventListener('serviceRequestsUpdated', refresh);
+        window.addEventListener('storage', refresh);
+        return ()=>{
+            window.removeEventListener('serviceRequestsUpdated', refresh);
+            window.removeEventListener('storage', refresh);
+        };
+    }, []);
+    return {
+        requests,
+        addRequest: addServiceRequest,
+        updateStatus: updateServiceRequestStatus
+    };
+};
+const getMenuEngineeringData = ()=>{
+    const items = getMenuItems();
+    const orders = getOrders();
+    // Calculate Sales and Profit for each item
+    const itemStats = items.map((item)=>{
+        const itemOrders = orders.flatMap((o)=>o.items).filter((i)=>i.includes(item.name)); // Simple name match for now
+        const salesCount = itemOrders.length;
+        const revenue = salesCount * item.price;
+        const cost = salesCount * (item.costPrice || 0);
+        const profit = revenue - cost;
+        return {
+            ...item,
+            sales: salesCount,
+            revenue,
+            cost,
+            profit,
+            margin: item.price - (item.costPrice || 0)
+        };
+    });
+    const avgSales = itemStats.reduce((sum, i)=>sum + i.sales, 0) / (itemStats.length || 1);
+    const avgMargin = itemStats.reduce((sum, i)=>sum + i.margin, 0) / (itemStats.length || 1);
+    const classifiedItems = itemStats.map((item)=>{
+        const isHighVolume = item.sales >= avgSales;
+        const isHighMargin = item.margin >= avgMargin;
+        let category = 'Dog';
+        if (isHighVolume && isHighMargin) category = 'Star';
+        else if (isHighVolume && !isHighMargin) category = 'Plowhorse';
+        else if (!isHighVolume && isHighMargin) category = 'Puzzle';
+        return {
+            id: item.id,
+            name: item.name,
+            sales: item.sales,
+            revenue: item.revenue,
+            cost: item.cost,
+            profit: item.profit,
+            margin: item.margin,
+            category
+        };
+    });
+    return {
+        stars: items.filter((i)=>classifiedItems.find((c)=>c.id === i.id)?.category === 'Star'),
+        plowhorses: items.filter((i)=>classifiedItems.find((c)=>c.id === i.id)?.category === 'Plowhorse'),
+        puzzles: items.filter((i)=>classifiedItems.find((c)=>c.id === i.id)?.category === 'Puzzle'),
+        dogs: items.filter((i)=>classifiedItems.find((c)=>c.id === i.id)?.category === 'Dog'),
+        items: classifiedItems
+    };
+};
+}),
+"[project]/app/login/page.tsx [app-ssr] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "default",
+    ()=>LoginPage
+]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/client/app-dir/link.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/lib/storage.ts [app-ssr] (ecmascript)");
+'use client';
+;
+;
+;
+;
+;
+function LoginPage() {
+    const [email, setEmail] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
+    const [password, setPassword] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
+    const [error, setError] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('');
+    const { login } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useAuth"])();
+    const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRouter"])();
+    const handleSubmit = (e)=>{
+        e.preventDefault();
+        setError('');
+        try {
+            login(email, password);
+            router.push('/profile');
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+    return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+        className: "min-h-screen bg-[var(--bg-light)] flex items-center justify-center p-4",
+        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "bg-white rounded-2xl shadow-xl p-8 w-full max-w-md animate-in",
+            children: [
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "text-center mb-8",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                            className: "text-3xl font-bold text-[var(--brand-dark)] mb-2",
+                            children: "Welcome Back! 👋"
+                        }, void 0, false, {
+                            fileName: "[project]/app/login/page.tsx",
+                            lineNumber: 30,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            className: "text-[var(--text-muted)]",
+                            children: "Login to track your orders"
+                        }, void 0, false, {
+                            fileName: "[project]/app/login/page.tsx",
+                            lineNumber: 31,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/app/login/page.tsx",
+                    lineNumber: 29,
+                    columnNumber: 17
+                }, this),
+                error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm text-center",
+                    children: error
+                }, void 0, false, {
+                    fileName: "[project]/app/login/page.tsx",
+                    lineNumber: 35,
+                    columnNumber: 21
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
+                    onSubmit: handleSubmit,
+                    className: "space-y-4",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                    className: "block text-sm font-medium mb-1",
+                                    children: "Email"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/login/page.tsx",
+                                    lineNumber: 42,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                    type: "email",
+                                    required: true,
+                                    className: "w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[var(--brand-primary)] outline-none",
+                                    placeholder: "you@example.com",
+                                    value: email,
+                                    onChange: (e)=>setEmail(e.target.value)
+                                }, void 0, false, {
+                                    fileName: "[project]/app/login/page.tsx",
+                                    lineNumber: 43,
+                                    columnNumber: 25
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/app/login/page.tsx",
+                            lineNumber: 41,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                    className: "block text-sm font-medium mb-1",
+                                    children: "Password"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/login/page.tsx",
+                                    lineNumber: 53,
+                                    columnNumber: 25
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                    type: "password",
+                                    required: true,
+                                    className: "w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[var(--brand-primary)] outline-none",
+                                    placeholder: "••••••••",
+                                    value: password,
+                                    onChange: (e)=>setPassword(e.target.value)
+                                }, void 0, false, {
+                                    fileName: "[project]/app/login/page.tsx",
+                                    lineNumber: 54,
+                                    columnNumber: 25
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/app/login/page.tsx",
+                            lineNumber: 52,
+                            columnNumber: 21
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            type: "submit",
+                            className: "btn btn-primary w-full py-3 text-lg btn-glow",
+                            children: "Login"
+                        }, void 0, false, {
+                            fileName: "[project]/app/login/page.tsx",
+                            lineNumber: 63,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/app/login/page.tsx",
+                    lineNumber: 40,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "mt-6 text-center text-sm text-[var(--text-muted)]",
+                    children: [
+                        "Don't have an account?",
+                        ' ',
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                            href: "/signup",
+                            className: "text-[var(--brand-primary)] font-bold hover:underline",
+                            children: "Sign Up"
+                        }, void 0, false, {
+                            fileName: "[project]/app/login/page.tsx",
+                            lineNumber: 70,
+                            columnNumber: 21
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/app/login/page.tsx",
+                    lineNumber: 68,
+                    columnNumber: 17
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "mt-4 text-center",
+                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
+                        href: "/",
+                        className: "text-sm text-[var(--text-light)] hover:text-[var(--brand-dark)]",
+                        children: "← Back to Home"
+                    }, void 0, false, {
+                        fileName: "[project]/app/login/page.tsx",
+                        lineNumber: 76,
+                        columnNumber: 21
+                    }, this)
+                }, void 0, false, {
+                    fileName: "[project]/app/login/page.tsx",
+                    lineNumber: 75,
+                    columnNumber: 17
+                }, this)
+            ]
+        }, void 0, true, {
+            fileName: "[project]/app/login/page.tsx",
+            lineNumber: 28,
+            columnNumber: 13
+        }, this)
+    }, void 0, false, {
+        fileName: "[project]/app/login/page.tsx",
+        lineNumber: 27,
+        columnNumber: 9
+    }, this);
+}
+}),
+];
+
+//# sourceMappingURL=%5Broot-of-the-server%5D__3f04b787._.js.map
