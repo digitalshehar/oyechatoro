@@ -67,7 +67,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     trustHost: true,
     cookies: {
         sessionToken: {
-            name: `__Secure-next-auth.session-token`,
+            name: `__Secure-oyechatoro-v2-token`,
             options: {
                 httpOnly: true,
                 sameSite: 'lax',
