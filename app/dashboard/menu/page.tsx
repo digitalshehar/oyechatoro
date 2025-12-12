@@ -474,7 +474,7 @@ export default function MenuManagerPage() {
                                     <input
                                         type="number"
                                         className="w-full px-4 py-2 border rounded-xl"
-                                        value={itemForm.costPrice}
+                                        value={itemForm.costPrice || ''}
                                         onChange={e => setItemForm({ ...itemForm, costPrice: Number(e.target.value) })}
                                     />
                                 </div>
@@ -491,7 +491,7 @@ export default function MenuManagerPage() {
                                 <input
                                     type="text"
                                     className="w-full px-4 py-2 border rounded-xl"
-                                    value={itemForm.image}
+                                    value={itemForm.image || ''}
                                     onChange={e => setItemForm({ ...itemForm, image: e.target.value })}
                                     placeholder="https://..."
                                 />
@@ -502,7 +502,7 @@ export default function MenuManagerPage() {
                                 <textarea
                                     className="w-full px-4 py-2 border rounded-xl"
                                     rows={3}
-                                    value={itemForm.description}
+                                    value={itemForm.description || ''}
                                     onChange={e => setItemForm({ ...itemForm, description: e.target.value })}
                                 />
                             </div>
