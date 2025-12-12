@@ -313,9 +313,9 @@ export default function MenuPage() {
                                                                 )}
                                                             </div>
                                                             <Link href={`/menu/${item.slug}`}>
-                                                                <h3 className="font-bold text-base mb-1 text-white leading-tight line-clamp-1 hover:text-orange-500 transition-colors cursor-pointer">{item.name}</h3>
+                                                                <h3 className="font-bold text-base mb-1 text-white leading-tight hover:text-orange-500 transition-colors cursor-pointer">{item.name}</h3>
                                                             </Link>
-                                                            <p className="text-xs text-white/40 line-clamp-2 mb-2">{item.description}</p>
+                                                            <p className="text-xs text-white/40 mb-2">{item.description}</p>
                                                         </div>
 
                                                         <div className="flex items-center justify-between">
@@ -415,7 +415,7 @@ export default function MenuPage() {
                                         <div className={`w-2 h-2 rounded-full bg-green-500`} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <div className="font-bold truncate">{item.name}</div>
+                                        <div className="font-bold text-sm leading-tight">{item.name}</div>
                                         <div className="text-sm text-orange-400 font-bold">₹{item.price}</div>
                                     </div>
                                     <div className="flex items-center gap-1 glass rounded-xl p-1">

@@ -160,7 +160,7 @@ export default async function MenuItemPage({ params }: Props) {
                                             )}
                                         </div>
                                         <div className="flex-1">
-                                            <h4 className="font-bold text-gray-800 group-hover:text-[var(--brand-primary)] transition-colors line-clamp-2">
+                                            <h4 className="font-bold text-gray-800 group-hover:text-[var(--brand-primary)] transition-colors">
                                                 {related.name}
                                             </h4>
                                             <div className="flex items-center gap-2 mt-1">
