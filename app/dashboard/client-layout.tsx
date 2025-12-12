@@ -259,7 +259,13 @@ export default function ClientLayout({ children, session }: { children: React.Re
                     </button>
 
                     <button
-                        onClick={() => signOut({ callbackUrl: '/login' })}
+                        onClick={async () => {
+                            // Brute Force: Manually expire cookies to ensure they die
+                            document.cookie = "__Secure-oyechatoro-v2-token=; Path=/; Domain=.oyechatoro.com; Max-Age=0; Secure; SameSite=Lax";
+                            document.cookie = "__Secure-oyechatoro-v2-token=; Path=/; Max-Age=0; Secure; SameSite=Lax";
+
+                            await signOut({ callbackUrl: '/login' });
+                        }}
                         className="flex items-center gap-3 px-4 py-2 w-full text-left text-red-500 hover:bg-red-50 rounded-xl transition-colors font-medium text-sm"
                     >
                         <span>🚪</span> Logout
