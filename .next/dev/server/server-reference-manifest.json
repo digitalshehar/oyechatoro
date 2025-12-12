@@ -34,33 +34,12 @@
           "async": false,
           "exportedName": "logout",
           "filename": "app/actions/auth.ts"
-        },
-        "app/dashboard/overview/page": {
-          "moduleId": "[project]/.next-internal/server/app/dashboard/overview/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false,
-          "exportedName": "logout",
-          "filename": "app/actions/auth.ts"
-        },
-        "app/dashboard/page": {
-          "moduleId": "[project]/.next-internal/server/app/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false,
-          "exportedName": "logout",
-          "filename": "app/actions/auth.ts"
-        },
-        "app/dashboard/pos/page": {
-          "moduleId": "[project]/.next-internal/server/app/dashboard/pos/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false,
-          "exportedName": "logout",
-          "filename": "app/actions/auth.ts"
         }
       },
       "layer": {
         "app/dashboard/kitchen/page": "action-browser",
         "app/dashboard/menu/page": "action-browser",
-        "app/dashboard/orders/page": "action-browser",
-        "app/dashboard/overview/page": "action-browser",
-        "app/dashboard/page": "action-browser",
-        "app/dashboard/pos/page": "action-browser"
+        "app/dashboard/orders/page": "action-browser"
       },
       "filename": "app/actions/auth.ts",
       "exportedName": "logout"
