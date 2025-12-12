@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useDbServiceRequests as useServiceRequests } from '../lib/db-hooks';
-import { logout } from '../actions/auth';
+import { signOut } from 'next-auth/react';
 import type { Session } from 'next-auth';
 
 export default function ClientLayout({ children, session }: { children: React.ReactNode; session: Session | null }) {
@@ -259,7 +259,7 @@ export default function ClientLayout({ children, session }: { children: React.Re
                     </button>
 
                     <button
-                        onClick={() => logout()}
+                        onClick={() => signOut({ callbackUrl: '/login' })}
                         className="flex items-center gap-3 px-4 py-2 w-full text-left text-red-500 hover:bg-red-50 rounded-xl transition-colors font-medium text-sm"
                     >
                         <span>🚪</span> Logout
