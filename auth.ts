@@ -72,7 +72,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
                 httpOnly: true,
                 sameSite: 'lax',
                 path: '/',
-                secure: true,
+                secure: process.env.NODE_ENV === 'production',
                 domain: process.env.NODE_ENV === 'production' ? '.oyechatoro.com' : undefined,
             },
         },
