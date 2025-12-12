@@ -3,11 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCart } from '../lib/storage';
+import { useDbCart } from '../lib/db-hooks';
 
 export default function MobileNav() {
     const pathname = usePathname();
-    const { cart } = useCart();
+    const { cart } = useDbCart();
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     const navItems = [

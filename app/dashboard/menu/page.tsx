@@ -2,13 +2,14 @@
 
 import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
-import { useMenu, MenuCategory, MenuItem, useInventory, useSettings } from '../../lib/storage';
+import { useDbMenu, MenuItem, MenuCategory, useDbInventory } from '../../lib/db-hooks';
 import { QRCodeSVG } from 'qrcode.react';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 export default function MenuManagerPage() {
-    const { categories, items, saveCategory, deleteCategory, saveItem, deleteItem } = useMenu();
-    const { inventory } = useInventory();
-    const { settings, updateSettings } = useSettings();
+    const { categories, items, saveCategory, deleteCategory, saveItem, deleteItem, loading } = useDbMenu();
+    const { inventory } = useDbInventory();
+    // const { settings, updateSettings } = useSettings(); // Settings still local for now
 
     const [activeTab, setActiveTab] = useState<'items' | 'train' | 'digital'>('items');
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
@@ -44,9 +45,6 @@ export default function MenuManagerPage() {
             if (activeTab === 'train') {
                 return matchesCategory && matchesSearch && item.isTrainMenu === true;
             } else if (activeTab === 'items') {
-                // Show items that are NOT exclusively for the train menu, or show all?
-                // Let's show items that are EITHER explicitly digital menu OR not marked as train menu only.
-                // If an item is BOTH, it shows in both tabs.
                 return matchesCategory && matchesSearch && (item.isTrainMenu !== true || item.isDigitalMenu === true);
             }
             return matchesCategory && matchesSearch;
@@ -54,26 +52,28 @@ export default function MenuManagerPage() {
     }, [items, selectedCategory, searchTerm, activeTab]);
 
     // Handlers
-    const handleSaveCategory = (e: React.FormEvent) => {
+    const handleSaveCategory = async (e: React.FormEvent) => {
         e.preventDefault();
         const newCategory: MenuCategory = {
-            id: `cat_${Date.now()}`,
+            id: `cat_${Date.now()}`, // ID will be ignored by DB create, or used if we add uuid support
             name: catForm.name
         };
 
-        saveCategory(newCategory);
+        if (saveCategory) await saveCategory(newCategory);
         setIsCatModalOpen(false);
         setCatForm({ name: '' });
     };
 
-    const handleDeleteCategory = (id: string) => {
-        if (confirm('Are you sure? This will hide all items in this category.')) {
-            deleteCategory(id);
-            if (selectedCategoryId === id) setSelectedCategoryId(null);
+    const handleDeleteCategory = async (id: string) => {
+        if (confirm('Are you sure? This will delete the category and all its items.')) {
+            if (deleteCategory) {
+                await deleteCategory(id);
+                if (selectedCategoryId === id) setSelectedCategoryId(null);
+            }
         }
     };
 
-    const handleSaveItem = (e: React.FormEvent) => {
+    const handleSaveItem = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!itemForm.categoryId) {
             alert('Please select a category');
@@ -83,20 +83,21 @@ export default function MenuManagerPage() {
         const newItem: MenuItem = {
             id: editingItem ? editingItem.id : `item_${Date.now()}`,
             name: itemForm.name || '',
+            slug: itemForm.slug || (itemForm.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
             price: Number(itemForm.price),
             description: itemForm.description || '',
             categoryId: itemForm.categoryId,
             veg: itemForm.veg || false,
-            status: itemForm.status as 'Active' | 'Out of Stock',
+            status: (itemForm.status || 'Active') as 'Active' | 'OutOfStock',
             image: itemForm.image || '',
-            recipe: editingItem?.recipe,
+            // recipe: editingItem?.recipe,
             isDigitalMenu: itemForm.isDigitalMenu !== false,
             isTrainMenu: itemForm.isTrainMenu || false,
             isFeatured: itemForm.isFeatured || false,
             costPrice: Number(itemForm.costPrice) || 0
         };
 
-        saveItem(newItem);
+        if (saveItem) await saveItem(newItem);
         setIsItemModalOpen(false);
         setEditingItem(null);
         setItemForm({ name: '', price: 0, costPrice: 0, description: '', categoryId: '', veg: true, status: 'Active', isDigitalMenu: true, isTrainMenu: false, isFeatured: false });
@@ -108,49 +109,58 @@ export default function MenuManagerPage() {
         setIsItemModalOpen(true);
     };
 
-    const handleDeleteItem = (id: string) => {
+    const handleDeleteItem = async (id: string) => {
         if (confirm('Delete this item?')) {
-            deleteItem(id);
+            if (deleteItem) await deleteItem(id);
         }
     };
 
-    // Recipe Handlers
     const openRecipeModal = (item: MenuItem) => {
         setSelectedItemForRecipe(item);
         setRecipeForm(item.recipe || []);
         setIsRecipeModalOpen(true);
     };
 
-    const addIngredientToRecipe = () => {
-        setRecipeForm([...recipeForm, { inventoryItemId: inventory[0]?.id || 0, quantity: 1 }]);
-    };
-
-    const removeIngredientFromRecipe = (index: number) => {
-        const updated = [...recipeForm];
-        updated.splice(index, 1);
-        setRecipeForm(updated);
-    };
-
-    const updateRecipeIngredient = (index: number, field: 'inventoryItemId' | 'quantity', value: number) => {
-        const updated = [...recipeForm];
-        updated[index] = { ...updated[index], [field]: value };
-        setRecipeForm(updated);
-    };
-
-    const handleSaveRecipe = () => {
-        if (selectedItemForRecipe) {
-            const updatedItem = { ...selectedItemForRecipe, recipe: recipeForm };
-            saveItem(updatedItem);
+    const handleSaveRecipe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (selectedItemForRecipe && saveItem) {
+            await saveItem({
+                ...selectedItemForRecipe,
+                recipe: recipeForm
+            });
             setIsRecipeModalOpen(false);
             setSelectedItemForRecipe(null);
+            setRecipeForm([]);
         }
     };
 
+    const addIngredientToRecipe = () => {
+        setRecipeForm([...recipeForm, { inventoryItemId: 0, quantity: 0 }]);
+    };
+
+    const removeIngredientFromRecipe = (index: number) => {
+        const newForm = [...recipeForm];
+        newForm.splice(index, 1);
+        setRecipeForm(newForm);
+    };
+
+    const updateRecipeItem = (index: number, field: 'inventoryItemId' | 'quantity', value: number) => {
+        const newForm = [...recipeForm];
+        newForm[index] = { ...newForm[index], [field]: value };
+        setRecipeForm(newForm);
+    };
+
     const menuUrl = typeof window !== 'undefined' ? `${window.location.origin}/menu` : '';
-    const trainMenuUrl = typeof window !== 'undefined' ? `${window.location.origin}/train-menu` : '';
+
+    if (loading && categories.length === 0) {
+        return <div className="p-12 flex justify-center"><LoadingSpinner /></div>;
+    }
 
     return (
-        <div className="flex flex-col h-[calc(100vh-2rem)] gap-6">
+        <div className="flex flex-col h-[calc(100vh-2rem)] gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
+            <div className="flex justify-between items-center mb-2">
+                <h1 className="text-3xl font-bold text-[var(--brand-dark)]">Menu Management <span className="text-sm font-normal text-gray-400 bg-gray-100 px-2 py-1 rounded-full ml-2">Live Database</span></h1>
+            </div>
 
             {/* Top Tabs */}
             <div className="flex gap-4">
@@ -210,6 +220,9 @@ export default function MenuManagerPage() {
                                     </div>
                                 </div>
                             ))}
+                            {categories.length === 0 && !loading && (
+                                <div className="text-center text-gray-400 text-sm mt-4">No categories. Add one +</div>
+                            )}
                         </div>
                     </div>
 
@@ -219,7 +232,10 @@ export default function MenuManagerPage() {
                             <>
                                 <div className="flex justify-between items-center mb-6">
                                     <div>
-                                        <h1 className="text-3xl font-bold text-[var(--brand-dark)]">{selectedCategory.name}</h1>
+                                        <h1 className="text-3xl font-bold text-[var(--brand-dark)]">
+                                            {selectedCategory.name}
+                                            {selectedCategory.name.endsWith('🍕') || selectedCategory.name.endsWith('🍔') ? '' : ''}
+                                        </h1>
                                         <p className="text-[var(--text-muted)]">
                                             {activeTab === 'train' ? 'Manage Train Delivery Items' : 'Manage Restaurant Menu Items'}
                                         </p>
@@ -243,7 +259,7 @@ export default function MenuManagerPage() {
                                                 });
                                                 setIsItemModalOpen(true);
                                             }}
-                                            className="btn btn-primary btn-glow"
+                                            className="px-4 py-2 bg-[var(--brand-primary)] text-white rounded-xl font-bold hover:shadow-lg transition-all"
                                         >
                                             + Add Item
                                         </button>
@@ -275,7 +291,7 @@ export default function MenuManagerPage() {
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex justify-between items-start">
                                                         <h4 className="font-bold text-[var(--text-main)] truncate">{item.name}</h4>
-                                                        <div className={`w-2 h-2 rounded-full ${item.veg ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
                                                     </div>
                                                     <p className="text-xs text-[var(--text-muted)] line-clamp-2 my-1">{item.description}</p>
                                                     <div className="flex flex-wrap gap-1 mt-1">
@@ -358,99 +374,11 @@ export default function MenuManagerPage() {
                                 </button>
                             </div>
 
-                            {/* Settings Section */}
+                            {/* Settings Section Placeholder */}
                             <div className="space-y-6">
                                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                    <h3 className="text-lg font-bold mb-4 text-gray-800">Appearance</h3>
-
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Menu Theme</label>
-                                        <div className="flex gap-2">
-                                            {['light', 'dark', 'system'].map(theme => (
-                                                <button
-                                                    key={theme}
-                                                    onClick={() => updateSettings({
-                                                        ...settings,
-                                                        digitalMenu: { ...settings.digitalMenu!, theme: theme as any }
-                                                    })}
-                                                    className={`flex-1 py-2 rounded-lg border capitalize font-medium ${settings.digitalMenu?.theme === theme
-                                                        ? 'bg-blue-50 border-blue-500 text-blue-700'
-                                                        : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                                                        }`}
-                                                >
-                                                    {theme}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-4">
-                                        <label className="block text-sm font-bold text-gray-700 mb-2">Banner Image URL</label>
-                                        <input
-                                            type="text"
-                                            className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
-                                            placeholder="https://..."
-                                            value={settings.digitalMenu?.bannerImage}
-                                            onChange={e => updateSettings({
-                                                ...settings,
-                                                digitalMenu: { ...settings.digitalMenu!, bannerImage: e.target.value }
-                                            })}
-                                        />
-                                        {settings.digitalMenu?.bannerImage && (
-                                            <div className="mt-2 h-32 w-full rounded-lg overflow-hidden relative">
-                                                <Image
-                                                    src={settings.digitalMenu.bannerImage}
-                                                    alt="Banner Preview"
-                                                    fill
-                                                    className="object-cover"
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={settings.digitalMenu?.isActive}
-                                            onChange={e => updateSettings({
-                                                ...settings,
-                                                digitalMenu: { ...settings.digitalMenu!, isActive: e.target.checked }
-                                            })}
-                                            className="w-5 h-5 rounded text-[var(--brand-primary)]"
-                                        />
-                                        <div>
-                                            <div className="font-bold text-gray-800">Enable Digital Menu</div>
-                                            <div className="text-xs text-gray-500">Turn off to show "Maintenance Mode" to customers</div>
-                                        </div>
-                                    </label>
-
-                                    <div className="pt-4 border-t border-gray-100 relative z-10">
-                                        <button
-                                            onClick={(e) => {
-                                                const btn = e.currentTarget;
-                                                if (btn.getAttribute('data-confirm') === 'true') {
-                                                    localStorage.removeItem('oye_chatoro_menu_items');
-                                                    localStorage.removeItem('oye_chatoro_menu_cats');
-                                                    window.location.reload();
-                                                } else {
-                                                    btn.setAttribute('data-confirm', 'true');
-                                                    btn.textContent = '⚠️ Click Again to Confirm Reset';
-                                                    btn.classList.remove('bg-red-100', 'text-red-600');
-                                                    btn.classList.add('bg-red-600', 'text-white');
-                                                    setTimeout(() => {
-                                                        btn.setAttribute('data-confirm', 'false');
-                                                        btn.innerHTML = '<span>🔄</span> Reset Menu to Defaults';
-                                                        btn.classList.add('bg-red-100', 'text-red-600');
-                                                        btn.classList.remove('bg-red-600', 'text-white');
-                                                    }, 3000);
-                                                }
-                                            }}
-                                            className="w-full py-3 bg-red-100 text-red-600 font-bold rounded-xl hover:bg-red-200 transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            <span>🔄</span> Reset Menu to Defaults
-                                        </button>
-                                        <p className="text-xs text-center text-gray-400 mt-2">Use this if you don't see the new Train Menu items.</p>
-                                    </div>
+                                    <h3 className="text-lg font-bold mb-4 text-gray-800">Appearance (Coming Soon)</h3>
+                                    <p className="text-gray-500">Settings are currently disabled while we move to the new database system.</p>
                                 </div>
                             </div>
                         </div>
@@ -534,21 +462,8 @@ export default function MenuManagerPage() {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium mb-1">Type</label>
-                                    <div className="flex gap-4 mt-2">
-                                        <label className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                checked={itemForm.veg}
-                                                onChange={() => setItemForm({ ...itemForm, veg: true })}
-                                            /> Veg
-                                        </label>
-                                        <label className="flex items-center gap-2 cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                checked={!itemForm.veg}
-                                                onChange={() => setItemForm({ ...itemForm, veg: false })}
-                                            /> Non-Veg
-                                        </label>
+                                    <div className="mt-2 text-sm font-bold text-green-700 bg-green-50 px-3 py-2 rounded-xl border border-green-200 inline-block">
+                                        🥗 100% Pure Veg
                                     </div>
                                 </div>
                             </div>
@@ -618,59 +533,64 @@ export default function MenuManagerPage() {
                     </div>
                 </div>
             )}
-
             {/* Recipe Modal */}
             {isRecipeModalOpen && selectedItemForRecipe && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-lg animate-in max-h-[80vh] overflow-y-auto custom-scrollbar">
-                        <h2 className="text-2xl font-bold mb-2">Recipe: {selectedItemForRecipe.name}</h2>
-                        <p className="text-sm text-gray-500 mb-6">Link inventory ingredients to this menu item. Stock will be auto-deducted when ordered.</p>
+                    <div className="bg-white rounded-2xl p-6 w-full max-w-lg animate-in max-h-[90vh] overflow-y-auto custom-scrollbar">
+                        <h2 className="text-2xl font-bold mb-4">Recipe: {selectedItemForRecipe.name}</h2>
+                        <p className="text-sm text-gray-500 mb-6">Link inventory items to deduct stock automatically when this item is sold.</p>
 
-                        <div className="space-y-4 mb-6">
+                        <form onSubmit={handleSaveRecipe} className="space-y-4">
                             {recipeForm.map((ingredient, index) => (
-                                <div key={index} className="flex gap-2 items-end">
+                                <div key={index} className="flex gap-2 items-end bg-gray-50 p-3 rounded-xl border border-gray-100">
                                     <div className="flex-1">
-                                        <label className="block text-xs font-medium mb-1">Ingredient</label>
+                                        <label className="block text-xs font-bold text-gray-500 mb-1">Ingredient</label>
                                         <select
+                                            required
                                             className="w-full px-3 py-2 border rounded-lg text-sm"
                                             value={ingredient.inventoryItemId}
-                                            onChange={e => updateRecipeIngredient(index, 'inventoryItemId', Number(e.target.value))}
+                                            onChange={e => updateRecipeItem(index, 'inventoryItemId', Number(e.target.value))}
                                         >
+                                            <option value={0}>Select Ingredient</option>
                                             {inventory.map(inv => (
                                                 <option key={inv.id} value={inv.id}>{inv.name} ({inv.unit})</option>
                                             ))}
                                         </select>
                                     </div>
                                     <div className="w-24">
-                                        <label className="block text-xs font-medium mb-1">Qty</label>
+                                        <label className="block text-xs font-bold text-gray-500 mb-1">Qty</label>
                                         <input
+                                            required
                                             type="number"
+                                            step="0.001"
                                             className="w-full px-3 py-2 border rounded-lg text-sm"
                                             value={ingredient.quantity}
-                                            onChange={e => updateRecipeIngredient(index, 'quantity', Number(e.target.value))}
+                                            onChange={e => updateRecipeItem(index, 'quantity', Number(e.target.value))}
                                         />
                                     </div>
                                     <button
+                                        type="button"
                                         onClick={() => removeIngredientFromRecipe(index)}
-                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                                        title="Remove"
+                                        className="p-2 text-red-500 hover:bg-red-100 rounded-lg"
                                     >
                                         🗑️
                                     </button>
                                 </div>
                             ))}
+
                             <button
+                                type="button"
                                 onClick={addIngredientToRecipe}
-                                className="text-sm text-[var(--brand-primary)] font-medium hover:underline"
+                                className="w-full py-2 border-2 border-dashed border-[var(--brand-primary)] text-[var(--brand-primary)] rounded-xl font-bold hover:bg-orange-50 transition-colors"
                             >
                                 + Add Ingredient
                             </button>
-                        </div>
 
-                        <div className="flex justify-end gap-3 pt-4 border-t">
-                            <button onClick={() => setIsRecipeModalOpen(false)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg">Cancel</button>
-                            <button onClick={handleSaveRecipe} className="btn btn-primary">Save Recipe</button>
-                        </div>
+                            <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
+                                <button type="button" onClick={() => setIsRecipeModalOpen(false)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg">Cancel</button>
+                                <button type="submit" className="btn btn-primary">Save Recipe</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

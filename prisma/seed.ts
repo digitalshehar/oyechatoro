@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { neonConfig } from '@neondatabase/serverless';
 import ws from 'ws';
+import bcrypt from 'bcryptjs';
 
 // Configure WebSocket
 neonConfig.webSocketConstructor = ws;
@@ -74,7 +75,7 @@ async function main() {
         await prisma.menuItem.upsert({
             where: { id: item.id },
             update: item,
-            create: { ...item, status: 'Active', isDigitalMenu: true }
+            create: { ...item, slug: item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'), status: 'Active' as any, isDigitalMenu: true }
         });
     }
     console.log(`   ✅ Created ${menuItems.length} menu items\n`);
@@ -134,8 +135,21 @@ async function main() {
                 excerpt: post.excerpt,
                 content: post.content,
                 author: post.author,
-                category: post.category,
-                tags: post.tags,
+                category: {
+                    connectOrCreate: {
+                        where: { name: post.category },
+                        create: {
+                            name: post.category,
+                            slug: post.category.toLowerCase().replace(/\s+/g, '-')
+                        }
+                    }
+                },
+                tags: {
+                    connectOrCreate: post.tags.map(tag => ({
+                        where: { name: tag },
+                        create: { name: tag, slug: tag.toLowerCase().replace(/\s+/g, '-') }
+                    }))
+                },
                 seoTitle: post.seoTitle,
                 seoDescription: post.seoDescription,
                 status: post.status as 'Draft' | 'Published',
@@ -148,8 +162,21 @@ async function main() {
                 excerpt: post.excerpt,
                 content: post.content,
                 author: post.author,
-                category: post.category,
-                tags: post.tags,
+                category: {
+                    connectOrCreate: {
+                        where: { name: post.category },
+                        create: {
+                            name: post.category,
+                            slug: post.category.toLowerCase().replace(/\s+/g, '-')
+                        }
+                    }
+                },
+                tags: {
+                    connectOrCreate: post.tags.map(tag => ({
+                        where: { name: tag },
+                        create: { name: tag, slug: tag.toLowerCase().replace(/\s+/g, '-') }
+                    }))
+                },
                 seoTitle: post.seoTitle,
                 seoDescription: post.seoDescription,
                 status: post.status as 'Draft' | 'Published',
@@ -174,6 +201,40 @@ async function main() {
         }
     });
     console.log('   ✅ Created sample customer\n');
+
+    // ==================== STAFF (RBAC) ====================
+    console.log('👮 Creating staff accounts...');
+    const hashedPassword = await bcrypt.hash('Admin@123', 10);
+    const staffPassword = await bcrypt.hash('Staff@123', 10);
+    const managerPassword = await bcrypt.hash('Manager@123', 10);
+
+    const staffMembers = [
+        { id: 'admin_user', name: 'Super Admin', email: 'admin@oyechatoro.com', password: hashedPassword, role: 'Admin' },
+        { id: 'manager_user', name: 'Restaurant Manager', email: 'manager@oyechatoro.com', password: managerPassword, role: 'Manager' },
+        { id: 'staff_user', name: 'Rahul Service', email: 'staff@oyechatoro.com', password: staffPassword, role: 'Staff' },
+        { id: 'chef_user', name: 'Head Chef', email: 'chef@oyechatoro.com', password: staffPassword, role: 'Chef' },
+    ];
+
+    for (const staff of staffMembers) {
+        await prisma.staff.upsert({
+            where: { id: staff.id },
+            update: {
+                name: staff.name,
+                email: staff.email,
+                password: staff.password,
+                role: staff.role as any
+            },
+            create: {
+                id: staff.id,
+                name: staff.name,
+                email: staff.email,
+                password: staff.password,
+                role: staff.role as any,
+                active: true
+            }
+        });
+    }
+    console.log(`   ✅ Created ${staffMembers.length} staff accounts\n`);
 
     console.log('🎉 Database seeding completed!\n');
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useOrders, updatePaymentStatus, updatePaymentMethod } from '../../lib/storage';
+import { useDbOrders } from '../../lib/db-hooks';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 // Helper function to format order item (handles both string and object formats)
 const formatOrderItem = (item: any): string => {
@@ -14,12 +15,12 @@ const formatOrderItem = (item: any): string => {
 };
 
 const OrdersPage = () => {
-    const { orders, updateStatus } = useOrders();
+    const { orders, updateOrder, loading } = useDbOrders();
     const [activeTab, setActiveTab] = useState<'live' | 'completed' | 'cancelled' | 'train' | 'all'>('live');
     const [searchQuery, setSearchQuery] = useState('');
     const [isSoundEnabled, setIsSoundEnabled] = useState(true);
     const prevOrderCountRef = useRef(orders.length);
-    const [dateFilter, setDateFilter] = useState<'today' | 'week' | 'month' | 'all'>('today');
+    const [dateFilter, setDateFilter] = useState<'today' | 'week' | 'month' | 'all'>('all');
 
     const playNotificationSound = () => {
         try {
@@ -31,6 +32,7 @@ const OrdersPage = () => {
     const isFirstRender = useRef(true);
 
     useEffect(() => {
+        if (loading) return;
         if (isFirstRender.current) {
             isFirstRender.current = false;
             prevOrderCountRef.current = orders.length;
@@ -40,9 +42,9 @@ const OrdersPage = () => {
             if (isSoundEnabled) playNotificationSound();
         }
         prevOrderCountRef.current = orders.length;
-    }, [orders.length, isSoundEnabled]);
+    }, [orders.length, isSoundEnabled, loading]);
 
-    const totalRevenue = orders.reduce((sum, order) => order.status !== 'Cancelled' ? sum + order.total : sum, 0);
+    const totalRevenue = orders.reduce((sum, order) => order.status !== 'Cancelled' ? sum + Number(order.total) : sum, 0);
     const totalOrders = orders.length;
     const pendingOrders = orders.filter(o => o.status === 'Pending').length;
     const cookingOrders = orders.filter(o => o.status === 'Cooking').length;
@@ -50,11 +52,11 @@ const OrdersPage = () => {
     const paidOrders = orders.filter(o => o.paymentStatus === 'Paid' && o.status !== 'Cancelled');
     const unpaidOrders = orders.filter(o => o.paymentStatus === 'Unpaid' && o.status !== 'Cancelled');
 
-    const cashCollected = paidOrders.filter(o => o.paymentMethod === 'Cash').reduce((sum, o) => sum + o.total, 0);
-    const upiCollected = paidOrders.filter(o => o.paymentMethod === 'UPI').reduce((sum, o) => sum + o.total, 0);
-    const onlineCollected = paidOrders.filter(o => o.paymentMethod === 'Online').reduce((sum, o) => sum + o.total, 0);
+    const cashCollected = paidOrders.filter(o => o.paymentMethod === 'Cash').reduce((sum, o) => sum + Number(o.total), 0);
+    const upiCollected = paidOrders.filter(o => o.paymentMethod === 'UPI').reduce((sum, o) => sum + Number(o.total), 0);
+    const onlineCollected = paidOrders.filter(o => o.paymentMethod === 'Online' || o.paymentMethod === 'Card').reduce((sum, o) => sum + Number(o.total), 0);
     const totalCollected = cashCollected + upiCollected + onlineCollected;
-    const pendingCollection = unpaidOrders.reduce((sum, o) => sum + o.total, 0);
+    const pendingCollection = unpaidOrders.reduce((sum, o) => sum + Number(o.total), 0);
 
     const filteredOrders = orders.filter(order => {
         const orderDate = new Date(order.createdAt || Date.now());
@@ -64,12 +66,21 @@ const OrdersPage = () => {
         const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
 
         const matchesDate = dateFilter === 'today' ? orderDate >= today : dateFilter === 'week' ? orderDate >= weekAgo : dateFilter === 'month' ? orderDate >= monthAgo : true;
-        const matchesTab = activeTab === 'live' ? ['Pending', 'Cooking', 'Ready'].includes(order.status) : activeTab === 'completed' ? order.status === 'Completed' : activeTab === 'cancelled' ? order.status === 'Cancelled' : activeTab === 'train' ? !!order.trainDetails : true;
+
+        let matchesTab = true;
+        if (activeTab === 'live') matchesTab = ['Pending', 'Cooking', 'Ready'].includes(order.status);
+        else if (activeTab === 'completed') matchesTab = order.status === 'Completed';
+        else if (activeTab === 'cancelled') matchesTab = order.status === 'Cancelled';
+        else if (activeTab === 'train') matchesTab = !!order.trainDetails;
+
         const query = searchQuery.toLowerCase();
-        const matchesSearch = order.id.toString().includes(query) || order.customer.toLowerCase().includes(query) || order.items.some((item: any) => formatOrderItem(item).toLowerCase().includes(query)) || (order.trainDetails?.pnr || '').includes(query) || (order.mobile || '').includes(query);
+        const matchesSearch = order.id.toString().includes(query) ||
+            order.customer.toLowerCase().includes(query) ||
+            (order.trainDetails?.pnr || '').includes(query) ||
+            (order.mobile || '').includes(query);
 
         return matchesDate && matchesTab && matchesSearch;
-    }).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     const printBill = (order: any) => {
         const billContent = `<html><head><title>Bill #${order.id}</title><style>body{font-family:monospace;padding:20px;max-width:300px;margin:0 auto;}.header{text-align:center;margin-bottom:20px;border-bottom:1px dashed #000;padding-bottom:10px;}.item{display:flex;justify-content:space-between;margin-bottom:5px;}.total{border-top:1px dashed #000;margin-top:10px;padding-top:10px;display:flex;justify-content:space-between;font-weight:bold;}.footer{text-align:center;margin-top:20px;font-size:12px;}</style></head><body><div class="header"><h2>Oye Chatoro</h2><p>Abu Road, Rajasthan</p><p>Order #${order.id}</p><p>${new Date().toLocaleString()}</p></div><div class="items">${order.items.map((item: any) => `<div class="item"><span>${formatOrderItem(item)}</span></div>`).join('')}</div><div class="total"><span>TOTAL</span><span>₹${order.total}</span></div><div class="footer"><p>Thank you for dining with us!</p></div><script>window.print();</script></body></html>`;
@@ -103,11 +114,15 @@ const OrdersPage = () => {
         a.click();
     };
 
+    if (loading && orders.length === 0) {
+        return <div className="p-12 flex justify-center"><LoadingSpinner /></div>;
+    }
+
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto">
             <div className="mb-8 animate-in w-full">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <h1 className="text-3xl font-bold text-[var(--brand-dark)]">Order Management</h1>
+                    <h1 className="text-3xl font-bold text-[var(--brand-dark)]">Order Management <span className="text-sm font-normal text-gray-400 bg-gray-100 px-2 py-1 rounded-full ml-2">Live Database</span></h1>
                     <div className="flex gap-3 w-full md:w-auto">
                         <div className="relative flex-1 w-full md:w-64">
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
@@ -122,7 +137,7 @@ const OrdersPage = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full">
                     <div className="glass-card p-4 rounded-xl flex items-center gap-4 bg-white/60">
                         <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-2xl shrink-0">💰</div>
-                        <div className="min-w-0"><div className="text-sm text-[var(--text-muted)] truncate">Total Revenue</div><div className="text-2xl font-bold text-[var(--brand-dark)]">₹{totalRevenue}</div></div>
+                        <div className="min-w-0"><div className="text-sm text-[var(--text-muted)] truncate">Total Revenue</div><div className="text-2xl font-bold text-[var(--brand-dark)]">₹{totalRevenue.toLocaleString()}</div></div>
                     </div>
                     <div className="glass-card p-4 rounded-xl flex items-center gap-4 bg-white/60">
                         <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-2xl shrink-0">📦</div>
@@ -141,11 +156,11 @@ const OrdersPage = () => {
                 <div className="mt-4 glass-card p-4 rounded-xl bg-gradient-to-r from-green-50 to-blue-50 border border-green-100">
                     <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2"><span>💳</span> Payment Summary (Today)</h3>
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                        <div className="bg-white/80 p-3 rounded-lg text-center border border-green-100"><div className="text-xs text-gray-500 mb-1">💵 Cash</div><div className="text-lg font-bold text-green-600">₹{cashCollected}</div></div>
-                        <div className="bg-white/80 p-3 rounded-lg text-center border border-purple-100"><div className="text-xs text-gray-500 mb-1">📱 UPI</div><div className="text-lg font-bold text-purple-600">₹{upiCollected}</div></div>
-                        <div className="bg-white/80 p-3 rounded-lg text-center border border-blue-100"><div className="text-xs text-gray-500 mb-1">💳 Online</div><div className="text-lg font-bold text-blue-600">₹{onlineCollected}</div></div>
-                        <div className="bg-white/80 p-3 rounded-lg text-center border border-gray-200"><div className="text-xs text-gray-500 mb-1">✅ Total Collected</div><div className="text-lg font-bold text-gray-800">₹{totalCollected}</div></div>
-                        <div className="bg-white/80 p-3 rounded-lg text-center border border-orange-100"><div className="text-xs text-gray-500 mb-1">⏳ Pending ({unpaidOrders.length})</div><div className="text-lg font-bold text-orange-600">₹{pendingCollection}</div></div>
+                        <div className="bg-white/80 p-3 rounded-lg text-center border border-green-100"><div className="text-xs text-gray-500 mb-1">💵 Cash</div><div className="text-lg font-bold text-green-600">₹{cashCollected.toLocaleString()}</div></div>
+                        <div className="bg-white/80 p-3 rounded-lg text-center border border-purple-100"><div className="text-xs text-gray-500 mb-1">📱 UPI</div><div className="text-lg font-bold text-purple-600">₹{upiCollected.toLocaleString()}</div></div>
+                        <div className="bg-white/80 p-3 rounded-lg text-center border border-blue-100"><div className="text-xs text-gray-500 mb-1">💳 Online</div><div className="text-lg font-bold text-blue-600">₹{onlineCollected.toLocaleString()}</div></div>
+                        <div className="bg-white/80 p-3 rounded-lg text-center border border-gray-200"><div className="text-xs text-gray-500 mb-1">✅ Total Collected</div><div className="text-lg font-bold text-gray-800">₹{totalCollected.toLocaleString()}</div></div>
+                        <div className="bg-white/80 p-3 rounded-lg text-center border border-orange-100"><div className="text-xs text-gray-500 mb-1">⏳ Pending ({unpaidOrders.length})</div><div className="text-lg font-bold text-orange-600">₹{pendingCollection.toLocaleString()}</div></div>
                     </div>
                 </div>
             </div>
@@ -182,22 +197,23 @@ const OrdersPage = () => {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-3 mb-2 flex-wrap">
                                     <span className="font-bold text-lg text-[var(--brand-dark)] shrink-0">#{order.id}</span>
-                                    <span className="text-sm text-[var(--text-muted)] bg-white px-2 py-1 rounded border shrink-0">{order.time}</span>
+                                    <span className="text-sm text-[var(--text-muted)] bg-white px-2 py-1 rounded border shrink-0">{new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shrink-0 ${order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : order.status === 'Cooking' ? 'bg-blue-100 text-blue-700' : order.status === 'Ready' ? 'bg-green-100 text-green-700' : order.status === 'Completed' ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-700'}`}>{order.status}</span>
                                     {order.trainDetails && <span className="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">🚆 Train</span>}
-                                    <select value={order.paymentMethod || 'Cash'} onChange={(e) => updatePaymentMethod(order.id, e.target.value as any)} className={`px-2 py-1 rounded text-xs font-bold border-0 cursor-pointer ${order.paymentMethod === 'Cash' ? 'bg-yellow-100 text-yellow-700' : order.paymentMethod === 'UPI' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                                    <select value={order.paymentMethod || 'Cash'} onChange={(e) => updateOrder(order.id, { paymentMethod: e.target.value as any })} className={`px-2 py-1 rounded text-xs font-bold border-0 cursor-pointer ${order.paymentMethod === 'Cash' ? 'bg-yellow-100 text-yellow-700' : order.paymentMethod === 'UPI' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
                                         <option value="Cash">💵 Cash</option>
                                         <option value="UPI">📱 UPI</option>
                                         <option value="Online">💳 Online</option>
+                                        <option value="Card">💳 Card</option>
                                     </select>
                                     {order.paymentStatus && <span className={`px-2 py-1 rounded text-xs font-bold ${order.paymentStatus === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>{order.paymentStatus === 'Paid' ? '✅ Paid' : '⏳ Unpaid'}</span>}
                                 </div>
-                                <h3 className="font-bold text-[var(--text-main)] mb-1 text-lg truncate">{order.customer}</h3>
+                                <h3 className="font-bold text-[var(--text-main)] mb-1 text-lg truncate">{order.customer || 'Guest'}</h3>
                                 {order.mobile && (
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="text-sm text-gray-600">📱 {order.mobile}</span>
                                         {order.status === 'Ready' && (
-                                            <a href={`https://wa.me/91${order.mobile}?text=${encodeURIComponent(`🎉 Hi! Your order #${order.id} is READY!\n\nItems: ${order.items.map((item: any) => formatOrderItem(item)).join(', ')}\nTotal: ₹${order.total}\n\nThank you from Oye Chatoro! 🍽️`)}`} target="_blank" rel="noopener noreferrer" className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded hover:bg-green-600">📲 Notify</a>
+                                            <a href={`https://wa.me/91${order.mobile}?text=${encodeURIComponent(`🎉 Hi ${order.customer}! Your order #${order.id} is READY!\n\nItems: ${order.items.map((item: any) => formatOrderItem(item)).join(', ')}\nTotal: ₹${order.total}\n\nThank you from Oye Chatoro! 🍽️`)}`} target="_blank" rel="noopener noreferrer" className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded hover:bg-green-600">📲 Notify</a>
                                         )}
                                     </div>
                                 )}
@@ -218,16 +234,30 @@ const OrdersPage = () => {
                                 <div className="text-right min-w-[100px]"><div className="text-xs text-[var(--text-muted)]">Total Amount</div><div className="font-bold text-xl md:text-2xl text-[var(--brand-primary)]">₹{order.total}</div></div>
                                 <div className="flex gap-2 flex-1 md:flex-none justify-end">
                                     <button onClick={() => printBill(order)} className="p-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors" title="Print Bill">🖨️</button>
-                                    {order.paymentStatus === 'Unpaid' && <button onClick={() => updatePaymentStatus(order.id, 'Paid')} className="p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl font-medium" title="Mark as Paid">💰</button>}
-                                    {order.paymentStatus === 'Paid' && <button onClick={() => updatePaymentStatus(order.id, 'Unpaid')} className="p-3 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-xl font-medium" title="Mark as Unpaid">↩️</button>}
+                                    {order.paymentStatus === 'Unpaid' && <button onClick={() => updateOrder(order.id, { paymentStatus: 'Paid' })} className="p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl font-medium" title="Mark as Paid">💰</button>}
+                                    {order.paymentStatus === 'Paid' && <button onClick={() => updateOrder(order.id, { paymentStatus: 'Unpaid' })} className="p-3 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded-xl font-medium" title="Mark as Unpaid">↩️</button>}
                                     {order.status === 'Pending' && (
                                         <>
-                                            <button onClick={() => updateStatus(order.id, 'Cooking')} className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-200 transition-all text-sm md:text-base">Accept & Cook</button>
-                                            <button onClick={() => updateStatus(order.id, 'Cancelled')} className="px-3 md:px-4 py-2 md:py-3 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl font-bold text-sm md:text-base">Reject</button>
+                                            <button onClick={() => updateOrder(order.id, { status: 'Cooking' })} className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-200 transition-all text-sm md:text-base">Accept & Cook</button>
+                                            <button onClick={() => updateOrder(order.id, { status: 'Cancelled' })} className="px-3 md:px-4 py-2 md:py-3 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl font-bold text-sm md:text-base">Reject</button>
                                         </>
                                     )}
-                                    {order.status === 'Cooking' && <button onClick={() => updateStatus(order.id, 'Ready')} className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-orange-200 text-sm md:text-base">Mark Ready</button>}
-                                    {order.status === 'Ready' && <button onClick={() => updateStatus(order.id, 'Completed')} className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg shadow-green-200 text-sm md:text-base">Complete Order</button>}
+                                    {order.status === 'Cooking' && <button onClick={() => updateOrder(order.id, { status: 'Ready' })} className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold shadow-lg shadow-orange-200 text-sm md:text-base">Mark Ready</button>}
+                                    {order.status === 'Ready' && (
+                                        <>
+                                            {order.mobile && (
+                                                <a
+                                                    href={`https://wa.me/91${order.mobile.replace(/\D/g, '')}?text=${encodeURIComponent(`🎉 Hi ${order.customer}!\n\nYour Order #${order.id} is READY! 🍔\n\nPlease collect from the counter.\n\nThank you!\n- Oye Chatoro 🙏`)}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold shadow-lg shadow-green-200 text-sm md:text-base flex items-center gap-2"
+                                                >
+                                                    📲 WhatsApp
+                                                </a>
+                                            )}
+                                            <button onClick={() => updateOrder(order.id, { status: 'Completed' })} className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-200 text-sm md:text-base">Complete ✓</button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -237,4 +267,5 @@ const OrdersPage = () => {
         </div>
     );
 }
+
 export default OrdersPage;

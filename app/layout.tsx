@@ -63,7 +63,16 @@ export const metadata: Metadata = {
         // Hindi Keywords (for local search)
         'Abu Road ka best restaurant',
         'pure veg food Abu Road',
-        'shakahari restaurant Abu Road'
+        'Abu Road ka best restaurant',
+        'pure veg food Abu Road',
+        'shakahari restaurant Abu Road',
+
+        // Target Keywords (High Volume)
+        'best restaurants in abu road',
+        'restaurants in abu road',
+        'abu road famous food',
+        'restaurants near abu road railway station',
+        'best restaurants in mount abu'
     ],
     authors: [{ name: 'Oye Chatoro' }],
     creator: 'Oye Chatoro',
@@ -138,8 +147,8 @@ export default function RootLayout({
             {
                 '@type': 'Restaurant',
                 '@id': 'https://oyechatoro.com',
-                name: 'Oye Chatoro - Restaurant in Abu Road',
-                description: 'Best Restaurant in Abu Road - 100% Pure Vegetarian. Fresh pizzas, pastas, chaats, burgers & street food near Mount Abu.',
+                name: 'Oye Chatoro - Best Restaurant in Abu Road',
+                description: 'Oye Chatoro is the best restaurant in Abu Road serving famous food like pizza, pasta, and chaat. Located near Abu Road Railway Station and Mount Abu.',
                 url: 'https://oyechatoro.com',
                 telephone: '+91-9509913792',
                 priceRange: '₹₹',

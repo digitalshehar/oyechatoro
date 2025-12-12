@@ -1,95 +1,125 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { createOrder, useAuth, useCart, useFavorites, useOffers } from './lib/storage';
+import { useFavorites, useOffers } from './lib/storage';
+import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
 import MobileNav from './components/MobileNav';
 
+function RecentBlogPosts() {
+    const { posts, loading } = useDbBlog();
+
+    // Get top 3 published posts
+    const recentPosts = useMemo(() => {
+        return posts
+            .filter(p => p.status === 'Published')
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .slice(0, 3);
+    }, [posts]);
+
+    if (loading) return <div className="text-center py-10">Loading stories...</div>;
+
+    if (recentPosts.length === 0) return (
+        <div className="text-center py-10 text-gray-400">
+            <p>New stories coming soon!</p>
+        </div>
+    );
+
+    return (
+        <div className="grid md:grid-cols-3 gap-8">
+            {recentPosts.map(post => (
+                <Link href={`/blog/${post.slug}`} key={post.id} className="group flex flex-col gap-4">
+                    <div className="aspect-[4/3] rounded-2xl overflow-hidden relative shadow-lg">
+                        <Image
+                            src={post.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c'}
+                            alt={post.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-gray-800 shadow-sm">
+                            {post.category?.name || 'News'}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-xl text-gray-900 group-hover:text-[var(--brand-primary)] transition-colors line-clamp-2 leading-tight">
+                            {post.title}
+                        </h3>
+                        <p className="text-sm text-gray-500 mt-2 line-clamp-2">{post.excerpt}</p>
+                        <div className="flex items-center gap-2 mt-4 text-xs font-bold text-gray-400 uppercase tracking-wider">
+                            <span>{new Date(post.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                            <span>•</span>
+                            <span>{post.readingTime || '5 min read'}</span>
+                        </div>
+                    </div>
+                </Link>
+            ))}
+        </div>
+    );
+}
+
 // Types
-import { MENU_ITEMS, MenuItem } from './lib/data';
-
-interface CartItem {
-    name: string;
-    price: number;
-    quantity: number;
-}
-
+// Types
 interface Review {
-    author_name: string;
+    id: string;
+    name: string;
+    avatar: string | null;
     rating: number;
-    relative_time_description: string;
-    text: string;
+    comment: string;
+    date: string | Date; // API returns string, we might convert
 }
 
+// Category Icons Map
+const CATEGORY_ICONS: Record<string, string> = {
+    pizza: '🍕',
+    chaat: '🥘',
+    sandwich: '🥪',
+    burger: '🍔',
+    pasta: '🍝',
+    frankie: '🌯',
+    fries: '🍟',
+    beverages: '🥤',
+    shake: '🥤',
+    coffee: '☕',
+    default: '🍽️'
+};
 
+const getCategoryIcon = (name: string) => {
+    const lowerName = name.toLowerCase();
+    const key = Object.keys(CATEGORY_ICONS).find(k => lowerName.includes(k));
+    return key ? CATEGORY_ICONS[key] : CATEGORY_ICONS['default'];
+};
 
 // Fallback Reviews
 const FALLBACK_REVIEWS: Review[] = [
     {
-        author_name: "Narsingh Ranga",
+        id: '1',
+        name: "Narsingh Ranga",
+        avatar: null,
         rating: 5,
-        relative_time_description: "4 days ago",
-        text: "Fast, friendly, and efficient—Oye Chattore of Abu Road stands out. The staff ensures you're well taken care of."
+        date: "4 days ago",
+        comment: "Fast, friendly, and efficient—Oye Chattore of Abu Road stands out. The staff ensures you're well taken care of."
     },
     {
-        author_name: "Sagar Sachan 7173",
+        id: '2',
+        name: "Sagar Sachan 7173",
+        avatar: null,
         rating: 5,
-        relative_time_description: "5 days ago",
-        text: "Very tasty pizza in Abu road like dominos pizza. Must visit place."
+        date: "5 days ago",
+        comment: "Very tasty pizza in Abu road like dominos pizza. Must visit place."
     },
     {
-        author_name: "Pritam Yadav",
+        id: '3',
+        name: "Pritam Yadav",
+        avatar: null,
         rating: 5,
-        relative_time_description: "2 weeks ago",
-        text: "Better food than other in abu road. Hygiene is very good."
-    },
-    {
-        author_name: "Local Customer",
-        rating: 5,
-        relative_time_description: "1 week ago",
-        text: "Best fast food shop in Abu Road. The paneer tikka pizza is amazing!"
-    },
-    {
-        author_name: "Traveler X",
-        rating: 5,
-        relative_time_description: "3 weeks ago",
-        text: "Stumbled upon this place while traveling. Great food and vibe."
-    },
-    {
-        author_name: "Cet B",
-        rating: 5,
-        relative_time_description: "2 weeks ago",
-        text: "Fresh hygeinic food prepared with love.i have ordered jain food online and the owner is so polite and patient to listen and prepare as per the request and deliver at home. I wish you great great success and thank you for honest and sincere efforts which is hard to found in this city.\nPs: Their chef is a genius!"
-    },
-    {
-        author_name: "Foodie Guide",
-        rating: 5,
-        relative_time_description: "a month ago",
-        text: "Excellent katori chaat and pizza. The service was quick and the place was clean."
-    },
-    {
-        author_name: "Rider Boy",
-        rating: 4,
-        relative_time_description: "3 weeks ago",
-        text: "Good food, a bit crowded on weekends but worth the wait."
-    },
-    {
-        author_name: "Happy Customer",
-        rating: 5,
-        relative_time_description: "a month ago",
-        text: "Loved the chutneys and the overall taste. Will visit again!"
-    },
-    {
-        author_name: "Abu Road Local",
-        rating: 5,
-        relative_time_description: "2 months ago",
-        text: "Finally a good place for fast food in Abu Road. Keep it up!"
+        date: "2 weeks ago",
+        comment: "Better food than other in abu road. Hygiene is very good."
     }
 ];
 
 export default function Home() {
-    const [activeCategory, setActiveCategory] = useState('all');
+    const [activeCategory, setActiveCategory] = useState('cat_chaat');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [reviews, setReviews] = useState<Review[]>([]);
@@ -100,16 +130,32 @@ export default function Home() {
     const [paymentMethod, setPaymentMethod] = useState<'COD' | 'UPI' | 'Online'>('COD');
     const [customerMobile, setCustomerMobile] = useState('');
 
-    const { user } = useAuth();
-    const { cart, addToCart, removeFromCart, updateQuantity, clearCart } = useCart();
+    const { user } = useDbCustomer();
+    const { cart, addToCart, removeFromCart, updateQuantity, clearCart } = useDbCart();
     const { favorites, toggleFavorite } = useFavorites();
     const { offers } = useOffers();
+    const { items: dbItems, categories: dbCategories, loading } = useDbMenu();
 
     const activeOffers = offers.filter(o => o.status === 'Active');
 
     useEffect(() => {
         setYear(new Date().getFullYear());
-        setReviews(FALLBACK_REVIEWS);
+
+        // Fetch reviews from API
+        fetch('/api/reviews')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setReviews(data);
+                } else {
+                    console.error('Failed to load reviews');
+                    setReviews(FALLBACK_REVIEWS); // Fallback if API fails
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                setReviews(FALLBACK_REVIEWS);
+            });
 
         const handleScroll = () => {
             setScrollY(window.scrollY);
@@ -148,9 +194,17 @@ export default function Home() {
     }, []);
 
     // Menu Filter - Show only 8 items on homepage
-    const allFilteredMenu = activeCategory === 'all'
-        ? MENU_ITEMS
-        : MENU_ITEMS.filter(item => item.category === activeCategory);
+    // Filter items first
+    const activeItems = useMemo(() => {
+        return dbItems.filter(item => item.status === 'Active' && item.veg);
+    }, [dbItems]);
+
+    const allFilteredMenu = useMemo(() => {
+        if (activeCategory === 'all') {
+            return activeItems;
+        }
+        return activeItems.filter(item => item.categoryId === activeCategory);
+    }, [activeItems, activeCategory]);
 
     const filteredMenu = allFilteredMenu.slice(0, 8); // Limit to 8 items
     const hasMoreItems = allFilteredMenu.length > 8;
@@ -158,10 +212,8 @@ export default function Home() {
     // Cart Logic
     const handleAddToCart = (item: MenuItem) => {
         addToCart({
-            name: item.name,
-            price: item.price,
-            quantity: 1,
-            image: item.image
+            menuItemId: item.id,
+            quantity: 1
         });
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
@@ -170,7 +222,7 @@ export default function Home() {
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    const checkout = () => {
+    const checkout = async () => {
         if (cart.length === 0) return;
 
         // Validate mobile number
@@ -179,17 +231,28 @@ export default function Home() {
             return;
         }
 
-        // 1. Create Order in Dashboard
-        createOrder({
-            customer: user ? user.name : 'Online Customer',
-            items: cart.map(i => `${i.name} (${i.quantity})`),
-            total: cartTotal,
-            type: 'Delivery',
-            userId: user?.id,
-            paymentMethod: paymentMethod === 'COD' ? 'Cash' : paymentMethod === 'UPI' ? 'UPI' : 'Online',
-            paymentStatus: paymentMethod === 'COD' ? 'Unpaid' : 'Paid',
-            mobile: customerMobile
-        });
+        // 1. Submit to API so it appears in Dashboard
+        try {
+            const orderData = {
+                customer: user ? user.name : 'Online Customer',
+                items: cart.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
+                total: cartTotal,
+                type: 'Delivery',
+                mobile: customerMobile,
+                paymentMethod: paymentMethod === 'COD' ? 'Cash' : paymentMethod === 'UPI' ? 'UPI' : 'Online',
+                paymentStatus: paymentMethod === 'COD' ? 'Unpaid' : 'Paid',
+                status: 'Pending'
+            };
+
+            await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            console.log('✅ Order submitted to dashboard');
+        } catch (e) {
+            console.error('Failed to submit order:', e);
+        }
 
         // 2. Construct WhatsApp Message
         let message = "New Order from Website:\n\n";
@@ -197,6 +260,7 @@ export default function Home() {
             message += `- ${item.quantity}x ${item.name} (₹${item.price * item.quantity})\n`;
         });
         message += `\n*Total: ₹${cartTotal}*`;
+        message += `\n📱 Mobile: ${customerMobile}`;
 
         // 3. Redirect to WhatsApp
         const phone = '919509913792';
@@ -285,11 +349,11 @@ export default function Home() {
                                 100% Pure Vegetarian
                             </span>
                             <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6 text-gray-900">
-                                Authentic <span className="text-[#991b1b]">Desi Flavors</span> <br />
-                                Delivered Fresh.
+                                <span className="text-[#991b1b]">Best Restaurant</span> in <br />
+                                Abu Road.
                             </h1>
                             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-lg font-medium">
-                                Experience the true taste of Abu Road. From spicy Chaats to rich Thalis, we serve tradition on a plate.
+                                Experience the <strong>Abu Road famous food</strong>. From spicy Chaats to rich Thalis, we serve tradition on a plate.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <a href="#menu" className="btn btn-primary text-lg px-8 py-4 rounded-full shadow-xl shadow-red-900/20 hover:shadow-2xl hover:scale-105 transition-all text-center">
@@ -452,25 +516,27 @@ export default function Home() {
                         </div>
 
                         {/* Circular Category Navigation */}
-                        <div className="flex justify-center gap-8 mb-16 overflow-x-auto pb-8 no-scrollbar">
-                            {[
-                                { id: 'all', name: 'All', icon: '🍽️' },
-                                { id: 'pizza', name: 'Pizza', icon: '🍕' },
-                                { id: 'chaat', name: 'Chaat', icon: '🥘' },
-                                { id: 'sandwich', name: 'Sandwich', icon: '🥪' },
-                                { id: 'burger', name: 'Burger', icon: '🍔' },
-                                { id: 'pasta', name: 'Pasta', icon: '🍝' },
-                                { id: 'frankie', name: 'Frankie', icon: '🌯' },
-                                { id: 'fries', name: 'Fries', icon: '🍟' },
-                                { id: 'beverages', name: 'Drinks', icon: '🥤' }
-                            ].map(cat => (
+                        <div className="flex justify-start md:justify-center gap-6 mb-16 overflow-x-auto pb-8 no-scrollbar px-4 snap-x">
+                            <button
+                                onClick={() => setActiveCategory('all')}
+                                className={`group flex flex-col items-center gap-3 min-w-[100px] transition-all duration-300 ${activeCategory === 'all' ? 'scale-110' : 'opacity-70 hover:opacity-100'}`}
+                            >
+                                <div className={`w-24 h-24 rounded-full flex items-center justify-center text-4xl shadow-lg transition-all duration-300 ${activeCategory === 'all' ? 'bg-[#991b1b] text-white ring-4 ring-red-100' : 'bg-white text-gray-700 hover:bg-red-50'}`}>
+                                    🍽️
+                                </div>
+                                <span className={`font-bold text-sm uppercase tracking-wide ${activeCategory === 'all' ? 'text-[#991b1b]' : 'text-gray-500'}`}>
+                                    All
+                                </span>
+                            </button>
+
+                            {dbCategories.map(cat => (
                                 <button
                                     key={cat.id}
                                     onClick={() => setActiveCategory(cat.id)}
-                                    className={`group flex flex-col items-center gap-3 min-w-[100px] transition-all duration-300 ${activeCategory === cat.id ? 'scale-110' : 'opacity-70 hover:opacity-100'}`}
+                                    className={`snap-center group flex flex-col items-center gap-3 min-w-[100px] transition-all duration-300 ${activeCategory === cat.id ? 'scale-110' : 'opacity-70 hover:opacity-100'}`}
                                 >
                                     <div className={`w-24 h-24 rounded-full flex items-center justify-center text-4xl shadow-lg transition-all duration-300 ${activeCategory === cat.id ? 'bg-[#991b1b] text-white ring-4 ring-red-100' : 'bg-white text-gray-700 hover:bg-red-50'}`}>
-                                        {cat.icon}
+                                        {getCategoryIcon(cat.name)}
                                     </div>
                                     <span className={`font-bold text-sm uppercase tracking-wide ${activeCategory === cat.id ? 'text-[#991b1b]' : 'text-gray-500'}`}>
                                         {cat.name}
@@ -482,7 +548,7 @@ export default function Home() {
                         {/* Product Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                             {filteredMenu.map((item, index) => (
-                                <div key={index} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:border-red-100 transition-all duration-300 flex flex-col h-full relative">
+                                <div key={item.id} className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:border-red-100 transition-all duration-300 flex flex-col h-full relative">
                                     {/* Image Area */}
                                     <div className="h-56 w-full relative overflow-hidden bg-gray-100">
                                         {item.image ? (
@@ -501,7 +567,9 @@ export default function Home() {
                                             <div className="w-3 h-3 border border-green-600 flex items-center justify-center rounded-[2px]">
                                                 <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
                                             </div>
-                                            <span className="text-[10px] font-bold text-green-700 uppercase">Veg</span>
+                                            <span className="text-[10px] font-bold text-green-700 uppercase">
+                                                Pure Veg
+                                            </span>
                                         </div>
 
                                         {/* Favorite Button */}
@@ -513,9 +581,9 @@ export default function Home() {
                                         </button>
 
                                         {/* Best Seller Ribbon */}
-                                        {item.badge && (
-                                            <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-red-700 to-orange-500 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-lg animate-pulse">
-                                                ⭐ {item.badge}
+                                        {item.isFeatured && (
+                                            <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-red-700 to-orange-500 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-lg animate-pulse whitespace-nowrap">
+                                                ⭐ {item.badge || 'Recommended'}
                                             </div>
                                         )}
                                     </div>
@@ -526,7 +594,7 @@ export default function Home() {
                                             <h3 className="text-lg font-bold text-gray-900 group-hover:text-[#991b1b] transition-colors line-clamp-1" title={item.name}>
                                                 {item.name}
                                             </h3>
-                                            <p className="text-xs text-gray-500 line-clamp-2 mt-1 h-8">{item.desc}</p>
+                                            <p className="text-xs text-gray-500 line-clamp-2 mt-1 h-8">{item.description}</p>
                                         </div>
 
                                         <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-50">
@@ -576,21 +644,44 @@ export default function Home() {
                             {reviews.map((r, i) => (
                                 <div key={i} className="review-card glass-card min-w-[350px] p-8 rounded-3xl border border-gray-100 snap-center hover:border-orange-200 transition-all duration-300 bg-white" style={{ animationDelay: `${i * 0.1}s` }}>
                                     <div className="review-header flex items-center gap-4 mb-6">
-                                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md" style={{ background: getRandomColor() }}>
-                                            {r.author_name.charAt(0).toUpperCase()}
+                                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md overflow-hidden" style={{ background: r.avatar ? 'transparent' : getRandomColor() }}>
+                                            {r.avatar ? (
+                                                <Image src={r.avatar} alt={r.name} width={48} height={48} className="object-cover w-full h-full" />
+                                            ) : (
+                                                r.name.charAt(0).toUpperCase()
+                                            )}
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-gray-900 text-lg">{r.author_name}</h4>
+                                            <h4 className="font-bold text-gray-900 text-lg">{r.name}</h4>
                                             <div className="flex items-center gap-2 text-sm text-gray-500">
-                                                <span className="text-yellow-400">⭐⭐⭐⭐⭐</span>
-                                                <span>• Google</span>
+                                                <span className="text-yellow-400">{'⭐'.repeat(r.rating)}</span>
+                                                <span>• Verified</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <p className="text-gray-600 leading-relaxed mb-6 italic">"{r.text}"</p>
-                                    <small className="block text-gray-400 font-medium">{r.relative_time_description}</small>
+                                    <p className="text-gray-600 leading-relaxed mb-6 italic">"{r.comment}"</p>
+                                    <small className="block text-gray-400 font-medium">{new Date(r.date).toLocaleDateString()}</small>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Blog / Recent Stories */}
+                <section id="blog" className="section py-12 md:py-24 bg-white">
+                    <div className="container">
+                        <div className="section-header text-center mb-16">
+                            <h2 className="section-title text-4xl font-black mb-4">Stories from the Kitchen 🥘</h2>
+                            <p className="section-subtitle text-xl text-gray-500">Food culture, recipes, and local guides.</p>
+                        </div>
+
+                        {/* Recent Posts Grid */}
+                        <RecentBlogPosts />
+
+                        <div className="text-center mt-12">
+                            <a href="/blog" className="btn btn-outline rounded-full px-8 py-3 font-bold border-2 hover:bg-black hover:text-white hover:border-black transition-all">
+                                Read All Stories →
+                            </a>
                         </div>
                     </div>
                 </section>
@@ -599,7 +690,7 @@ export default function Home() {
                 <section id="contact" className={`section py-12 md:py-24 bg-gray-50 ${visibleSections.has('contact') ? 'animate-in' : ''}`}>
                     <div className="container">
                         <div className="section-header text-center mb-16">
-                            <h2 className="section-title text-4xl font-black mb-4">Visit Us 📍</h2>
+                            <h2 className="section-title text-4xl font-black mb-4">Visit the Best Restaurant in Abu Road 📍</h2>
                             <p className="section-subtitle text-xl text-gray-500">We are waiting to serve you!</p>
                         </div>
 
@@ -610,7 +701,7 @@ export default function Home() {
                                     <div className="space-y-4 text-gray-600">
                                         <p className="flex gap-3">
                                             <span className="text-xl">📍</span>
-                                            <span>Abu Central Mall, G-5, Riico Check Post Road, Abu Road, Rajasthan 307026</span>
+                                            <span>Abu Central Mall, G-5, Riico Check Post Road, Abu Road, Rajasthan 307026 (Near Abu Road Railway Station)</span>
                                         </p>
                                         <p className="flex gap-3">
                                             <span className="text-xl">🕒</span>
@@ -665,8 +756,8 @@ export default function Home() {
                         <div>
                             <h4 className="font-bold text-gray-900 mb-6">Connect</h4>
                             <ul className="space-y-4">
-                                <li><a href="https://instagram.com/oyechatoro" target="_blank" className="text-gray-500 hover:text-pink-600 transition-colors flex items-center gap-2">📸 Instagram</a></li>
-                                <li><a href="https://facebook.com/oyechatoro" target="_blank" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-2">👥 Facebook</a></li>
+                                <li><a href="https://www.instagram.com/oyechatoro_/" target="_blank" className="text-gray-500 hover:text-pink-600 transition-colors flex items-center gap-2">📸 Instagram</a></li>
+
                                 <li><a href="https://share.google/i1ls8jxzjEOxQ5gd8" target="_blank" className="text-gray-500 hover:text-green-600 transition-colors flex items-center gap-2">🗺️ Google Maps</a></li>
                             </ul>
                         </div>
@@ -724,9 +815,9 @@ export default function Home() {
                                         <div className="cart-item-title font-bold text-gray-900 line-clamp-1">{item.name}</div>
                                         <div className="cart-item-price text-[var(--brand-primary)] font-bold">₹{item.price}</div>
                                         <div className="cart-item-controls flex items-center gap-3 mt-2">
-                                            <button className="qty-btn w-6 h-6 rounded-full border flex items-center justify-center hover:bg-gray-50" onClick={() => updateQuantity(item.name, -1)}>-</button>
+                                            <button className="qty-btn w-6 h-6 rounded-full border flex items-center justify-center hover:bg-gray-50" onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
                                             <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
-                                            <button className="qty-btn w-6 h-6 rounded-full border flex items-center justify-center hover:bg-gray-50" onClick={() => updateQuantity(item.name, 1)}>+</button>
+                                            <button className="qty-btn w-6 h-6 rounded-full border flex items-center justify-center hover:bg-gray-50" onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                                         </div>
                                     </div>
                                     <div className="font-bold text-gray-900">₹{item.price * item.quantity}</div>
@@ -742,7 +833,7 @@ export default function Home() {
                                 <span>✨</span> Complete your meal with...
                             </h4>
                             <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-                                {MENU_ITEMS
+                                {activeItems
                                     .filter(item => item.price < 100 && !cart.find(c => c.name === item.name))
                                     .slice(0, 5)
                                     .map((item, i) => (
@@ -751,7 +842,7 @@ export default function Home() {
                                                 {item.image ? (
                                                     <Image src={item.image} alt={item.name} fill className="object-cover" />
                                                 ) : (
-                                                    <span className="text-xl leading-[3rem]">{item.emoji}</span>
+                                                    <span className="text-xl leading-[3rem]">🥘</span>
                                                 )}
                                             </div>
                                             <div className="text-xs font-bold text-gray-800 line-clamp-1 mb-1">{item.name}</div>
@@ -785,45 +876,35 @@ export default function Home() {
                         </div>
                         {/* Payment Method Selection */}
                         <div className="mb-4">
-                            <p className="text-sm font-bold text-gray-700 mb-2">Payment Method</p>
+                            <label className="text-sm font-bold text-gray-700 mb-2 block">Payment Method</label>
                             <div className="grid grid-cols-3 gap-2">
-                                {[
-                                    { id: 'COD', label: '💵 Cash', desc: 'Pay on Delivery' },
-                                    { id: 'UPI', label: '📱 UPI', desc: 'GPay/PhonePe' },
-                                    { id: 'Online', label: '💳 Online', desc: 'Paid Already' }
-                                ].map(pm => (
+                                {['COD', 'UPI', 'Online'].map((method) => (
                                     <button
-                                        key={pm.id}
-                                        onClick={() => setPaymentMethod(pm.id as any)}
-                                        className={`p-3 rounded-xl border-2 text-center transition-all ${paymentMethod === pm.id
-                                            ? 'border-[var(--brand-primary)] bg-orange-50 text-[var(--brand-primary)]'
-                                            : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
-                                            }`}
+                                        key={method}
+                                        onClick={() => setPaymentMethod(method as any)}
+                                        className={`py-2 rounded-lg text-sm font-bold border-2 transition-all ${paymentMethod === method ? 'border-[var(--brand-primary)] bg-orange-50 text-[var(--brand-primary)]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
                                     >
-                                        <div className="text-lg font-bold">{pm.label}</div>
-                                        <div className="text-[10px] text-gray-500">{pm.desc}</div>
+                                        {method}
                                     </button>
                                 ))}
                             </div>
                         </div>
-                        <div className="cart-total flex justify-between items-center mb-4 text-xl font-black text-gray-900">
-                            <span>Total:</span>
-                            <span className="text-[var(--brand-primary)]">₹{cartTotal}</span>
+
+                        <div className="flex justify-between items-center mb-6">
+                            <span className="text-lg font-bold text-gray-900">Total Amount</span>
+                            <span className="text-3xl font-black text-[var(--brand-primary)]">₹{cartTotal}</span>
                         </div>
-                        <button className="btn btn-primary btn-block btn-glow w-full py-4 rounded-xl shadow-lg shadow-orange-200 text-lg" onClick={checkout}>
-                            {paymentMethod === 'COD' ? 'Order (Cash on Delivery) 🚀' : paymentMethod === 'UPI' ? 'Order & Pay via UPI 📱' : 'Confirm Paid Order ✅'}
+                        <button
+                            onClick={checkout}
+                            className="btn btn-primary w-full py-4 text-xl rounded-xl shadow-xl shadow-orange-200 hover:shadow-2xl hover:translate-y-[-2px] transition-all flex items-center justify-center gap-3"
+                        >
+                            <span>Place Order</span>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Toast Notification */}
-            <div className={`toast-notification fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-4 z-50 transition-all duration-300 ${showToast ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}>
-                <span className="font-medium">Item added to cart! 🛒</span>
-                <button onClick={() => setIsCartOpen(true)} className="text-sm font-bold text-orange-400 hover:text-orange-300 underline">View Cart</button>
-            </div>
-
-            {/* Mobile Navigation */}
             <MobileNav />
         </>
     );

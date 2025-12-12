@@ -977,77 +977,7 @@ export const useAllUsers = () => {
     return { users };
 };
 
-// --- CART SYSTEM ---
-
-export interface CartItem {
-    name: string;
-    price: number;
-    quantity: number;
-    image?: string;
-}
-
-const CART_KEY = 'oye_chatoro_cart';
-
-export const useCart = () => {
-    const [cart, setCart] = useState<CartItem[]>([]);
-
-    useEffect(() => {
-        const stored = localStorage.getItem(CART_KEY);
-        if (stored) setCart(JSON.parse(stored));
-
-        const handleStorage = () => {
-            const s = localStorage.getItem(CART_KEY);
-            if (s) setCart(JSON.parse(s));
-        };
-
-        window.addEventListener('storage', handleStorage);
-        window.addEventListener('cartUpdated', handleStorage);
-        return () => {
-            window.removeEventListener('storage', handleStorage);
-            window.removeEventListener('cartUpdated', handleStorage);
-        };
-    }, []);
-
-    const addToCart = (item: CartItem) => {
-        const newCart = [...cart];
-        const existing = newCart.find(i => i.name === item.name);
-        if (existing) {
-            existing.quantity += 1;
-        } else {
-            newCart.push(item);
-        }
-        setCart(newCart);
-        localStorage.setItem(CART_KEY, JSON.stringify(newCart));
-        window.dispatchEvent(new Event('cartUpdated'));
-    };
-
-    const removeFromCart = (name: string) => {
-        const newCart = cart.filter(i => i.name !== name);
-        setCart(newCart);
-        localStorage.setItem(CART_KEY, JSON.stringify(newCart));
-        window.dispatchEvent(new Event('cartUpdated'));
-    };
-
-    const updateQuantity = (name: string, delta: number) => {
-        const newCart = cart.map(item => {
-            if (item.name === name) {
-                return { ...item, quantity: Math.max(0, item.quantity + delta) };
-            }
-            return item;
-        }).filter(i => i.quantity > 0);
-        setCart(newCart);
-        localStorage.setItem(CART_KEY, JSON.stringify(newCart));
-        window.dispatchEvent(new Event('cartUpdated'));
-    };
-
-    const clearCart = () => {
-        setCart([]);
-        localStorage.setItem(CART_KEY, JSON.stringify([]));
-        window.dispatchEvent(new Event('cartUpdated'));
-    };
-
-    return { cart, addToCart, removeFromCart, updateQuantity, clearCart };
-};
+// --- CART SYSTEM REMOVED (Migrated to DB) ---
 
 // --- FAVORITES SYSTEM ---
 

@@ -4,7 +4,7 @@ export const restaurantSchema = {
     '@id': 'https://oyechatoro.com',
     name: 'Oye Chatoro',
     alternateName: 'Oye Chatoro Abu Road',
-    description: '100% Pure Vegetarian Restaurant in Abu Road serving authentic Indian street food, pizzas, pastas, chaats and more.',
+    description: 'Best vegetarian restaurant in Abu Road. Serving famous food of Abu Road like pizza, pasta, and chaat. Located near Abu Road Railway Station.',
     url: 'https://oyechatoro.com',
     telephone: '+91-9509913792',
     email: 'oyechatoro@gmail.com',
@@ -46,8 +46,8 @@ export const restaurantSchema = {
         worstRating: '1'
     },
     sameAs: [
-        'https://instagram.com/oyechatoro',
-        'https://facebook.com/oyechatoro',
+        'https://www.instagram.com/oyechatoro_/',
+
         'https://www.google.com/maps/place/Oye+Chatoro'
     ]
 };
@@ -56,7 +56,7 @@ export const localBusinessSchema = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: 'Oye Chatoro',
-    description: 'Best vegetarian restaurant in Abu Road, Rajasthan',
+    description: 'Best vegetarian restaurant in Abu Road. Serving famous food and located near Abu Road Railway Station.',
     url: 'https://oyechatoro.com',
     telephone: '+91-9509913792',
     address: {
@@ -101,8 +101,8 @@ export const organizationSchema = {
         availableLanguage: ['English', 'Hindi']
     },
     sameAs: [
-        'https://instagram.com/oyechatoro',
-        'https://facebook.com/oyechatoro'
+        'https://www.instagram.com/oyechatoro_/',
+
     ]
 };
 

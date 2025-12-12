@@ -3,13 +3,16 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth, useOrders, useCart, useFavorites } from '../lib/storage';
+import { signOut } from 'next-auth/react';
+import { useFavorites } from '../lib/storage';
+import { useDbCustomer, useDbOrders, useDbCart, useDbMenu } from '../lib/db-hooks';
 
 export default function ProfilePage() {
-    const { user, logout, updateUser } = useAuth();
-    const { orders } = useOrders();
+    const { user, loading, updateUser } = useDbCustomer();
+    const { orders } = useDbOrders();
+    const { items: menuItems } = useDbMenu();
     const router = useRouter();
-    const { addToCart } = useCart();
+    const { addToCart } = useDbCart();
     const { favorites } = useFavorites();
     const [activeTab, setActiveTab] = useState('overview');
     const [orderTab, setOrderTab] = useState<'active' | 'past'>('active');
@@ -18,28 +21,23 @@ export default function ProfilePage() {
     const [newAddress, setNewAddress] = useState({ label: '', text: '' });
     const [isAddingAddress, setIsAddingAddress] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            if (!user && typeof window !== 'undefined' && !localStorage.getItem('oye_chatoro_current_user')) {
-                router.push('/login');
-            }
-        }, 100);
-        return () => clearTimeout(timer);
-    }, [user, router]);
+    if (loading || !user) {
+        return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin text-4xl">🥘</div></div>;
+    }
 
-    if (!user) return null;
+    const myOrders = orders
+        .filter((o: any) => (user && user.id && o.userId === user.id) || (user && o.customer === user.name))
+        .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    const myOrders = orders.filter(o => o.userId === user.id || o.customer === user.name).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-
-    const activeOrders = myOrders.filter(o => ['Pending', 'Cooking', 'Ready'].includes(o.status));
-    const pastOrders = myOrders.filter(o => ['Completed', 'Cancelled'].includes(o.status));
+    const activeOrders = myOrders.filter((o: any) => ['Pending', 'Cooking', 'Ready'].includes(o.status));
+    const pastOrders = myOrders.filter((o: any) => ['Completed', 'Cancelled'].includes(o.status));
 
     // --- Feature Helpers ---
     const triggerConfetti = () => { /* Confetti logic */ };
 
-    const handleReorder = (order: any) => {
+    const handleReorder = async (order: any) => {
         // Robust parsing: "Item Name (Qty)" or just "Item Name"
-        order.items.forEach((itemStr: string) => {
+        for (const itemStr of order.items) {
             let name = itemStr;
             let quantity = 1;
 
@@ -49,15 +47,18 @@ export default function ProfilePage() {
                 quantity = parseInt(match[2]);
             }
 
-            // In a real app, we'd look up the price. Here we default to 0 or try to parse if available.
-            addToCart({ name, price: 0, quantity });
-        });
+            // Find item in menu to get ID
+            const menuItem = menuItems.find(i => i.name.toLowerCase() === name.toLowerCase());
+            if (menuItem) {
+                await addToCart({ menuItemId: menuItem.id, quantity });
+            }
+        }
         router.push('/');
     };
 
     const downloadInvoice = (order: any) => {
         const element = document.createElement("a");
-        const file = new Blob([`INVOICE #ORD-${order.id}\nDate: ${order.time}\nTotal: ₹${order.total}`], { type: 'text/plain' });
+        const file = new Blob([`INVOICE #ORD-${order.id}\nDate: ${new Date(order.createdAt).toLocaleString()}\nTotal: ₹${order.total}`], { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
         element.download = `Invoice-${order.id}.txt`;
         document.body.appendChild(element);
@@ -84,13 +85,13 @@ export default function ProfilePage() {
     };
 
     const removeAddress = (id: string) => {
-        const addresses = user.addresses?.filter(a => a.id !== id) || [];
+        const addresses = user.addresses?.filter((a: any) => a.id !== id) || [];
         updateUser({ addresses });
     };
 
     const toggleDietary = (pref: string) => {
         const current = user.preferences?.dietary || [];
-        const updated = current.includes(pref) ? current.filter(p => p !== pref) : [...current, pref];
+        const updated = current.includes(pref) ? current.filter((p: any) => p !== pref) : [...current, pref];
         updateUser({ preferences: { ...user.preferences, dietary: updated, language: user.preferences?.language || 'en' } });
     };
 
@@ -170,7 +171,7 @@ export default function ProfilePage() {
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        {(orderTab === 'active' ? activeOrders : pastOrders).map(order => (
+                        {(orderTab === 'active' ? activeOrders : pastOrders).map((order: any) => (
                             <div key={order.id} className="glass-card p-0 rounded-2xl hover:shadow-lg transition-all overflow-hidden border border-gray-100 group">
                                 {/* Order Header */}
                                 <div className="p-6 border-b bg-gray-50/50 flex justify-between items-start">
@@ -181,7 +182,7 @@ export default function ProfilePage() {
                                         <div>
                                             <div className="flex items-center gap-3 mb-1">
                                                 <span className="font-bold text-lg text-[var(--brand-dark)]">Order #{order.id}</span>
-                                                <span className="text-xs font-bold text-gray-500 bg-white px-2 py-1 rounded border shadow-sm">{order.time}</span>
+                                                <span className="text-xs font-bold text-gray-500 bg-white px-2 py-1 rounded border shadow-sm">{new Date(order.createdAt).toLocaleTimeString()}</span>
                                             </div>
                                             <div className="text-sm text-[var(--text-muted)] font-medium">{order.items.length} Items • {order.type}</div>
                                         </div>
@@ -280,7 +281,7 @@ export default function ProfilePage() {
             <div className="glass-card p-6 rounded-2xl">
                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2">📍 Manage Addresses</h3>
                 <div className="space-y-4">
-                    {user.addresses?.map((addr, i) => (
+                    {user.addresses?.map((addr: any, i: number) => (
                         <div key={i} className="p-4 border rounded-xl flex justify-between items-center bg-gray-50">
                             <div>
                                 <div className="font-bold text-sm">{addr.label} {addr.isDefault && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded ml-2">Default</span>}</div>
@@ -505,7 +506,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex gap-4">
                         <Link href="/" className="btn btn-outline">← Home</Link>
-                        <button onClick={() => { logout(); router.push('/'); }} className="btn bg-red-50 text-red-600 hover:bg-red-100">Logout</button>
+                        <button onClick={() => { signOut({ callbackUrl: '/' }); }} className="btn bg-red-50 text-red-600 hover:bg-red-100">Logout</button>
                     </div>
                 </div>
 

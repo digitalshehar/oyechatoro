@@ -1,37 +1,23 @@
 'use client';
-
-import React, { useState, useEffect } from 'react';
-import { getAnalyticsData, getMenuEngineeringData, MenuEngineeringData } from '../../lib/storage';
+import React, { useState } from 'react';
+import { useDbAnalytics } from '../../lib/db-hooks';
 
 export default function AnalyticsPage() {
     const [activeTab, setActiveTab] = useState<'sales' | 'menu'>('sales');
     const [dateRange, setDateRange] = useState<'7d' | '30d' | 'month' | 'year'>('7d');
-    const [data, setData] = useState(getAnalyticsData('7d'));
-    const [menuData, setMenuData] = useState<MenuEngineeringData | null>(null);
 
-    useEffect(() => {
-        setData(getAnalyticsData(dateRange));
-        setMenuData(getMenuEngineeringData());
+    const { data, loading } = useDbAnalytics(dateRange);
+    const menuData = data?.menuEngineering;
 
-        const handleUpdate = () => {
-            setData(getAnalyticsData(dateRange));
-            setMenuData(getMenuEngineeringData());
-        };
-
-        window.addEventListener('ordersUpdated', handleUpdate);
-        window.addEventListener('menuUpdated', handleUpdate);
-        window.addEventListener('storage', handleUpdate);
-        return () => {
-            window.removeEventListener('ordersUpdated', handleUpdate);
-            window.removeEventListener('menuUpdated', handleUpdate);
-            window.removeEventListener('storage', handleUpdate);
-        };
-    }, [dateRange]);
+    // Loading State
+    if (loading || !data) {
+        return <div className="p-8 text-center text-gray-500">Loading analytics...</div>;
+    }
 
     const handleExport = () => {
         if (activeTab === 'sales') {
             const headers = ['Date', 'Revenue'];
-            const rows = data.revenueTrend.map(d => `${d.date},${d.amount}`);
+            const rows = data.revenueTrend.map((d: any) => `${d.date},${d.amount}`);
             const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
@@ -41,8 +27,8 @@ export default function AnalyticsPage() {
             link.click();
             document.body.removeChild(link);
         } else if (menuData) {
-            const headers = ['Item', 'Category', 'Sales', 'Cost', 'Revenue', 'Profit', 'Margin'];
-            const rows = menuData.items.map(i => `${i.name},${i.category},${i.sales},${i.cost},${i.revenue},${i.profit},${i.margin}`);
+            const headers = ['Item', 'Category', 'Sales', 'Cost', 'Revenue', 'Profit', 'Class'];
+            const rows = menuData.items.map((i: any) => `${i.name},Food,${i.sales},${i.cost},${i.revenue},${i.profit},${i.category}`);
             const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
@@ -111,7 +97,7 @@ export default function AnalyticsPage() {
                         <div className="glass-card p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-white border-purple-100">
                             <div className="text-purple-800 text-sm font-bold mb-1 uppercase tracking-wider">Peak Hour</div>
                             <div className="text-4xl font-bold text-purple-700">
-                                {data.peakHours.reduce((max, curr) => curr.count > max.count ? curr : max, { hour: 0, count: 0 }).hour}:00
+                                {data.peakHours.reduce((max: any, curr: any) => curr.count > max.count ? curr : max, { hour: 0, count: 0 }).hour}:00
                             </div>
                             <div className="text-purple-600 text-xs mt-2 font-medium">Busiest time of day</div>
                         </div>
@@ -123,8 +109,8 @@ export default function AnalyticsPage() {
                         <div className="glass-card p-6 rounded-2xl">
                             <h3 className="font-bold text-[var(--brand-dark)] mb-6 flex items-center gap-2">📈 Revenue Trend</h3>
                             <div className="h-64 flex items-end justify-between gap-2 px-2 border-b border-gray-100 pb-2">
-                                {data.revenueTrend.length > 0 ? data.revenueTrend.map((d, i) => {
-                                    const maxVal = Math.max(...data.revenueTrend.map(x => x.amount), 1);
+                                {data.revenueTrend.length > 0 ? data.revenueTrend.map((d: any, i: number) => {
+                                    const maxVal = Math.max(...data.revenueTrend.map((x: any) => x.amount), 1);
                                     const height = (d.amount / maxVal) * 100;
                                     return (
                                         <div key={i} className="w-full flex flex-col justify-end group relative h-full">
@@ -149,7 +135,7 @@ export default function AnalyticsPage() {
                         <div className="glass-card p-6 rounded-2xl">
                             <h3 className="font-bold text-[var(--brand-dark)] mb-6 flex items-center gap-2">🏆 Top Selling Items</h3>
                             <div className="space-y-4">
-                                {data.topItems.length > 0 ? data.topItems.map((item, i) => (
+                                {data.topItems.length > 0 ? data.topItems.map((item: any, i: number) => (
                                     <div key={i}>
                                         <div className="flex justify-between text-sm mb-1">
                                             <span className="font-medium text-[var(--text-main)]">{item.name}</span>
@@ -173,8 +159,8 @@ export default function AnalyticsPage() {
                     <div className="glass-card p-6 rounded-2xl mb-8">
                         <h3 className="font-bold text-[var(--brand-dark)] mb-6 flex items-center gap-2">⏰ Peak Hours Activity</h3>
                         <div className="h-48 flex items-end gap-1">
-                            {data.peakHours.map((h, i) => {
-                                const maxCount = Math.max(...data.peakHours.map(x => x.count), 1);
+                            {data.peakHours.map((h: any, i: number) => {
+                                const maxCount = Math.max(...data.peakHours.map((x: any) => x.count), 1);
                                 const height = (h.count / maxCount) * 100;
                                 return (
                                     <div key={i} className="flex-1 flex flex-col justify-end group h-full">
@@ -284,7 +270,7 @@ export default function AnalyticsPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-100">
-                                    {menuData?.items.map((item) => (
+                                    {menuData?.items.map((item: any) => (
                                         <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                                             <td className="p-4 font-medium">{item.name}</td>
                                             <td className="p-4 text-sm text-gray-500">Food</td>

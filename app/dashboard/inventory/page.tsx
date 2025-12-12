@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useInventory, InventoryItem, StockLog, WastageLog } from '../../lib/storage';
+import { useDbInventory, InventoryItem } from '../../lib/db-hooks';
 
 export default function InventoryPage() {
-    const { inventory, stockLogs, wastageLogs, addItem, updateItem, deleteItem, recordWastage } = useInventory();
+    const { inventory, stockLogs, wastageLogs, addItem, updateItem, deleteItem, recordWastage } = useDbInventory();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('All Status');
 
@@ -289,14 +289,14 @@ export default function InventoryPage() {
                             <button onClick={() => setIsHistoryOpen(false)} className="text-gray-500 hover:text-gray-700">✕</button>
                         </div>
                         <div className="space-y-3">
-                            {stockLogs.filter(log => log.itemId === selectedItemForHistory.id).length === 0 ? (
+                            {stockLogs.filter(log => log.inventoryItemId === selectedItemForHistory.id).length === 0 ? (
                                 <p className="text-gray-500 text-center py-4">No history available.</p>
                             ) : (
-                                stockLogs.filter(log => log.itemId === selectedItemForHistory.id).map(log => (
+                                stockLogs.filter(log => log.inventoryItemId === selectedItemForHistory.id).map(log => (
                                     <div key={log.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
                                         <div>
-                                            <div className="font-medium text-gray-800">{log.reason}</div>
-                                            <div className="text-xs text-gray-500">{new Date(log.timestamp).toLocaleString()}</div>
+                                            <div className="font-medium text-gray-800">{log.reason || log.type}</div>
+                                            <div className="text-xs text-gray-500">{new Date(log.createdAt).toLocaleString()}</div>
                                         </div>
                                         <div className={`font-bold ${log.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
                                             {log.change > 0 ? '+' : ''}{log.change}

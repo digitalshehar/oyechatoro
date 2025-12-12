@@ -1,23 +1,17 @@
 'use client';
+// Force rebuild
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { useMenu, useSettings, MenuItem, addServiceRequest } from '../lib/storage';
+import { useDbMenu, MenuItem, useDbSettings as useSettings, addServiceRequest, useDbCart } from '../lib/db-hooks';
 import { useRouter } from 'next/navigation';
-
-interface CartItem {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    veg: boolean;
-}
+import Link from 'next/link';
 
 export default function MenuPage() {
     const router = useRouter();
-    const { categories, items } = useMenu();
+    const { categories, items } = useDbMenu();
     const { settings } = useSettings();
-    const [cart, setCart] = useState<CartItem[]>([]);
+    const { cart, addToCart, removeFromCart, clearCart, updateQuantity } = useDbCart(); // Use Global Cart
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [activeSection, setActiveSection] = useState('');
@@ -48,15 +42,15 @@ export default function MenuPage() {
     }, [categories]);
 
     const digitalMenuItems = useMemo(() => {
-        return items.filter(item => item.isDigitalMenu !== false && item.status === 'Active');
+        return items.filter((item: MenuItem) => item.isDigitalMenu !== false && item.status === 'Active' && item.veg);
     }, [items]);
 
     const filteredItems = useMemo(() => {
         if (!searchQuery) return digitalMenuItems;
         const lowerQuery = searchQuery.toLowerCase();
-        return digitalMenuItems.filter(item =>
+        return digitalMenuItems.filter((item: MenuItem) =>
             item.name.toLowerCase().includes(lowerQuery) ||
-            item.description.toLowerCase().includes(lowerQuery)
+            (item.description || '').toLowerCase().includes(lowerQuery)
         );
     }, [digitalMenuItems, searchQuery]);
 
@@ -69,7 +63,7 @@ export default function MenuPage() {
         return grouped;
     }, [categories, filteredItems]);
 
-    if (mounted && settings.digitalMenu?.isActive === false) {
+    if (mounted && settings?.digitalMenu?.isActive === false) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4 text-center">
                 <h1 className="text-4xl font-bold mb-4">We'll be back soon! 👨‍🍳</h1>
@@ -78,39 +72,71 @@ export default function MenuPage() {
         );
     }
 
-    const addToCart = (item: MenuItem) => {
-        setCart(prev => {
-            const existing = prev.find(i => i.id === item.id);
-            if (existing) return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
-            return [...prev, { id: item.id, name: item.name, price: item.price, quantity: 1, veg: item.veg }];
+    const handleAddToCart = (item: MenuItem) => {
+        addToCart({
+            menuItemId: item.id,
+            quantity: 1
         });
         setShowToast(true);
         setTimeout(() => setShowToast(false), 2000);
     };
 
-    const removeFromCart = (itemId: string) => {
-        setCart(prev => {
-            const existing = prev.find(i => i.id === itemId);
-            if (existing && existing.quantity > 1) return prev.map(i => i.id === itemId ? { ...i, quantity: i.quantity - 1 } : i);
-            return prev.filter(i => i.id !== itemId);
-        });
+    const handleRemoveFromCart = (item: MenuItem) => {
+        // Find cart item by menuItemId logic if possible, or name
+        const cartItem = cart.find(i => i.name === item.name);
+        if (cartItem) {
+            updateQuantity(cartItem.id, cartItem.quantity - 1);
+        }
     };
 
-    const getItemQty = (itemId: string) => cart.find(i => i.id === itemId)?.quantity || 0;
+    const getItemQty = (itemId: string) => cart.find(i => i.menuItemId === itemId)?.quantity || 0;
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    const checkout = () => {
+    const checkout = async () => {
         if (cart.length === 0) return;
+
+        // First, submit to database so it appears in dashboard
+        try {
+            const orderData = {
+                items: cart.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                total: cartTotal,
+                type: 'DineIn',
+                table: tableNumber || undefined,
+                customer: 'Digital Menu Customer',
+                paymentMethod: 'Cash',
+                paymentStatus: 'Unpaid',
+                status: 'Pending'
+            };
+
+            await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            console.log('✅ Order submitted to dashboard');
+        } catch (e) {
+            console.error('Failed to submit to dashboard:', e);
+        }
+
+        // Then open WhatsApp for confirmation
         let message = `New Order from Table ${tableNumber || 'Unknown'}:\n\n`;
         cart.forEach(item => message += `- ${item.quantity}x ${item.name} - ₹${item.price * item.quantity}\n`);
         message += `\n*Total: ₹${cartTotal}*`;
         window.open(`https://wa.me/919509913792?text=${encodeURIComponent(message)}`, '_blank');
+
+        // Clear cart after order
+        clearCart();
+        setIsCartOpen(false);
     };
 
     const handleServiceRequest = (type: 'Call' | 'Bill' | 'Water') => {
         if (tableNumber) {
-            addServiceRequest(tableNumber, type);
+            addServiceRequest({ table: tableNumber, type });
             alert(`Request sent: ${type}`);
             setIsServiceModalOpen(false);
         }
@@ -161,15 +187,26 @@ export default function MenuPage() {
                 <div
                     className="absolute inset-0 bg-cover bg-center scale-110"
                     style={{
-                        backgroundImage: settings.digitalMenu?.bannerImage
+                        backgroundImage: settings?.digitalMenu?.bannerImage
                             ? `url(${settings.digitalMenu.bannerImage})`
-                            : 'url(https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1000&q=80)'
+                            : 'url(https://images.unsplash.com/photo-1589301760014-dd836a8dfe9f?auto=format&fit=crop&w=1000&q=80)'
                     }}
                 />
                 <div className="relative z-20 h-full flex flex-col items-center justify-center text-white p-4 text-center">
                     <div className="w-28 h-28 rounded-full glass border-2 border-orange-500/30 overflow-hidden mb-4 shadow-2xl animate-float animate-glow">
                         <Image src="/logowhite.PNG" alt="Oye Chatoro" width={112} height={112} className="object-cover w-full h-full" />
                     </div>
+
+                    {/* Pure Veg Badge */}
+                    <div className="absolute top-4 right-4 animate-slide-up" style={{ animationDelay: '0.5s' }}>
+                        <div className="glass px-3 py-1.5 rounded-full flex items-center gap-2 border border-green-500/30 shadow-lg shadow-green-900/20">
+                            <div className="w-4 h-4 border-2 border-green-500 flex items-center justify-center rounded-[2px]">
+                                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                            </div>
+                            <span className="text-xs font-bold text-green-400 uppercase tracking-wider">100% Pure Veg</span>
+                        </div>
+                    </div>
+
                     <h1 className="text-5xl font-black mb-2 gradient-text drop-shadow-2xl">Oye Chatoro</h1>
                     <p className="text-white/70 text-sm font-medium tracking-widest uppercase">Premium Street Food Experience</p>
                     {tableNumber && (
@@ -210,8 +247,8 @@ export default function MenuPage() {
                             onClick={() => scrollToCategory(cat.id)}
                             style={{ animationDelay: `${i * 0.05}s` }}
                             className={`animate-slide-up whitespace-nowrap px-6 py-3 rounded-2xl text-sm font-bold transition-all flex-shrink-0 ${activeSection === cat.id
-                                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30 scale-105'
-                                    : 'glass text-white/70 hover:text-white hover:bg-white/10'
+                                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30 scale-105'
+                                : 'glass text-white/70 hover:text-white hover:bg-white/10'
                                 }`}
                         >
                             {cat.name}
@@ -253,14 +290,14 @@ export default function MenuPage() {
                                             >
                                                 <div className="flex h-full">
                                                     {/* Image */}
-                                                    <div className="w-32 h-36 flex-shrink-0 relative overflow-hidden">
+                                                    <Link href={`/menu/${item.slug}`} className="w-32 h-36 flex-shrink-0 relative overflow-hidden cursor-pointer">
                                                         {item.image ? (
                                                             <Image src={item.image} alt={item.name} fill className="object-cover transition-transform duration-500 group-hover:scale-110" sizes="128px" />
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center bg-white/5 text-4xl">🥘</div>
                                                         )}
                                                         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#0a0a0a]/80" />
-                                                    </div>
+                                                    </Link>
 
                                                     {/* Content */}
                                                     <div className="flex-1 p-4 flex flex-col justify-between">
@@ -275,7 +312,9 @@ export default function MenuPage() {
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <h3 className="font-bold text-base mb-1 text-white leading-tight line-clamp-1">{item.name}</h3>
+                                                            <Link href={`/menu/${item.slug}`}>
+                                                                <h3 className="font-bold text-base mb-1 text-white leading-tight line-clamp-1 hover:text-orange-500 transition-colors cursor-pointer">{item.name}</h3>
+                                                            </Link>
                                                             <p className="text-xs text-white/40 line-clamp-2 mb-2">{item.description}</p>
                                                         </div>
 
@@ -284,16 +323,16 @@ export default function MenuPage() {
 
                                                             {qty === 0 ? (
                                                                 <button
-                                                                    onClick={() => addToCart(item)}
+                                                                    onClick={() => handleAddToCart(item)}
                                                                     className="px-5 py-2 rounded-xl font-bold text-xs bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30 active:scale-95 transition-all uppercase tracking-wide hover:shadow-orange-500/50"
                                                                 >
                                                                     ADD
                                                                 </button>
                                                             ) : (
                                                                 <div className="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg shadow-orange-500/30 overflow-hidden">
-                                                                    <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 flex items-center justify-center hover:bg-white/20 font-bold text-lg transition-colors">−</button>
+                                                                    <button onClick={() => handleRemoveFromCart(item)} className="w-9 h-9 flex items-center justify-center hover:bg-white/20 font-bold text-lg transition-colors">−</button>
                                                                     <span className="w-6 text-center font-black text-sm">{qty}</span>
-                                                                    <button onClick={() => addToCart(item)} className="w-9 h-9 flex items-center justify-center hover:bg-white/20 font-bold text-lg transition-colors">+</button>
+                                                                    <button onClick={() => handleAddToCart(item)} className="w-9 h-9 flex items-center justify-center hover:bg-white/20 font-bold text-lg transition-colors">+</button>
                                                                 </div>
                                                             )}
                                                         </div>
@@ -370,18 +409,19 @@ export default function MenuPage() {
 
                         <div className="flex-1 overflow-y-auto p-6 space-y-4">
                             {cart.map((item) => (
-                                <div key={item.id} className="flex gap-4 items-center p-4 glass rounded-2xl">
-                                    <div className={`w-4 h-4 rounded flex items-center justify-center border-2 flex-shrink-0 ${item.veg ? 'border-green-500' : 'border-red-500'}`}>
-                                        <div className={`w-2 h-2 rounded-full ${item.veg ? 'bg-green-500' : 'bg-red-500'}`} />
+                                <div key={item.name} className="flex gap-4 items-center p-4 glass rounded-2xl">
+                                    <div className={`w-4 h-4 rounded flex items-center justify-center border-2 flex-shrink-0 disabled shadow-none opacity-50 bg-green-500/10`}>
+                                        {/* Simple veg dot, dynamic check removed for CartItem simplicity, assuming mostly veg */}
+                                        <div className={`w-2 h-2 rounded-full bg-green-500`} />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="font-bold truncate">{item.name}</div>
                                         <div className="text-sm text-orange-400 font-bold">₹{item.price}</div>
                                     </div>
                                     <div className="flex items-center gap-1 glass rounded-xl p-1">
-                                        <button className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg font-bold transition-colors" onClick={() => removeFromCart(item.id)}>−</button>
+                                        <button className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg font-bold transition-colors" onClick={() => updateQuantity(item.id, item.quantity - 1)}>−</button>
                                         <span className="font-bold text-sm w-6 text-center">{item.quantity}</span>
-                                        <button className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg font-bold transition-colors" onClick={() => addToCart(item as any)}>+</button>
+                                        <button className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg font-bold transition-colors" onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
                                     </div>
                                     <div className="font-black text-lg w-16 text-right gradient-text">₹{item.price * item.quantity}</div>
                                 </div>

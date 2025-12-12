@@ -19,7 +19,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍕',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&h=400&fit=crop'
+        image: '/images/menu/margherita.png'
     },
     {
         name: 'Garden Feast (Regular 7")',
@@ -28,7 +28,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Loaded with fresh garden vegetables.',
         veg: true,
         emoji: '🍕',
-        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: 'Paneer Tikka Pizza (Regular 7")',
@@ -38,7 +38,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍕',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&h=400&fit=crop'
+        image: '/images/menu/paneer_pizza.png'
     },
     {
         name: 'Veggie Supreme (Regular 7")',
@@ -48,7 +48,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍕',
         badge: 'Recommended',
-        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&h=400&fit=crop'
+        image: '/images/menu/veggie_pizza.png'
     },
     {
         name: 'Veg Loaded (Regular 7")',
@@ -57,7 +57,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Extra vegetables, extra taste!',
         veg: true,
         emoji: '🍕',
-        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: 'Farm Fresh Pizza (Regular 7")',
@@ -66,7 +66,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Fresh farm vegetables with herbs.',
         veg: true,
         emoji: '🍕',
-        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: 'Cheese Overload (Regular 7")',
@@ -76,7 +76,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍕',
         badge: 'Best Choice',
-        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: 'Peri Peri Veggie (Regular 7")',
@@ -85,7 +85,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Spicy peri peri flavored veggie pizza.',
         veg: true,
         emoji: '🍕',
-        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: 'Creamy Mushroom Garlic (Regular 7")',
@@ -94,7 +94,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Creamy garlic sauce with mushrooms.',
         veg: true,
         emoji: '🍕',
-        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: 'Paneer Tikka Butter Masala (Regular 7")',
@@ -113,7 +113,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Tandoori flavored paneer pizza.',
         veg: true,
         emoji: '🍕',
-        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&h=400&fit=crop'
+        image: '/images/menu/paneer_pizza.png'
     },
     {
         name: 'Mexican Treat (Regular 7")',
@@ -122,7 +122,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Mexican style spicy pizza.',
         veg: true,
         emoji: '🍕',
-        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: '5 Pepper Pizza (Regular 7")',
@@ -132,7 +132,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍕',
         badge: 'Best Choice',
-        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: 'Abu Road Supreme (Regular 7")',
@@ -142,7 +142,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍕',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: 'Spicy Volcano (Regular 7")',
@@ -160,7 +160,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Sweet corn with cheesy burst.',
         veg: true,
         emoji: '🍕',
-        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&h=400&fit=crop'
+        image: '/images/menu/corn_pizza.png'
     },
     {
         name: 'Desi Masala Tadka (Regular 7")',
@@ -170,7 +170,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍕',
         badge: 'Recommended',
-        image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
     {
         name: 'Veg Supreme Deluxe (Regular 7")',
@@ -179,7 +179,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Premium veggie supreme with extra toppings.',
         veg: true,
         emoji: '🍕',
-        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&h=400&fit=crop'
+        image: '/images/menu/pizza.png'
     },
 
     // ========== CHAAT CORNER ==========
@@ -191,7 +191,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥘',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&h=400&fit=crop'
+        image: '/images/menu/chaat.png'
     },
     {
         name: 'Bhel Puri Cheese',
@@ -200,7 +200,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Classic bhel puri with extra cheese topping.',
         veg: true,
         emoji: '🥘',
-        image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500&h=400&fit=crop'
+        image: '/images/menu/chaat.png'
     },
     {
         name: 'Dahi Papdi Chaat',
@@ -210,7 +210,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥘',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=500&h=400&fit=crop'
+        image: '/images/menu/dahi_papdi.png'
     },
     {
         name: 'Papdi Chaat Cheese',
@@ -219,7 +219,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Crispy papdi topped with creamy chutneys & namkeen.',
         veg: true,
         emoji: '🥘',
-        image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=500&h=400&fit=crop'
+        image: '/images/menu/chaat.png'
     },
     {
         name: 'Kurkure Bhel',
@@ -229,7 +229,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥘',
         badge: 'Recommended',
-        image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=500&h=400&fit=crop'
+        image: '/images/menu/chaat.png'
     },
     {
         name: 'Kurkure Cheese Bhel',
@@ -238,7 +238,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Extra crunch with cheesy goodness!',
         veg: true,
         emoji: '🥘',
-        image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=500&h=400&fit=crop'
+        image: '/images/menu/chaat.png'
     },
     {
         name: 'Crispy Aloo Chaat',
@@ -248,7 +248,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥘',
         badge: 'Recommended',
-        image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=500&h=400&fit=crop'
+        image: '/images/menu/chaat.png'
     },
     {
         name: 'Nachos Chaat',
@@ -257,7 +257,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Indian cheesy style nachos.',
         veg: true,
         emoji: '🥘',
-        image: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=500&h=400&fit=crop'
+        image: '/images/menu/chaat.png'
     },
     {
         name: 'Katori Chaat',
@@ -267,7 +267,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥘',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1589301760014-dd836a8dfe9f?w=500&h=400&fit=crop'
+        image: '/images/menu/basket_chaat.png'
     },
     {
         name: 'Basket Chaat (6 pcs)',
@@ -276,7 +276,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Mini baskets of joy!',
         veg: true,
         emoji: '🥘',
-        image: 'https://images.unsplash.com/photo-1589301760014-dd836a8dfe9f?w=500&h=400&fit=crop'
+        image: '/images/menu/basket_chaat.png'
     },
     {
         name: 'Raj Kachori',
@@ -286,7 +286,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥘',
         badge: 'Best Choice',
-        image: 'https://images.unsplash.com/photo-1626132647523-66f5bf380027?w=500&h=400&fit=crop'
+        image: '/images/menu/kachori.png'
     },
 
     // ========== SANDWICH - NON GRILLED ==========
@@ -298,7 +298,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥪',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1528736235302-52922df5c122?w=500&h=400&fit=crop'
+        image: '/images/menu/plain_sandwich.png'
     },
     {
         name: 'Mix Vegetable Sandwich',
@@ -308,7 +308,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥪',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1528736235302-52922df5c122?w=500&h=400&fit=crop'
+        image: '/images/menu/plain_sandwich.png'
     },
     {
         name: 'Cheese Corn Sandwich',
@@ -317,7 +317,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Sweet corn and melted cheese in bread.',
         veg: true,
         emoji: '🥪',
-        image: 'https://images.unsplash.com/photo-1528736235302-52922df5c122?w=500&h=400&fit=crop'
+        image: '/images/menu/corn_pizza.png'
     },
 
     // ========== SANDWICH - GRILLED ==========
@@ -328,7 +328,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Grilled sandwich with aloo matar filling & cheese.',
         veg: true,
         emoji: '🥪',
-        image: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&h=400&fit=crop'
+        image: '/images/menu/sandwich.png'
     },
     {
         name: 'Veg Grill Sandwich',
@@ -338,7 +338,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥪',
         badge: 'Recommended',
-        image: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&h=400&fit=crop'
+        image: '/images/menu/sandwich.png'
     },
     {
         name: 'Paneer Tikka Cheese Grilled Sandwich',
@@ -347,7 +347,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Spiced paneer tikka with melted cheese.',
         veg: true,
         emoji: '🥪',
-        image: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&h=400&fit=crop'
+        image: '/images/menu/sandwich.png'
     },
     {
         name: 'Aloo Matar Grill Sandwich',
@@ -357,7 +357,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥪',
         badge: 'Recommended',
-        image: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&h=400&fit=crop'
+        image: '/images/menu/sandwich.png'
     },
     {
         name: 'Bahubali Sandwich',
@@ -366,7 +366,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Mega grilled sandwich loaded with cheese.',
         veg: true,
         emoji: '🥪',
-        image: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&h=400&fit=crop'
+        image: '/images/menu/sandwich.png'
     },
     {
         name: 'Masala Junglee Sandwich',
@@ -375,7 +375,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Spicy masala filling with cheese.',
         veg: true,
         emoji: '🥪',
-        image: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&h=400&fit=crop'
+        image: '/images/menu/sandwich.png'
     },
     {
         name: 'Veg Mayo Sandwich',
@@ -384,7 +384,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Creamy mayo with fresh veggies.',
         veg: true,
         emoji: '🥪',
-        image: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&h=400&fit=crop'
+        image: '/images/menu/sandwich.png'
     },
     {
         name: 'Mumbai Biggest Cheese Grilled Sandwich',
@@ -393,7 +393,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Live & Fresh – Preparation Time 15-20 Min.',
         veg: true,
         emoji: '🥪',
-        image: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&h=400&fit=crop'
+        image: '/images/menu/sandwich.png'
     },
 
     // ========== PASTA ==========
@@ -405,7 +405,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍝',
         badge: 'Recommended',
-        image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=500&h=400&fit=crop'
+        image: '/images/menu/pasta.png'
     },
     {
         name: 'White Sauce Pasta',
@@ -415,7 +415,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍝',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=500&h=400&fit=crop'
+        image: '/images/menu/pasta.png'
     },
     {
         name: 'Red Sauce Pasta',
@@ -425,7 +425,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍝',
         badge: 'Best Choice',
-        image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=500&h=400&fit=crop'
+        image: '/images/menu/red_pasta.png'
     },
     {
         name: 'Peri Peri Pasta',
@@ -434,7 +434,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Spicy peri peri sauce with veggies.',
         veg: true,
         emoji: '🍝',
-        image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=500&h=400&fit=crop'
+        image: '/images/menu/pasta.png'
     },
     {
         name: 'Masala Pasta',
@@ -443,7 +443,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Indian style masala pasta.',
         veg: true,
         emoji: '🍝',
-        image: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=500&h=400&fit=crop'
+        image: '/images/menu/pasta.png'
     },
 
     // ========== FRANKIE ==========
@@ -454,7 +454,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Classic vegetable frankie roll.',
         veg: true,
         emoji: '🌯',
-        image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&h=400&fit=crop'
+        image: '/images/menu/frankie.png'
     },
     {
         name: 'Veg Frankie with Paneer',
@@ -463,7 +463,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Frankie roll stuffed with paneer.',
         veg: true,
         emoji: '🌯',
-        image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&h=400&fit=crop'
+        image: '/images/menu/frankie.png'
     },
     {
         name: 'Classic Veg Frankie Paneer & Cheese',
@@ -472,7 +472,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Loaded with paneer and cheese.',
         veg: true,
         emoji: '🌯',
-        image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&h=400&fit=crop'
+        image: '/images/menu/frankie.png'
     },
     {
         name: 'Paneer Tikka Frankie with Cheese',
@@ -482,7 +482,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🌯',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&h=400&fit=crop'
+        image: '/images/menu/frankie.png'
     },
 
     // ========== BURGER ==========
@@ -494,7 +494,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍔',
         badge: 'Recommended',
-        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop'
+        image: '/images/menu/burger.png'
     },
     {
         name: 'Classic Tikki Burger with Cheese Slice',
@@ -504,7 +504,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍔',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop'
+        image: '/images/menu/burger.png'
     },
     {
         name: 'Double Tikki Burger',
@@ -514,7 +514,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍔',
         badge: 'Best Choice',
-        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop'
+        image: '/images/menu/burger.png'
     },
     {
         name: 'Double Tikki Burger with Cheese Slice',
@@ -523,7 +523,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Double tikki with cheese slice.',
         veg: true,
         emoji: '🍔',
-        image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&h=400&fit=crop'
+        image: '/images/menu/burger.png'
     },
 
     // ========== FRENCH FRIES ==========
@@ -534,7 +534,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Classic salted fries with sauce.',
         veg: true,
         emoji: '🍟',
-        image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&h=400&fit=crop'
+        image: '/images/menu/fries.png'
     },
     {
         name: 'Masala French Fries',
@@ -543,7 +543,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Fries with Indian masala sprinkle.',
         veg: true,
         emoji: '🍟',
-        image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&h=400&fit=crop'
+        image: '/images/menu/fries.png'
     },
     {
         name: 'Peri Peri French Fries',
@@ -553,7 +553,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🍟',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&h=400&fit=crop'
+        image: '/images/menu/peri_peri_fries.png'
     },
     {
         name: 'Tandoori Mayo French Fries',
@@ -562,7 +562,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Fries with tandoori mayo dip.',
         veg: true,
         emoji: '🍟',
-        image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&h=400&fit=crop'
+        image: '/images/menu/fries.png'
     },
     {
         name: 'Chilli Potato French Fries',
@@ -571,7 +571,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Indo-Chinese style chilli potato fries.',
         veg: true,
         emoji: '🍟',
-        image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&h=400&fit=crop'
+        image: '/images/menu/peri_peri_fries.png'
     },
     {
         name: 'Spicy Potato French Fries',
@@ -580,7 +580,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Extra spicy potato fries.',
         veg: true,
         emoji: '🍟',
-        image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&h=400&fit=crop'
+        image: '/images/menu/fries.png'
     },
 
     // ========== COFFEE ==========
@@ -592,7 +592,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '☕',
         badge: 'Recommended',
-        image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&h=400&fit=crop'
+        image: '/images/menu/hot_coffee.png'
     },
     {
         name: 'Cold Coffee',
@@ -602,7 +602,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '☕',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=500&h=400&fit=crop'
+        image: '/images/menu/cold_coffee.png'
     },
     {
         name: 'Cold Coffee with Ice Cream',
@@ -612,7 +612,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '☕',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=500&h=400&fit=crop'
+        image: '/images/menu/cold_coffee.png'
     },
 
     // ========== SHAKES ==========
@@ -623,7 +623,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Classic creamy milkshake.',
         veg: true,
         emoji: '🥤',
-        image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&h=400&fit=crop'
+        image: '/images/menu/shake.png'
     },
     {
         name: 'Strawberry Shake',
@@ -632,7 +632,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Fresh strawberry flavored shake.',
         veg: true,
         emoji: '🥤',
-        image: 'https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=500&h=400&fit=crop'
+        image: '/images/menu/strawberry_shake.png'
     },
     {
         name: 'Oreo Milkshake',
@@ -642,7 +642,7 @@ export const MENU_ITEMS: MenuItem[] = [
         veg: true,
         emoji: '🥤',
         badge: 'Best Seller',
-        image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&h=400&fit=crop'
+        image: '/images/menu/oreo_shake.png'
     },
     {
         name: 'Pineapple Shake',
@@ -651,7 +651,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Tropical pineapple shake.',
         veg: true,
         emoji: '🥤',
-        image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&h=400&fit=crop'
+        image: '/images/menu/shake.png'
     },
     {
         name: 'KitKat Shake',
@@ -660,7 +660,7 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Rich KitKat chocolate shake.',
         veg: true,
         emoji: '🥤',
-        image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&h=400&fit=crop'
+        image: '/images/menu/kitkat_shake.png'
     },
     {
         name: 'Kesar Badam Rabdi Milk',
@@ -669,6 +669,6 @@ export const MENU_ITEMS: MenuItem[] = [
         desc: 'Traditional kesar badam with rabdi.',
         veg: true,
         emoji: '🥛',
-        image: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=500&h=400&fit=crop'
+        image: '/images/menu/shake.png'
     }
 ];

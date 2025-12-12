@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
-import { useMenu, MenuItem, createOrder } from '../lib/storage';
+import { useMenu, MenuItem } from '../lib/storage';
 import { useRouter } from 'next/navigation';
 
 interface CartItem {
@@ -69,28 +69,39 @@ export default function TrainMenuPage() {
 
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-    const checkout = () => {
+    const checkout = async () => {
         if (cart.length === 0) return;
         if (!pnr && !trainNo) {
             alert('Please enter PNR or Train Number');
             return;
         }
 
-        // 1. Create Order in Dashboard
-        const orderItems = cart.map(item => `${item.name} (${item.quantity})`);
-        createOrder({
-            customer: `Train Passenger (PNR: ${pnr})`,
-            items: orderItems,
-            total: cartTotal,
-            type: 'Delivery',
-            trainDetails: {
-                pnr,
-                trainNo,
-                coachSeat: seatNo
-            },
-            paymentStatus: 'Unpaid',
-            paymentMethod: 'Cash' // Default for now
-        });
+        // 1. Submit to API so it appears in Dashboard
+        try {
+            const orderData = {
+                customer: `Train Passenger (PNR: ${pnr})`,
+                items: cart.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+                total: cartTotal,
+                type: 'Delivery',
+                trainDetails: {
+                    pnr,
+                    trainNo,
+                    coachSeat: seatNo
+                },
+                paymentStatus: 'Unpaid',
+                paymentMethod: 'Cash',
+                status: 'Pending'
+            };
+
+            await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            console.log('✅ Train order submitted to dashboard');
+        } catch (e) {
+            console.error('Failed to submit order:', e);
+        }
 
         // 2. Redirect to WhatsApp
         let message = `🚆 *TRAIN ORDER - ABU ROAD* 🚆\n\n`;

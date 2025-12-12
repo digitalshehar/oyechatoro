@@ -1,5 +1,190 @@
 {
-  "node": {},
+  "node": {
+    "60f64766dd265a26724d767e8061379375d0693224": {
+      "workers": {
+        "app/chef/login/page": {
+          "moduleId": 75601,
+          "async": false,
+          "exportedName": "authenticate",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/login/page": {
+          "moduleId": 51661,
+          "async": false,
+          "exportedName": "authenticate",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/staff/login/page": {
+          "moduleId": 96668,
+          "async": false,
+          "exportedName": "authenticate",
+          "filename": "app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/chef/login/page": "action-browser",
+        "app/login/page": "action-browser",
+        "app/staff/login/page": "action-browser"
+      },
+      "filename": "app/actions/auth.ts",
+      "exportedName": "authenticate"
+    },
+    "001c0bdf53d80f33c001c1de0525c3de9d6044c24a": {
+      "workers": {
+        "app/dashboard/analytics/page": {
+          "moduleId": 72559,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/audit/page": {
+          "moduleId": 31710,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/blog/page": {
+          "moduleId": 32631,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/customers/page": {
+          "moduleId": 52451,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/finance/page": {
+          "moduleId": 73231,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/inventory/page": {
+          "moduleId": 5908,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/kitchen/page": {
+          "moduleId": 44406,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/marketing/page": {
+          "moduleId": 38600,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/menu-engineering/page": {
+          "moduleId": 82837,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/menu/page": {
+          "moduleId": 99807,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/offers/page": {
+          "moduleId": 22188,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/orders/page": {
+          "moduleId": 60864,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/overview/page": {
+          "moduleId": 3931,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/page": {
+          "moduleId": 76409,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/pos/page": {
+          "moduleId": 45163,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/reviews/page": {
+          "moduleId": 65285,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/settings/page": {
+          "moduleId": 54496,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/staff/page": {
+          "moduleId": 34607,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/suppliers/page": {
+          "moduleId": 96836,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/tables/page": {
+          "moduleId": 96526,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        },
+        "app/dashboard/whatsapp/page": {
+          "moduleId": 18076,
+          "async": false,
+          "exportedName": "logout",
+          "filename": "app/actions/auth.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/analytics/page": "action-browser",
+        "app/dashboard/audit/page": "action-browser",
+        "app/dashboard/blog/page": "action-browser",
+        "app/dashboard/customers/page": "action-browser",
+        "app/dashboard/finance/page": "action-browser",
+        "app/dashboard/inventory/page": "action-browser",
+        "app/dashboard/kitchen/page": "action-browser",
+        "app/dashboard/marketing/page": "action-browser",
+        "app/dashboard/menu-engineering/page": "action-browser",
+        "app/dashboard/menu/page": "action-browser",
+        "app/dashboard/offers/page": "action-browser",
+        "app/dashboard/orders/page": "action-browser",
+        "app/dashboard/overview/page": "action-browser",
+        "app/dashboard/page": "action-browser",
+        "app/dashboard/pos/page": "action-browser",
+        "app/dashboard/reviews/page": "action-browser",
+        "app/dashboard/settings/page": "action-browser",
+        "app/dashboard/staff/page": "action-browser",
+        "app/dashboard/suppliers/page": "action-browser",
+        "app/dashboard/tables/page": "action-browser",
+        "app/dashboard/whatsapp/page": "action-browser"
+      },
+      "filename": "app/actions/auth.ts",
+      "exportedName": "logout"
+    }
+  },
   "edge": {},
   "encryptionKey": "9+Yc+d1267qpVFTaRrk6srKJ63D97uPVvfyMlFLRjuE="
 }

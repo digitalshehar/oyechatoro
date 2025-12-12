@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.env
+build.log
+npm-debug.log
+Dockerfile
+ecosystem.config.js

@@ -2,19 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { useBlog, BlogPost, BlogCategory, BlogTag } from '../../lib/storage';
+import { useDbBlog as useBlog, BlogPost, BlogCategory, BlogTag } from '../../lib/db-hooks';
 
 export default function BlogManagerPage() {
-    const { posts, categories, tags, savePost, deletePost, saveCategory, deleteCategory, saveTag } = useBlog();
+    const { posts, categories, tags, savePost, deletePost, saveCategory, deleteCategory, saveTag, deleteTag } = useBlog();
     const [isEditing, setIsEditing] = useState(false);
     const [activeTab, setActiveTab] = useState<'edit' | 'preview' | 'seo'>('edit');
     const [currentPost, setCurrentPost] = useState<Partial<BlogPost>>({});
 
     // --- Category Management State ---
     const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [showTagsModal, setShowTagsModal] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
 
-    // --- SEO Scoring Logic ---
+    const [focusKeyword, setFocusKeyword] = useState('');
     const [seoScore, setSeoScore] = useState(0);
 
     useEffect(() => {
@@ -30,11 +31,19 @@ export default function BlogManagerPage() {
         if (currentPost.content && currentPost.content.length > 300) score += 20;
         if (currentPost.image) score += 10;
         if (currentPost.slug) score += 10;
-        if (currentPost.tags && currentPost.tags.length > 0) score += 10;
-        if (currentPost.category) score += 10;
+        if (currentPost.tags && currentPost.tags.length > 0) score += 5;
+        if (currentPost.tags && currentPost.tags.length > 0) score += 5;
+        if (currentPost.category || currentPost.categoryId) score += 5;
+
+        // Focus Keyword Bonus
+        if (focusKeyword) {
+            const lowerKeyword = focusKeyword.toLowerCase();
+            if (currentPost.title?.toLowerCase().includes(lowerKeyword)) score += 5;
+            if (currentPost.seoDescription?.toLowerCase().includes(lowerKeyword)) score += 5;
+        }
 
         setSeoScore(score);
-    }, [currentPost]);
+    }, [currentPost, focusKeyword]);
 
     const handleEdit = (post: BlogPost) => {
         setCurrentPost(post);
@@ -48,7 +57,6 @@ export default function BlogManagerPage() {
             date: new Date().toLocaleDateString(),
             author: 'Admin',
             tags: [],
-            category: categories[0]?.name || 'News',
             status: 'Draft',
             views: 0,
             likes: 0,
@@ -88,7 +96,7 @@ export default function BlogManagerPage() {
         return `${time} min read`;
     };
 
-    const handleSave = (e: React.FormEvent) => {
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         if (currentPost.title && currentPost.content) {
             const finalPost = {
@@ -100,12 +108,23 @@ export default function BlogManagerPage() {
 
             // Save new tags
             if (finalPost.tags) {
-                finalPost.tags.forEach(tagName => {
-                    saveTag({ id: Date.now().toString() + Math.random(), name: tagName, slug: generateSlug(tagName) });
+                const tagPromises: Promise<any>[] = [];
+                finalPost.tags.forEach(tag => {
+                    if (tag.id.startsWith('temp_')) {
+                        tagPromises.push(saveTag(tag).then(() => {
+                            // Ideally update the tag's ID in finalPost here, but simpler to just let API resolve by name or rely on 'connect' logic in backend 
+                            // For now, we assume saveTag creates it, and savePost will simply refer to it by name or we rely on backend 'connectOrCreate'
+                        }));
+                    }
                 });
+                await Promise.all(tagPromises);
             }
 
-            savePost(finalPost);
+            // Ensure we send valid structure to API
+            // Refine validPost to just send IDs or expected format if needed
+            // But db-hooks sends JSON.stringify(postData), so we send everything.
+            await savePost(finalPost);
+
             setIsEditing(false);
             setCurrentPost({});
         }
@@ -208,6 +227,12 @@ export default function BlogManagerPage() {
                                 📂 Manage Categories
                             </button>
                             <button
+                                onClick={() => setShowTagsModal(true)}
+                                className="px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm"
+                            >
+                                🏷️ Manage Tags
+                            </button>
+                            <button
                                 onClick={handleCreate}
                                 className="px-6 py-3 bg-[var(--brand-primary)] text-white rounded-xl font-bold shadow-lg shadow-orange-200 hover:bg-[var(--brand-secondary)] transition-all flex items-center gap-2"
                             >
@@ -251,6 +276,36 @@ export default function BlogManagerPage() {
                         </div>
                     )}
 
+                    {/* Tags Modal */}
+                    {showTagsModal && (
+                        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in">
+                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+                                <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
+                                    <h3 className="font-bold text-lg">Manage Tags</h3>
+                                    <button onClick={() => setShowTagsModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+                                </div>
+                                <div className="p-4">
+                                    <p className="text-sm text-gray-500 mb-4">Tags are created automatically when you add them to posts. You can delete unused tags here.</p>
+                                    <div className="max-h-60 overflow-y-auto space-y-2">
+                                        {tags.map(tag => (
+                                            <div key={tag.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                                <div className="font-bold text-gray-800">{tag.name}</div>
+                                                <button
+                                                    onClick={() => {
+                                                        if (confirm('Delete this tag?')) deleteTag(tag.id);
+                                                    }}
+                                                    className="text-red-500 hover:text-red-700 text-sm font-bold"
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="grid gap-4 animate-in" style={{ animationDelay: '0.1s' }}>
                         {posts.length === 0 ? (
                             <div className="text-center py-20 text-[var(--text-muted)] bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
@@ -277,7 +332,7 @@ export default function BlogManagerPage() {
 
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <span className="px-2 py-0.5 bg-orange-50 text-orange-700 text-xs font-bold rounded-md border border-orange-100">{post.category || 'News'}</span>
+                                            <span className="px-2 py-0.5 bg-orange-50 text-orange-700 text-xs font-bold rounded-md border border-orange-100">{post.category?.name || 'News'}</span>
                                             {post.isRecipe && <span className="px-2 py-0.5 bg-yellow-50 text-yellow-700 text-xs font-bold rounded-md border border-yellow-100">🍳 Recipe</span>}
                                             <span className="text-xs text-gray-400 flex items-center gap-1">
                                                 <span>👁️ {post.views || 0}</span>
@@ -446,15 +501,28 @@ export default function BlogManagerPage() {
                                         <h3 className="font-bold text-gray-800 mb-4">Post Settings</h3>
 
                                         <div className="space-y-4">
-                                            <div className="flex items-center gap-2 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
-                                                <input
-                                                    type="checkbox"
-                                                    id="isRecipe"
-                                                    checked={currentPost.isRecipe || false}
-                                                    onChange={e => setCurrentPost({ ...currentPost, isRecipe: e.target.checked })}
-                                                    className="w-5 h-5 text-orange-500 rounded focus:ring-orange-500"
-                                                />
-                                                <label htmlFor="isRecipe" className="font-bold text-gray-700 cursor-pointer">This is a Recipe</label>
+                                            <div>
+                                                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Post Type</label>
+                                                <div className="flex p-1 bg-gray-100 rounded-lg">
+                                                    <button
+                                                        onClick={() => setCurrentPost({ ...currentPost, isRecipe: false })}
+                                                        className={`flex-1 py-2 px-3 rounded-md text-sm font-bold transition-all ${!currentPost.isRecipe
+                                                            ? 'bg-white shadow text-gray-800'
+                                                            : 'text-gray-500 hover:text-gray-700'
+                                                            }`}
+                                                    >
+                                                        📝 Article
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setCurrentPost({ ...currentPost, isRecipe: true })}
+                                                        className={`flex-1 py-2 px-3 rounded-md text-sm font-bold transition-all ${currentPost.isRecipe
+                                                            ? 'bg-white shadow text-orange-600'
+                                                            : 'text-gray-500 hover:text-gray-700'
+                                                            }`}
+                                                    >
+                                                        🍳 Recipe
+                                                    </button>
+                                                </div>
                                             </div>
 
                                             <div>
@@ -467,29 +535,51 @@ export default function BlogManagerPage() {
                                                     placeholder="Image URL..."
                                                 />
                                                 {currentPost.image && (
-                                                    <img src={currentPost.image} alt="Preview" className="mt-2 w-full h-32 object-cover rounded-lg border border-gray-100" />
+                                                    <div className="relative w-full h-32 mt-2">
+                                                        <Image
+                                                            src={currentPost.image}
+                                                            alt="Preview"
+                                                            fill
+                                                            className="object-cover rounded-lg border border-gray-100"
+                                                            unoptimized
+                                                        />
+                                                    </div>
                                                 )}
                                             </div>
 
                                             <div>
                                                 <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Category</label>
                                                 <select
-                                                    value={currentPost.category || ''}
-                                                    onChange={e => setCurrentPost({ ...currentPost, category: e.target.value })}
+                                                    value={currentPost.categoryId || currentPost.category?.id || ''}
+                                                    onChange={e => {
+                                                        const cat = categories.find(c => c.id === e.target.value);
+                                                        if (cat) {
+                                                            setCurrentPost({ ...currentPost, category: cat, categoryId: cat.id });
+                                                        }
+                                                    }}
                                                     className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
                                                 >
+                                                    <option value="">Select Category</option>
                                                     {categories.map(cat => (
-                                                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                                        <option key={cat.id} value={cat.id}>{cat.name}</option>
                                                     ))}
                                                 </select>
                                             </div>
 
                                             <div>
-                                                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Tags</label>
+                                                <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Tags (Comma separated)</label>
                                                 <input
                                                     type="text"
-                                                    value={Array.isArray(currentPost.tags) ? currentPost.tags.join(', ') : currentPost.tags || ''}
-                                                    onChange={e => setCurrentPost({ ...currentPost, tags: e.target.value.split(',').map(t => t.trim()) })}
+                                                    value={currentPost.tags?.map(t => t.name).join(', ') || ''}
+                                                    onChange={e => {
+                                                        const names = e.target.value.split(',').map(t => t.trim());
+                                                        const newTags = names.filter(n => n).map(n => {
+                                                            const existing = tags.find(t => t.name.toLowerCase() === n.toLowerCase());
+                                                            // Cast to any to bypass strict ID checks for temp tags during editing
+                                                            return existing || { id: `temp_${Date.now()}_${n}`, name: n, slug: generateSlug(n) } as any;
+                                                        });
+                                                        setCurrentPost({ ...currentPost, tags: newTags });
+                                                    }}
                                                     className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
                                                     placeholder="Separate with commas..."
                                                     list="tag-suggestions"
@@ -501,7 +591,7 @@ export default function BlogManagerPage() {
                                                 </datalist>
                                                 <div className="flex flex-wrap gap-2 mt-2">
                                                     {currentPost.tags?.map((tag, i) => (
-                                                        <span key={i} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">{tag}</span>
+                                                        <span key={i} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">{tag.name}</span>
                                                     ))}
                                                 </div>
                                             </div>
@@ -570,12 +660,25 @@ export default function BlogManagerPage() {
                         {activeTab === 'seo' && (
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <div className="space-y-6">
+                                    {/* SEO Analysis */}
                                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                                         <div className="flex justify-between items-center mb-6">
                                             <h3 className="font-bold text-gray-800">SEO Analysis</h3>
                                             <div className={`text-2xl font-bold ${seoScore >= 80 ? 'text-green-500' : seoScore >= 50 ? 'text-yellow-500' : 'text-red-500'}`}>
                                                 {seoScore}/100
                                             </div>
+                                        </div>
+
+                                        <div className="mb-6">
+                                            <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Focus Keyword</label>
+                                            <input
+                                                type="text"
+                                                value={focusKeyword}
+                                                onChange={e => setFocusKeyword(e.target.value)}
+                                                placeholder="e.g. Best Butter Chicken"
+                                                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-[var(--brand-primary)] focus:ring-1 focus:ring-[var(--brand-primary)]"
+                                            />
+                                            <p className="text-xs text-gray-400 mt-1">Enter a main keyword to check if it appears in your content.</p>
                                         </div>
 
                                         <div className="space-y-3">
@@ -597,6 +700,22 @@ export default function BlogManagerPage() {
                                                     {currentPost.content?.length || 0}
                                                 </span>
                                             </div>
+                                            {focusKeyword && (
+                                                <>
+                                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                        <span className="text-sm font-medium">Keyword in Title</span>
+                                                        <span className={currentPost.title?.toLowerCase().includes(focusKeyword.toLowerCase()) ? 'text-green-500' : 'text-red-500'}>
+                                                            {currentPost.title?.toLowerCase().includes(focusKeyword.toLowerCase()) ? 'Yes' : 'No'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                        <span className="text-sm font-medium">Keyword in Description</span>
+                                                        <span className={currentPost.seoDescription?.toLowerCase().includes(focusKeyword.toLowerCase()) ? 'text-green-500' : 'text-red-500'}>
+                                                            {currentPost.seoDescription?.toLowerCase().includes(focusKeyword.toLowerCase()) ? 'Yes' : 'No'}
+                                                        </span>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
 

@@ -543,7 +543,9 @@ const INITIAL_POSTS = [
         ],
         seoTitle: 'Welcome to Oye Chatoro - Best Street Food in Abu Road',
         seoDescription: 'Oye Chatoro is now open in Abu Road! Experience authentic street food, live kitchen, and fresh ingredients. Visit us today.',
-        readingTime: '2 min read'
+        readingTime: '2 min read',
+        status: 'Published',
+        featured: true
     },
     {
         id: '2',
@@ -563,7 +565,70 @@ const INITIAL_POSTS = [
         ],
         seoTitle: 'Top 5 Must-Try Dishes at Oye Chatoro',
         seoDescription: 'From Paneer Tikka Pizza to Dahi Papdi Chaat, discover the top 5 dishes you must try at Oye Chatoro Abu Road.',
-        readingTime: '3 min read'
+        readingTime: '3 min read',
+        status: 'Published'
+    },
+    {
+        id: '3',
+        title: 'Best Restaurant in Abu Road - Why Oye Chatoro Stands Out',
+        slug: 'best-restaurant-in-abu-road',
+        excerpt: 'Looking for the best restaurant in Abu Road? Discover why Oye Chatoro is the top choice for vegetarian food lovers near Mount Abu.',
+        content: '## Best Restaurant in Abu Road\n\nWhen it comes to finding a great restaurant in Abu Road, Oye Chatoro stands out as the premier destination for food lovers. Located in Abu Central Mall, we offer a unique dining experience.\n\n### Why Choose Oye Chatoro?\n\n1. **100% Pure Vegetarian**\n2. **Live Kitchen**\n3. **Near Mount Abu**\n4. **AC Dining**\n5. **FSSAI Licensed**\n\nVisit us today and experience why we are rated as the best restaurant in Abu Road!',
+        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
+        date: new Date(Date.now() - 172800000).toLocaleDateString(),
+        author: 'Admin',
+        category: 'About Us',
+        tags: [
+            'Restaurant in Abu Road',
+            'Best Restaurant',
+            'Mount Abu',
+            'Pure Veg'
+        ],
+        seoTitle: 'Best Restaurant in Abu Road | Oye Chatoro - Pure Veg Food',
+        seoDescription: 'Looking for the best restaurant in Abu Road? Oye Chatoro offers 100% pure vegetarian food, pizzas, pastas, chaats near Mount Abu. FSSAI Licensed.',
+        readingTime: '4 min read',
+        status: 'Published',
+        featured: true
+    },
+    {
+        id: '4',
+        title: 'Complete Food Guide: What to Eat in Abu Road',
+        slug: 'food-guide-what-to-eat-abu-road',
+        excerpt: 'A complete guide to the best food options in Abu Road, Rajasthan.',
+        content: '## Food Guide: Abu Road\n\nAbu Road, the gateway to Mount Abu, has become a growing food destination in Rajasthan.\n\n### Best Restaurants\n\n**Oye Chatoro** - Location: Abu Central Mall, G-5\n\n### Popular Food Items\n\n1. **Pizza** - Fresh, wood-fire style\n2. **Chaat** - Authentic North Indian flavors\n3. **Pasta** - Creamy options\n4. **Burgers** - Loaded veggie burgers\n5. **Momos** - Steamed and fried varieties',
+        image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80',
+        date: new Date(Date.now() - 259200000).toLocaleDateString(),
+        author: 'Food Blogger',
+        category: 'Food Guide',
+        tags: [
+            'Abu Road Food',
+            'Mount Abu',
+            'Food Guide'
+        ],
+        seoTitle: 'Food Guide Abu Road | Best Places to Eat Near Mount Abu',
+        seoDescription: 'Complete food guide for Abu Road, Rajasthan. Discover the best restaurants near Mount Abu.',
+        readingTime: '5 min read',
+        status: 'Published'
+    },
+    {
+        id: '5',
+        title: 'Oye Chatoro - Your Family Restaurant in Abu Road',
+        slug: 'family-restaurant-abu-road',
+        excerpt: 'Looking for a family-friendly restaurant in Abu Road? Oye Chatoro offers the perfect dining experience.',
+        content: '## Family Restaurant in Abu Road\n\nPlanning a family outing? Oye Chatoro is the perfect destination.\n\n### Why Families Love Us\n\n1. **Kid-Friendly Menu**\n2. **AC Seating**\n3. **Pure Vegetarian**\n4. **Quick Service**\n5. **Affordable Prices**\n\nVisit Oye Chatoro - The best family restaurant in Abu Road!',
+        image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80',
+        date: new Date(Date.now() - 345600000).toLocaleDateString(),
+        author: 'Admin',
+        category: 'About Us',
+        tags: [
+            'Family Restaurant',
+            'Abu Road',
+            'Kids Menu'
+        ],
+        seoTitle: 'Family Restaurant in Abu Road | Oye Chatoro - Kid Friendly',
+        seoDescription: 'Best family restaurant in Abu Road. Kid-friendly menu, AC seating, pure vegetarian food.',
+        readingTime: '3 min read',
+        status: 'Published'
     }
 ];
 const getBlogPosts = ()=>{

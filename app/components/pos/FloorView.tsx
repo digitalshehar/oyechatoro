@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Order, getOrders } from '../../lib/storage';
+import { Order } from '../../lib/db-hooks';
 
 const TOTAL_TABLES = 10;
 
@@ -17,6 +17,7 @@ interface FloorViewProps {
     onOnlineOrder: () => void;
     onShowSales: () => void;
     onShowRecent: () => void;
+    orders: Order[];
 }
 
 export default function FloorView({
@@ -28,12 +29,13 @@ export default function FloorView({
     onDelivery,
     onOnlineOrder,
     onShowSales,
-    onShowRecent
+    onShowRecent,
+    orders
 }: FloorViewProps) {
 
     const getTableStatus = (tableNum: string): { status: TableStatus; order?: Order } => {
-        const activeOrders = getOrders().filter(
-            o => o.type === 'Dine-in' &&
+        const activeOrders = orders.filter(
+            o => o.type === 'DineIn' &&
                 o.table === tableNum &&
                 o.status !== 'Completed' &&
                 o.status !== 'Cancelled'

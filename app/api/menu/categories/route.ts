@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
+import { auth } from '@/auth';
 
-// GET all categories
+// GET all categories - PUBLIC
 export async function GET() {
     try {
         const categories = await prisma.menuCategory.findMany({
@@ -16,9 +17,14 @@ export async function GET() {
     }
 }
 
-// POST create category
+// POST create category - Protected
 export async function POST(request: NextRequest) {
     try {
+        const session = await auth();
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const body = await request.json();
 
         const category = await prisma.menuCategory.create({

@@ -8,36 +8,39 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/lib/storage.ts [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$db$2d$hooks$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/lib/db-hooks.ts [app-ssr] (ecmascript)");
 'use client';
 ;
 ;
 ;
 function KitchenPage() {
-    const { orders, updateStatus } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useOrders"])();
+    const { orders: allOrders, updateOrder } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$db$2d$hooks$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useDbOrders"])();
     const [viewMode, setViewMode] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('tickets');
     const [currentTime, setCurrentTime] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(Date.now());
     const [isSoundEnabled, setIsSoundEnabled] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(true);
     const prevOrderCountRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(0);
-    const audioRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useRef"])(null);
     // Filter for active orders (Pending or Cooking)
-    const activeOrders = orders.filter((o)=>o.status === 'Pending' || o.status === 'Cooking').sort((a, b)=>a.id - b.id);
+    // Note: DB returns valid Order objects with createdAt
+    const activeOrders = allOrders.filter((o)=>o.status === 'Pending' || o.status === 'Cooking').sort((a, b)=>new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     // --- Timer Logic ---
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         const timer = setInterval(()=>setCurrentTime(Date.now()), 10000); // Update every 10s
         return ()=>clearInterval(timer);
     }, []);
     const getElapsedTime = (order)=>{
+        const created = new Date(order.createdAt).getTime();
         if (order.status === 'Pending') {
-            // For pending orders, maybe show "Waiting" or time since placed
-            const diff = currentTime - order.id; // Fallback to ID as timestamp
+            const diff = currentTime - created;
             return Math.floor(diff / 60000);
         }
         if (order.status === 'Cooking' && order.cookingStartedAt) {
-            const diff = currentTime - order.cookingStartedAt;
+            const started = new Date(order.cookingStartedAt).getTime();
+            const diff = currentTime - started;
             return Math.floor(diff / 60000);
         }
-        return 0;
+        // Fallback if cookingStartedAt is missing but status is Cooking
+        const diff = currentTime - created;
+        return Math.floor(diff / 60000);
     };
     const getStatusColor = (minutes)=>{
         if (minutes < 10) return 'bg-green-100 text-green-800 border-green-200';
@@ -46,8 +49,6 @@ function KitchenPage() {
     };
     // --- Sound Logic ---
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        // Initialize Audio Context on first interaction if needed, or just use simple Audio for now
-        // Using the same robust AudioContext method as Orders page
         const playSound = ()=>{
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -57,7 +58,7 @@ function KitchenPage() {
                 const gain = ctx.createGain();
                 osc.connect(gain);
                 gain.connect(ctx.destination);
-                osc.type = 'square'; // harsher sound for kitchen
+                osc.type = 'square';
                 osc.frequency.setValueAtTime(600, ctx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.5);
                 gain.gain.setValueAtTime(0.3, ctx.currentTime);
@@ -78,16 +79,23 @@ function KitchenPage() {
     ]);
     // --- Item Aggregation Logic ---
     const aggregatedItems = activeOrders.reduce((acc, order)=>{
-        order.items.forEach((item)=>{
-            // Clean item name (remove existing qty if present, though usually stored as "Name")
-            // Assuming item string is just "Name" or "Name (Qty)"
-            // For this logic, we'll just count the raw strings or try to parse
-            acc[item] = (acc[item] || 0) + 1;
-        });
+        const items = order.items;
+        if (Array.isArray(items)) {
+            items.forEach((item)=>{
+                const name = item.name;
+                const qty = item.quantity || 1;
+                acc[name] = (acc[name] || 0) + qty;
+            });
+        }
         return acc;
     }, {});
     // --- KOT Print ---
     const printKOT = (order)=>{
+        const time = new Date(order.createdAt).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        const itemsList = order.items.map((i)=>`<div>□ ${i.quantity}x ${i.name}</div>`).join('');
         const content = `
             <html>
             <head>
@@ -103,10 +111,10 @@ function KitchenPage() {
                 <div class="header">KITCHEN TICKET</div>
                 <div class="meta">
                     #${order.id}<br>
-                    ${order.time}<br>
+                    ${time}<br>
                     ${order.type}
                 </div>
-                ${order.items.map((item)=>`<div class="item">□ ${item}</div>`).join('')}
+                ${itemsList}
                 <script>window.print();</script>
             </body>
             </html>
@@ -130,7 +138,7 @@ function KitchenPage() {
                                 children: "👨‍🍳 Kitchen Display"
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                lineNumber: 119,
+                                lineNumber: 127,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -138,13 +146,13 @@ function KitchenPage() {
                                 children: "Live Order Tracking"
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                lineNumber: 120,
+                                lineNumber: 128,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                        lineNumber: 118,
+                        lineNumber: 126,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -159,7 +167,7 @@ function KitchenPage() {
                                         children: "🎫 Tickets"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                        lineNumber: 126,
+                                        lineNumber: 134,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -168,13 +176,13 @@ function KitchenPage() {
                                         children: "🍔 Items"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                        lineNumber: 132,
+                                        lineNumber: 140,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                lineNumber: 125,
+                                lineNumber: 133,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -183,7 +191,7 @@ function KitchenPage() {
                                 children: isSoundEnabled ? '🔔' : '🔕'
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                lineNumber: 141,
+                                lineNumber: 149,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -194,7 +202,7 @@ function KitchenPage() {
                                         children: activeOrders.length
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                        lineNumber: 150,
+                                        lineNumber: 158,
                                         columnNumber: 25
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -202,25 +210,25 @@ function KitchenPage() {
                                         children: "Pending"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                        lineNumber: 151,
+                                        lineNumber: 159,
                                         columnNumber: 25
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                lineNumber: 149,
+                                lineNumber: 157,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                        lineNumber: 123,
+                        lineNumber: 131,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                lineNumber: 117,
+                lineNumber: 125,
                 columnNumber: 13
             }, this),
             activeOrders.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -231,7 +239,7 @@ function KitchenPage() {
                         children: "👨‍🍳"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                        lineNumber: 159,
+                        lineNumber: 167,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -239,7 +247,7 @@ function KitchenPage() {
                         children: "All Caught Up!"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                        lineNumber: 160,
+                        lineNumber: 168,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -247,13 +255,13 @@ function KitchenPage() {
                         children: "Kitchen is clear."
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                        lineNumber: 161,
+                        lineNumber: 169,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                lineNumber: 158,
+                lineNumber: 166,
                 columnNumber: 17
             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
                 children: viewMode === 'tickets' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -261,6 +269,11 @@ function KitchenPage() {
                     children: activeOrders.map((order)=>{
                         const elapsed = getElapsedTime(order);
                         const statusColor = getStatusColor(elapsed);
+                        const timeStr = new Date(order.createdAt).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        const items = order.items;
                         return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: `bg-white rounded-2xl shadow-sm border-2 flex flex-col overflow-hidden transition-all hover:shadow-md ${order.status === 'Pending' ? 'border-yellow-400' : 'border-blue-500'}`,
                             children: [
@@ -276,11 +289,11 @@ function KitchenPage() {
                                                             className: "font-bold text-lg",
                                                             children: [
                                                                 "#",
-                                                                order.id.toString().slice(-4)
+                                                                order.id
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                                            lineNumber: 177,
+                                                            lineNumber: 187,
                                                             columnNumber: 53
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -288,27 +301,27 @@ function KitchenPage() {
                                                             children: order.type
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                                            lineNumber: 178,
+                                                            lineNumber: 188,
                                                             columnNumber: 53
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                                    lineNumber: 176,
+                                                    lineNumber: 186,
                                                     columnNumber: 49
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "text-xs font-mono opacity-80",
-                                                    children: order.time
+                                                    children: timeStr
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                                    lineNumber: 180,
+                                                    lineNumber: 190,
                                                     columnNumber: 49
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                            lineNumber: 175,
+                                            lineNumber: 185,
                                             columnNumber: 45
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -322,7 +335,7 @@ function KitchenPage() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                                    lineNumber: 183,
+                                                    lineNumber: 193,
                                                     columnNumber: 49
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -330,50 +343,65 @@ function KitchenPage() {
                                                     children: order.status === 'Cooking' ? 'Cooking' : 'Waiting'
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                                    lineNumber: 184,
+                                                    lineNumber: 194,
                                                     columnNumber: 49
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                            lineNumber: 182,
+                                            lineNumber: 192,
                                             columnNumber: 45
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                    lineNumber: 174,
+                                    lineNumber: 184,
                                     columnNumber: 41
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "p-4 flex-1 space-y-3",
-                                    children: order.items.map((item, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                    children: Array.isArray(items) && items.map((item, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "flex items-start gap-3 text-lg font-bold text-gray-800",
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "mt-1.5 w-2 h-2 rounded-full bg-gray-300 shrink-0"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                                    lineNumber: 192,
+                                                    lineNumber: 202,
                                                     columnNumber: 53
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: "leading-tight",
-                                                    children: item
-                                                }, void 0, false, {
+                                                    children: [
+                                                        item.quantity,
+                                                        "x ",
+                                                        item.name,
+                                                        item.note && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                            className: "text-sm font-normal text-red-500 italic",
+                                                            children: [
+                                                                "Note: ",
+                                                                item.note
+                                                            ]
+                                                        }, void 0, true, {
+                                                            fileName: "[project]/app/dashboard/kitchen/page.tsx",
+                                                            lineNumber: 205,
+                                                            columnNumber: 71
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                                    lineNumber: 193,
+                                                    lineNumber: 203,
                                                     columnNumber: 53
                                                 }, this)
                                             ]
                                         }, idx, true, {
                                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                            lineNumber: 191,
+                                            lineNumber: 201,
                                             columnNumber: 49
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                    lineNumber: 189,
+                                    lineNumber: 199,
                                     columnNumber: 41
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -386,42 +414,46 @@ function KitchenPage() {
                                             children: "🖨️"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                            lineNumber: 200,
+                                            lineNumber: 213,
                                             columnNumber: 45
                                         }, this),
                                         order.status === 'Pending' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>updateStatus(order.id, 'Cooking'),
+                                            onClick: ()=>updateOrder(order.id, {
+                                                    status: 'Cooking'
+                                                }),
                                             className: "flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-200 transition-all",
                                             children: "Start Cooking"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                            lineNumber: 208,
+                                            lineNumber: 221,
                                             columnNumber: 49
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                            onClick: ()=>updateStatus(order.id, 'Ready'),
+                                            onClick: ()=>updateOrder(order.id, {
+                                                    status: 'Ready'
+                                                }),
                                             className: "flex-1 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg shadow-green-200 transition-all",
                                             children: "Mark Ready"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                            lineNumber: 215,
+                                            lineNumber: 228,
                                             columnNumber: 49
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                    lineNumber: 199,
+                                    lineNumber: 212,
                                     columnNumber: 41
                                 }, this)
                             ]
                         }, order.id, true, {
                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                            lineNumber: 172,
+                            lineNumber: 182,
                             columnNumber: 37
                         }, this);
                     })
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                    lineNumber: 166,
+                    lineNumber: 174,
                     columnNumber: 25
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 animate-in",
@@ -433,7 +465,7 @@ function KitchenPage() {
                                     children: count
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                    lineNumber: 231,
+                                    lineNumber: 244,
                                     columnNumber: 37
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -441,7 +473,7 @@ function KitchenPage() {
                                     children: item
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                    lineNumber: 232,
+                                    lineNumber: 245,
                                     columnNumber: 37
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -449,25 +481,25 @@ function KitchenPage() {
                                     children: "To Prepare"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                                    lineNumber: 233,
+                                    lineNumber: 246,
                                     columnNumber: 37
                                 }, this)
                             ]
                         }, item, true, {
                             fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                            lineNumber: 230,
+                            lineNumber: 243,
                             columnNumber: 33
                         }, this))
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/kitchen/page.tsx",
-                    lineNumber: 228,
+                    lineNumber: 241,
                     columnNumber: 25
                 }, this)
             }, void 0, false)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/kitchen/page.tsx",
-        lineNumber: 115,
+        lineNumber: 123,
         columnNumber: 9
     }, this);
 }

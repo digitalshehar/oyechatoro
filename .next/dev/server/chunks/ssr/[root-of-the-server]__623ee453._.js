@@ -174,7 +174,15 @@ const metadata = {
         // Hindi Keywords (for local search)
         'Abu Road ka best restaurant',
         'pure veg food Abu Road',
-        'shakahari restaurant Abu Road'
+        'Abu Road ka best restaurant',
+        'pure veg food Abu Road',
+        'shakahari restaurant Abu Road',
+        // Target Keywords (High Volume)
+        'best restaurants in abu road',
+        'restaurants in abu road',
+        'abu road famous food',
+        'restaurants near abu road railway station',
+        'best restaurants in mount abu'
     ],
     authors: [
         {
@@ -249,8 +257,8 @@ function RootLayout({ children }) {
             {
                 '@type': 'Restaurant',
                 '@id': 'https://oyechatoro.com',
-                name: 'Oye Chatoro - Restaurant in Abu Road',
-                description: 'Best Restaurant in Abu Road - 100% Pure Vegetarian. Fresh pizzas, pastas, chaats, burgers & street food near Mount Abu.',
+                name: 'Oye Chatoro - Best Restaurant in Abu Road',
+                description: 'Oye Chatoro is the best restaurant in Abu Road serving famous food like pizza, pasta, and chaat. Located near Abu Road Railway Station and Mount Abu.',
                 url: 'https://oyechatoro.com',
                 telephone: '+91-9509913792',
                 priceRange: '₹₹',
@@ -313,12 +321,12 @@ function RootLayout({ children }) {
                     }
                 }, void 0, false, {
                     fileName: "[project]/app/layout.tsx",
-                    lineNumber: 175,
+                    lineNumber: 184,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/layout.tsx",
-                lineNumber: 174,
+                lineNumber: 183,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$rsc$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["jsxDEV"])("body", {
@@ -327,13 +335,13 @@ function RootLayout({ children }) {
                 children: children
             }, void 0, false, {
                 fileName: "[project]/app/layout.tsx",
-                lineNumber: 180,
+                lineNumber: 189,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/layout.tsx",
-        lineNumber: 173,
+        lineNumber: 182,
         columnNumber: 9
     }, this);
 }

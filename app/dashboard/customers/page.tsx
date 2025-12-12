@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useCustomers } from '../../lib/storage';
+import { useDbCustomers } from '../../lib/db-hooks';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 export default function CustomersPage() {
-    const { customers } = useCustomers();
+    const { customers, loading } = useDbCustomers();
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredCustomers = customers.filter(c =>
@@ -12,11 +13,15 @@ export default function CustomersPage() {
         c.phone.includes(searchTerm)
     );
 
+    if (loading && customers.length === 0) {
+        return <div className="p-12 flex justify-center"><LoadingSpinner /></div>;
+    }
+
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 animate-in gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-[var(--brand-dark)]">Customer CRM</h1>
+                    <h1 className="text-3xl font-bold text-[var(--brand-dark)]">Customer CRM <span className="text-sm font-normal text-gray-400 bg-gray-100 px-2 py-1 rounded-full ml-2">Live Database</span></h1>
                     <p className="text-[var(--text-muted)]">Track loyalty and customer history</p>
                 </div>
                 <div className="w-full md:w-auto">
@@ -45,33 +50,34 @@ export default function CustomersPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {filteredCustomers.map((customer) => (
-                                <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="p-4">
-                                        <div className="font-bold text-gray-800">{customer.name}</div>
-                                        <div className="text-xs text-gray-400">ID: {customer.id}</div>
-                                    </td>
-                                    <td className="p-4">
-                                        <div className="text-sm text-gray-600">{customer.phone}</div>
-                                        <div className="text-xs text-gray-400">{customer.email || '-'}</div>
-                                    </td>
-                                    <td className="p-4 text-center">
-                                        <span className="font-bold text-gray-700">{customer.totalOrders}</span>
-                                    </td>
-                                    <td className="p-4 text-center">
-                                        <span className="font-bold text-gray-700">₹{customer.totalSpent}</span>
-                                    </td>
-                                    <td className="p-4 text-center">
-                                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
-                                            {customer.loyaltyPoints} pts
-                                        </span>
-                                    </td>
-                                    <td className="p-4 text-right text-sm text-gray-500">
-                                        {new Date(customer.lastVisit).toLocaleDateString()}
-                                    </td>
-                                </tr>
-                            ))}
-                            {filteredCustomers.length === 0 && (
+                            {filteredCustomers.length > 0 ? (
+                                filteredCustomers.map((customer) => (
+                                    <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="p-4">
+                                            <div className="font-bold text-gray-800">{customer.name}</div>
+                                            <div className="text-xs text-gray-400">ID: {customer.id.substring(0, 8)}...</div>
+                                        </td>
+                                        <td className="p-4">
+                                            <div className="text-sm text-gray-600">{customer.phone}</div>
+                                            <div className="text-xs text-gray-400">{customer.email || '-'}</div>
+                                        </td>
+                                        <td className="p-4 text-center">
+                                            <span className="font-bold text-gray-700">{customer.totalOrders}</span>
+                                        </td>
+                                        <td className="p-4 text-center">
+                                            <span className="font-bold text-gray-700">₹{customer.totalSpent}</span>
+                                        </td>
+                                        <td className="p-4 text-center">
+                                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">
+                                                {customer.loyaltyPoints} pts
+                                            </span>
+                                        </td>
+                                        <td className="p-4 text-right text-sm text-gray-500">
+                                            {new Date(customer.lastVisit).toLocaleDateString()}
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
                                 <tr>
                                     <td colSpan={6} className="p-8 text-center text-gray-400">
                                         No customers found matching your search.

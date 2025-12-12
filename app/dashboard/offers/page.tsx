@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useOffers, Offer } from '../../lib/storage';
+import { useDbOffers, DbOffer } from '../../lib/db-hooks';
 
 export default function OffersPage() {
-    const { offers, saveOffer, deleteOffer } = useOffers();
+    const { offers, loading, saveOffer, deleteOffer } = useDbOffers();
     const [showForm, setShowForm] = useState(false);
-    const [newOffer, setNewOffer] = useState<Partial<Offer>>({
+    const [newOffer, setNewOffer] = useState<Partial<DbOffer>>({
         code: '',
         discount: '',
         type: 'Percentage',
@@ -17,33 +17,37 @@ export default function OffersPage() {
         bgColor: 'from-orange-400 to-red-500'
     });
 
-    const handleCreate = () => {
+    const handleCreate = async () => {
         if (!newOffer.code || !newOffer.discount || !newOffer.expiry) return;
 
-        saveOffer({
-            id: Date.now().toString(),
+        const success = await saveOffer({
             code: newOffer.code.toUpperCase(),
             discount: newOffer.discount,
-            type: newOffer.type as any,
+            type: newOffer.type,
             expiry: newOffer.expiry,
             status: 'Active',
-            usage: 0,
-            description: newOffer.description || '',
+            description: newOffer.description,
             bgColor: newOffer.bgColor
-        } as Offer);
-
-        setShowForm(false);
-        setNewOffer({
-            code: '',
-            discount: '',
-            type: 'Percentage',
-            expiry: '',
-            status: 'Active',
-            usage: 0,
-            description: '',
-            bgColor: 'from-orange-400 to-red-500'
         });
+
+        if (success) {
+            setShowForm(false);
+            setNewOffer({
+                code: '',
+                discount: '',
+                type: 'Percentage',
+                expiry: '',
+                status: 'Active',
+                usage: 0,
+                description: '',
+                bgColor: 'from-orange-400 to-red-500'
+            });
+        } else {
+            alert('Failed to create offer. Code might be duplicate.');
+        }
     };
+
+    if (loading) return <div className="p-8 text-center">Loading offers...</div>;
 
     return (
         <div className="p-4">
@@ -97,7 +101,7 @@ export default function OffersPage() {
                             <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">Expiry Date</label>
                             <input
                                 type="date"
-                                value={newOffer.expiry}
+                                value={newOffer.expiry as string}
                                 onChange={e => setNewOffer({ ...newOffer, expiry: e.target.value })}
                                 className="w-full px-4 py-2 rounded-xl border border-[var(--border-light)] outline-none focus:border-[var(--brand-primary)]"
                             />
@@ -153,7 +157,7 @@ export default function OffersPage() {
                             </div>
                             <div>
                                 <h3 className="font-bold text-xl text-[var(--brand-dark)] tracking-wide">{offer.code}</h3>
-                                <p className="text-sm text-[var(--text-muted)]">{offer.description || `${offer.type} Discount`} • Expires {offer.expiry}</p>
+                                <p className="text-sm text-[var(--text-muted)]">{offer.description || `${offer.type} Discount`} • Expires {offer.expiry as string}</p>
                             </div>
                         </div>
 
@@ -169,7 +173,9 @@ export default function OffersPage() {
                                     {offer.status}
                                 </span>
                                 <button
-                                    onClick={() => deleteOffer(offer.id)}
+                                    onClick={() => {
+                                        if (confirm('Delete this offer?')) deleteOffer(offer.id);
+                                    }}
                                     className="p-2 hover:bg-red-50 rounded-lg text-red-500 transition-colors"
                                     title="Delete Offer"
                                 >

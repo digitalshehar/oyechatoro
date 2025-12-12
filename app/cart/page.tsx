@@ -4,14 +4,15 @@ import React, { useState, useEffect } from 'react';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useCart, useOffers, createOrder, useAuth } from '../lib/storage';
-import { MENU_ITEMS } from '../lib/data';
+import { useOffers } from '../lib/storage';
+import { useDbCustomer, useDbMenu, useDbCart } from '../lib/db-hooks';
 import MobileNav from '../components/MobileNav';
 
 export default function CartPage() {
-    const { cart, updateQuantity, removeFromCart, clearCart, addToCart } = useCart();
+    const { cart, updateQuantity, removeFromCart, clearCart, addToCart } = useDbCart();
     const { offers } = useOffers();
-    const { user } = useAuth();
+    const { user } = useDbCustomer();
+    const { items: dbItems } = useDbMenu();
 
     const [couponCode, setCouponCode] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
@@ -35,8 +36,8 @@ export default function CartPage() {
     const grandTotal = itemTotal + tax + deliveryCharge - discountAmount;
 
     // Upsell Logic: Items not in cart, prioritized by price (low to high)
-    const upsellItems = MENU_ITEMS
-        .filter(item => !cart.find(c => c.name === item.name))
+    const upsellItems = dbItems
+        .filter(item => !cart.find(c => c.name === item.name) && item.status === 'Active')
         .sort((a, b) => a.price - b.price)
         .slice(0, 5);
 
@@ -51,17 +52,30 @@ export default function CartPage() {
         }
     };
 
-    const handleCheckout = () => {
+    const handleCheckout = async () => {
         if (cart.length === 0) return;
 
-        // 1. Create Order
-        createOrder({
-            customer: user ? user.name : 'Guest',
-            items: cart.map(i => `${i.name} (${i.quantity})`),
-            total: grandTotal,
-            type: 'Delivery',
-            userId: user?.id
-        });
+        // 1. Submit to API so it appears in Dashboard
+        try {
+            const orderData = {
+                customer: user ? user.name : 'Website Guest',
+                items: cart.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
+                total: grandTotal,
+                type: 'Delivery',
+                paymentMethod: 'Cash',
+                paymentStatus: 'Unpaid',
+                status: 'Pending'
+            };
+
+            await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+            console.log('✅ Order submitted to dashboard');
+        } catch (e) {
+            console.error('Failed to submit order:', e);
+        }
 
         // 2. WhatsApp
         let message = `New Order from Website:\n\n`;
@@ -169,7 +183,7 @@ export default function CartPage() {
                                         />
                                     )}
                                     <button
-                                        onClick={() => addToCart({ name: item.name, price: item.price, quantity: 1, image: item.image })}
+                                        onClick={() => addToCart({ menuItemId: item.id, quantity: 1 })}
                                         className="absolute bottom-2 right-2 bg-white text-green-600 px-3 py-1 rounded-lg text-xs font-bold shadow-md"
                                     >
                                         ADD

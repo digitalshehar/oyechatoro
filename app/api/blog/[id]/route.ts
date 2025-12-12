@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
+import { auth } from '@/auth';
+import { logAudit } from '@/app/lib/audit';
 
-// GET single post by id or slug
+// GET single post by id or slug - PUBLIC
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -37,12 +39,17 @@ export async function GET(
     }
 }
 
-// PATCH update post
+// PATCH update post - Protected
 export async function PATCH(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const session = await auth();
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { id } = await params;
         const body = await request.json();
 
@@ -51,6 +58,8 @@ export async function PATCH(
             data: body,
         });
 
+        await logAudit('UPDATE_POST', 'BlogPost', post.id, { title: post.title });
+
         return NextResponse.json(post);
     } catch (error) {
         console.error('Error updating post:', error);
@@ -58,16 +67,23 @@ export async function PATCH(
     }
 }
 
-// DELETE post
+// DELETE post - Protected
 export async function DELETE(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const session = await auth();
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { id } = await params;
-        await prisma.blogPost.delete({
+        const post = await prisma.blogPost.delete({
             where: { id },
         });
+
+        await logAudit('DELETE_POST', 'BlogPost', id, { title: post.title });
 
         return NextResponse.json({ success: true });
     } catch (error) {

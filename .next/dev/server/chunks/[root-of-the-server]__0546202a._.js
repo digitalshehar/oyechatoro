@@ -131,33 +131,55 @@ module.exports = mod;
 __turbopack_context__.s([
     "default",
     ()=>__TURBOPACK__default__export__,
+    "getPrisma",
+    ()=>getPrisma,
     "prisma",
     ()=>prisma
 ]);
 var __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/@prisma/client [external] (@prisma/client, cjs)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$prisma$2f$adapter$2d$neon$2f$dist$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@prisma/adapter-neon/dist/index.mjs [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$neondatabase$2f$serverless$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@neondatabase/serverless/index.mjs [app-route] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$ws$2f$wrapper$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/ws/wrapper.mjs [app-route] (ecmascript) <locals>");
 ;
 ;
 ;
-;
-// Configure WebSocket for Node.js environment
-__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$neondatabase$2f$serverless$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["neonConfig"].webSocketConstructor = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$ws$2f$wrapper$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__$3c$locals$3e$__["default"];
-// Connection string from environment
-const connectionString = process.env.DATABASE_URL;
-// Create adapter with connection string
-const adapter = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$prisma$2f$adapter$2d$neon$2f$dist$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["PrismaNeon"]({
-    connectionString
-});
 // Prisma Client singleton for Next.js
 const globalForPrisma = globalThis;
-const prisma = globalForPrisma.prisma ?? new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]({
-    adapter
-});
-if ("TURBOPACK compile-time truthy", 1) {
-    globalForPrisma.prisma = prisma;
+// Lazy initialization function
+function createPrismaClient() {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+        throw new Error('DATABASE_URL environment variable is not set');
+    }
+    // Only configure WebSocket in Node.js environment (not edge/browser)
+    if ("TURBOPACK compile-time truthy", 1) {
+        // Dynamic import ws only on server
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const ws = __turbopack_context__.r("[project]/node_modules/ws/index.js [app-route] (ecmascript)");
+            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$neondatabase$2f$serverless$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["neonConfig"].webSocketConstructor = ws;
+        } catch  {
+            // In edge runtime, ws is not available - use fetch instead
+            __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$neondatabase$2f$serverless$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["neonConfig"].poolQueryViaFetch = true;
+        }
+    }
+    const adapter = new __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$prisma$2f$adapter$2d$neon$2f$dist$2f$index$2e$mjs__$5b$app$2d$route$5d$__$28$ecmascript$29$__["PrismaNeon"]({
+        connectionString
+    });
+    return new __TURBOPACK__imported__module__$5b$externals$5d2f40$prisma$2f$client__$5b$external$5d$__$2840$prisma$2f$client$2c$__cjs$29$__["PrismaClient"]({
+        adapter
+    });
 }
+function getPrisma() {
+    if (!globalForPrisma.prisma) {
+        globalForPrisma.prisma = createPrismaClient();
+    }
+    return globalForPrisma.prisma;
+}
+const prisma = new Proxy({}, {
+    get (_target, prop) {
+        return getPrisma()[prop];
+    }
+});
 const __TURBOPACK__default__export__ = prisma;
 }),
 "[project]/app/api/customers/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {

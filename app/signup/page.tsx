@@ -3,26 +3,38 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../lib/storage';
+
 
 export default function SignupPage() {
     const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' });
     const [error, setError] = useState('');
-    const { register } = useAuth();
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
+
         try {
-            register(form);
-            // Auto login after signup (optional, or redirect to login)
-            // For now, just redirect to login with a message or directly to profile if we auto-login logic was there.
-            // But register doesn't auto-login in our storage logic yet.
-            // Let's redirect to login.
-            router.push('/login');
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(form)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Registration failed');
+            }
+
+            // Redirect to login
+            router.push('/login?message=Account created! Please login.');
         } catch (err: any) {
             setError(err.message);
+        } finally {
+            setLoading(false);
         }
     };
 

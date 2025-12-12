@@ -34,8 +34,8 @@ const Footer = memo(function Footer({ year }: FooterProps) {
                     <div>
                         <h4 className="font-bold text-gray-900 mb-6">Connect</h4>
                         <ul className="space-y-4">
-                            <li><a href="https://instagram.com/oyechatoro" target="_blank" className="text-gray-500 hover:text-pink-600 transition-colors flex items-center gap-2">📸 Instagram</a></li>
-                            <li><a href="https://facebook.com/oyechatoro" target="_blank" className="text-gray-500 hover:text-blue-600 transition-colors flex items-center gap-2">👥 Facebook</a></li>
+                            <li><a href="https://www.instagram.com/oyechatoro_/" target="_blank" className="text-gray-500 hover:text-pink-600 transition-colors flex items-center gap-2">📸 Instagram</a></li>
+
                             <li><a href="https://share.google/i1ls8jxzjEOxQ5gd8" target="_blank" className="text-gray-500 hover:text-green-600 transition-colors flex items-center gap-2">🗺️ Google Maps</a></li>
                         </ul>
                     </div>

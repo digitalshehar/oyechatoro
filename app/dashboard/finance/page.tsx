@@ -1,98 +1,86 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { getOrders, Order } from '../../lib/storage';
+import { useDbFinance, Expense } from '../../lib/db-hooks';
+import { Order } from '../../lib/db-hooks';
 
-interface Expense {
-    id: string;
-    date: string;
-    category: string;
-    description: string;
-    amount: number;
-}
-
-interface DaySummary {
-    date: string;
-    totalSales: number;
-    cashSales: number;
-    onlineSales: number;
-    totalOrders: number;
-    expenses: number;
-    netCash: number;
-    isClosed: boolean;
-}
-
-const EXPENSES_KEY = 'oye_chatoro_expenses';
-const DAY_CLOSING_KEY = 'oye_chatoro_day_closing';
+const API_BASE = '/api';
 
 export default function FinancePage() {
     const [activeTab, setActiveTab] = useState<'closing' | 'expenses' | 'gst'>('closing');
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [expenses, setExpenses] = useState<Expense[]>([]);
-    const [closedDays, setClosedDays] = useState<string[]>([]);
-    const [newExpense, setNewExpense] = useState({ category: 'Ingredients', description: '', amount: '' });
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 
+    // Hooks
+    const { expenses, loading: loadingExpenses, addExpense, deleteExpense } = useDbFinance(selectedDate);
+
+    // Local state for orders
+    const [dailyOrders, setDailyOrders] = useState<Order[]>([]);
+    const [loadingOrders, setLoadingOrders] = useState(true);
+
+    const [newExpense, setNewExpense] = useState({ category: 'Ingredients', description: '', amount: '' });
+
+    // Fetch orders for selected date
     useEffect(() => {
-        setOrders(getOrders());
-        const storedExpenses = localStorage.getItem(EXPENSES_KEY);
-        if (storedExpenses) setExpenses(JSON.parse(storedExpenses));
-        const storedClosing = localStorage.getItem(DAY_CLOSING_KEY);
-        if (storedClosing) setClosedDays(JSON.parse(storedClosing));
+        const fetchDailyOrders = async () => {
+            setLoadingOrders(true);
+            try {
+                // Create start/end for the selected date in local time (or just full day UTC coverage)
+                // Using simple string matching or exact bounds often tricky with timezones.
+                // Let's assume server handles UTC comparison correctly if we send ISO.
+                const start = new Date(selectedDate);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(selectedDate);
+                end.setHours(23, 59, 59, 999);
 
-        const handleUpdate = () => setOrders(getOrders());
-        window.addEventListener('ordersUpdated', handleUpdate);
-        return () => window.removeEventListener('ordersUpdated', handleUpdate);
-    }, []);
+                const res = await fetch(`${API_BASE}/orders?start=${start.toISOString()}&end=${end.toISOString()}`, { cache: 'no-store' });
+                if (res.ok) {
+                    const json = await res.json();
+                    setDailyOrders(json);
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setLoadingOrders(false);
+            }
+        };
+        fetchDailyOrders();
+    }, [selectedDate]);
 
-    // Get today's data
-    const today = new Date().toISOString().split('T')[0];
-    const todayOrders = orders.filter(o => {
-        const orderDate = new Date(o.createdAt || Date.now()).toISOString().split('T')[0];
-        return orderDate === selectedDate && o.status !== 'Cancelled';
-    });
-
+    // Calculations
+    const todayOrders = dailyOrders.filter(o => o.status !== 'Cancelled');
     const todaySales = todayOrders.reduce((sum, o) => sum + o.total, 0);
     const todayCash = todayOrders.filter(o => o.paymentMethod === 'Cash' && o.paymentStatus === 'Paid').reduce((sum, o) => sum + o.total, 0);
     const todayOnline = todayOrders.filter(o => o.paymentMethod !== 'Cash' && o.paymentStatus === 'Paid').reduce((sum, o) => sum + o.total, 0);
-    const todayExpenses = expenses.filter(e => e.date === selectedDate).reduce((sum, e) => sum + e.amount, 0);
-    const netCash = todayCash - todayExpenses;
+    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const netCash = todayCash - totalExpenses;
 
-    // GST Calculations (5% GST for restaurants)
+    // GST Calculations (5% GST)
     const gstRate = 0.05;
     const gstAmount = Math.round(todaySales * gstRate / (1 + gstRate));
     const baseAmount = todaySales - gstAmount;
 
-    const addExpense = () => {
+    const handleAddExpense = async () => {
         if (!newExpense.description || !newExpense.amount) return;
-        const expense: Expense = {
-            id: `exp_${Date.now()}`,
+        const success = await addExpense({
             date: selectedDate,
             category: newExpense.category,
             description: newExpense.description,
             amount: parseFloat(newExpense.amount)
-        };
-        const updated = [expense, ...expenses];
-        setExpenses(updated);
-        localStorage.setItem(EXPENSES_KEY, JSON.stringify(updated));
-        setNewExpense({ category: 'Ingredients', description: '', amount: '' });
+        });
+        if (success) {
+            setNewExpense({ category: 'Ingredients', description: '', amount: '' });
+        }
     };
 
-    const deleteExpense = (id: string) => {
-        const updated = expenses.filter(e => e.id !== id);
-        setExpenses(updated);
-        localStorage.setItem(EXPENSES_KEY, JSON.stringify(updated));
+    const handleDeleteExpense = async (id: string) => {
+        if (confirm('Delete this expense?')) {
+            await deleteExpense(id);
+        }
     };
 
-    const closeDay = () => {
-        if (closedDays.includes(selectedDate)) return;
-        const updated = [...closedDays, selectedDate];
-        setClosedDays(updated);
-        localStorage.setItem(DAY_CLOSING_KEY, JSON.stringify(updated));
-        alert(`Day closed for ${selectedDate}!\n\nTotal Sales: ₹${todaySales}\nCash: ₹${todayCash}\nOnline: ₹${todayOnline}\nExpenses: ₹${todayExpenses}\nNet Cash: ₹${netCash}`);
-    };
-
-    const isDayClosed = closedDays.includes(selectedDate);
+    if (loadingOrders || loadingExpenses) {
+        return <div className="p-8 text-center text-gray-400">Loading finance data...</div>;
+    }
 
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto">
@@ -120,8 +108,8 @@ export default function FinancePage() {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
                         className={`px-6 py-3 rounded-xl font-medium transition-all whitespace-nowrap ${activeTab === tab.id
-                                ? 'bg-[var(--brand-dark)] text-white'
-                                : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                            ? 'bg-[var(--brand-dark)] text-white'
+                            : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
                             }`}
                     >
                         {tab.label}
@@ -130,7 +118,7 @@ export default function FinancePage() {
             </div>
 
             {activeTab === 'closing' && (
-                <div className="space-y-6">
+                <div className="space-y-6 animate-in">
                     {/* Summary Cards */}
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div className="glass-card p-4 rounded-xl bg-blue-50 border border-blue-100">
@@ -148,7 +136,7 @@ export default function FinancePage() {
                         </div>
                         <div className="glass-card p-4 rounded-xl bg-red-50 border border-red-100">
                             <div className="text-xs text-red-600 mb-1">💸 Expenses</div>
-                            <div className="text-2xl font-bold text-red-700">₹{todayExpenses}</div>
+                            <div className="text-2xl font-bold text-red-700">₹{totalExpenses}</div>
                         </div>
                         <div className="glass-card p-4 rounded-xl bg-yellow-50 border border-yellow-100">
                             <div className="text-xs text-yellow-600 mb-1">🏦 Net Cash</div>
@@ -156,31 +144,42 @@ export default function FinancePage() {
                         </div>
                     </div>
 
-                    {/* Close Day Button */}
+                    {/* Report Generation */}
                     <div className="glass-card p-6 rounded-xl">
-                        <h3 className="font-bold text-lg mb-4">Day Closing</h3>
-                        {isDayClosed ? (
-                            <div className="bg-green-100 text-green-800 p-4 rounded-xl flex items-center gap-3">
-                                <span className="text-2xl">✅</span>
-                                <span className="font-medium">Day already closed for {selectedDate}</span>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
-                                <p className="text-gray-600">Close the day to finalize all transactions for {selectedDate}.</p>
-                                <button
-                                    onClick={closeDay}
-                                    className="px-6 py-3 bg-[var(--brand-primary)] text-white rounded-xl font-bold hover:bg-orange-600 transition-colors"
-                                >
-                                    🔒 Close Day
-                                </button>
-                            </div>
-                        )}
+                        <h3 className="font-bold text-lg mb-4">Day Closing Report</h3>
+                        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                            <p className="text-gray-600">Generate a report text file for {selectedDate}.</p>
+                            <button
+                                onClick={() => {
+                                    const report = `Day Closing Report - ${selectedDate}
+--------------------------------
+Total Sales:    ₹${todaySales}
+Orders Count:   ${todayOrders.length}
+--------------------------------
+Cash Sales:     ₹${todayCash}
+Online Sales:   ₹${todayOnline}
+Total Expenses: ₹${totalExpenses}
+--------------------------------
+NET CASH IN HAND: ₹${netCash}
+--------------------------------`;
+                                    const blob = new Blob([report], { type: 'text/plain' });
+                                    const url = URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `closing_report_${selectedDate}.txt`;
+                                    a.click();
+                                }}
+                                className="px-6 py-3 bg-[var(--brand-primary)] text-white rounded-xl font-bold hover:bg-orange-600 transition-colors"
+                            >
+                                🔒 Generate Report
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
 
             {activeTab === 'expenses' && (
-                <div className="space-y-6">
+                <div className="space-y-6 animate-in">
                     {/* Add Expense Form */}
                     <div className="glass-card p-6 rounded-xl">
                         <h3 className="font-bold text-lg mb-4">Add Expense</h3>
@@ -212,7 +211,7 @@ export default function FinancePage() {
                                 className="px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]"
                             />
                             <button
-                                onClick={addExpense}
+                                onClick={handleAddExpense}
                                 className="px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors"
                             >
                                 + Add Expense
@@ -224,13 +223,13 @@ export default function FinancePage() {
                     <div className="glass-card rounded-xl overflow-hidden">
                         <div className="p-4 border-b border-gray-100 flex justify-between items-center">
                             <h3 className="font-bold">Expenses for {selectedDate}</h3>
-                            <span className="text-red-600 font-bold">Total: ₹{todayExpenses}</span>
+                            <span className="text-red-600 font-bold">Total: ₹{totalExpenses}</span>
                         </div>
                         <div className="divide-y divide-gray-100">
-                            {expenses.filter(e => e.date === selectedDate).length === 0 ? (
+                            {expenses.length === 0 ? (
                                 <div className="p-8 text-center text-gray-400">No expenses for this day</div>
                             ) : (
-                                expenses.filter(e => e.date === selectedDate).map(exp => (
+                                expenses.map(exp => (
                                     <div key={exp.id} className="p-4 flex justify-between items-center hover:bg-gray-50">
                                         <div>
                                             <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded mr-2">{exp.category}</span>
@@ -238,7 +237,7 @@ export default function FinancePage() {
                                         </div>
                                         <div className="flex items-center gap-4">
                                             <span className="font-bold text-red-600">₹{exp.amount}</span>
-                                            <button onClick={() => deleteExpense(exp.id)} className="text-gray-400 hover:text-red-500">🗑️</button>
+                                            <button onClick={() => handleDeleteExpense(exp.id)} className="text-gray-400 hover:text-red-500">🗑️</button>
                                         </div>
                                     </div>
                                 ))
@@ -249,7 +248,7 @@ export default function FinancePage() {
             )}
 
             {activeTab === 'gst' && (
-                <div className="space-y-6">
+                <div className="space-y-6 animate-in">
                     {/* GST Summary */}
                     <div className="glass-card p-6 rounded-xl">
                         <h3 className="font-bold text-lg mb-4">GST Summary for {selectedDate}</h3>

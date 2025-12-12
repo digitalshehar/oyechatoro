@@ -1,8 +1,0 @@
-User-Agent: *
-Allow: /
-Disallow: /dashboard/
-Disallow: /api/
-Disallow: /chef/
-Disallow: /admin/
-
-Sitemap: https://oyechatoro.com/sitemap.xml

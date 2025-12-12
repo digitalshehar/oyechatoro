@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
+import { auth } from '@/auth';
+import { logAudit } from '@/app/lib/audit';
 
-// GET all customers
+// GET all customers - Protected
 export async function GET(request: NextRequest) {
     try {
+        const session = await auth();
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { searchParams } = new URL(request.url);
         const search = searchParams.get('search');
         const limit = parseInt(searchParams.get('limit') || '100');
@@ -26,9 +33,14 @@ export async function GET(request: NextRequest) {
     }
 }
 
-// POST create/update customer
+// POST create/update customer - Protected
 export async function POST(request: NextRequest) {
     try {
+        const session = await auth();
+        if (!session) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const body = await request.json();
 
         // Upsert - create or update based on phone
@@ -51,6 +63,8 @@ export async function POST(request: NextRequest) {
                 loyaltyPoints: Math.floor((body.orderTotal || 0) / 100),
             },
         });
+
+        await logAudit('UPDATE_CUSTOMER', 'Customer', customer.id, { name: customer.name, phone: customer.phone });
 
         return NextResponse.json(customer, { status: 201 });
     } catch (error) {

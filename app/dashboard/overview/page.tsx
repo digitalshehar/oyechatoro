@@ -1,27 +1,47 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useOrders, useMenu, getDailyStats } from '../../lib/storage';
+import React, { useMemo } from 'react';
+import { useDbOrders, useDbMenu, useDbCustomers } from '../../lib/db-hooks';
 import Link from 'next/link';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 export default function OverviewPage() {
-    const { orders } = useOrders();
-    const { items } = useMenu();
-    const [dailyStats, setDailyStats] = useState(getDailyStats());
+    const { orders, loading: ordersLoading } = useDbOrders();
+    const { items, loading: menuLoading } = useDbMenu();
+    const { customers, loading: customersLoading } = useDbCustomers();
 
-    useEffect(() => {
-        setDailyStats(getDailyStats());
-        const updateStats = () => setDailyStats(getDailyStats());
-        window.addEventListener('ordersUpdated', updateStats);
-        window.addEventListener('storage', updateStats);
-        return () => {
-            window.removeEventListener('ordersUpdated', updateStats);
-            window.removeEventListener('storage', updateStats);
-        };
-    }, []);
+    const loading = ordersLoading || menuLoading || customersLoading;
+
+    // Calculate Daily Stats Dynamically from Live Orders
+    const dailyStats = useMemo(() => {
+        const today = new Date().toISOString().split('T')[0];
+
+        // Filter orders created today
+        const todayOrders = orders.filter(o =>
+            new Date(o.createdAt).toISOString().split('T')[0] === today &&
+            o.status !== 'Cancelled'
+        );
+
+        const totalSales = todayOrders.reduce((acc, o) => acc + Number(o.total), 0);
+        const totalOrders = todayOrders.length;
+
+        const cashSales = todayOrders
+            .filter(o => o.paymentMethod === 'Cash')
+            .reduce((acc, o) => acc + Number(o.total), 0);
+
+        const onlineSales = todayOrders
+            .filter(o => o.paymentMethod === 'UPI' || o.paymentMethod === 'Online' || o.paymentMethod === 'Card')
+            .reduce((acc, o) => acc + Number(o.total), 0);
+
+        return { totalSales, totalOrders, cashSales, onlineSales };
+    }, [orders]);
 
     const activeMenuItems = items.filter(i => i.status === 'Active').length;
-    const outOfStockItems = items.filter(i => i.status === 'Out of Stock');
+    const outOfStockItems = items.filter(i => i.status === 'OutOfStock');
+
+    if (loading && orders.length === 0) {
+        return <div className="p-8 flex justify-center"><LoadingSpinner /></div>;
+    }
 
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto">
@@ -30,20 +50,22 @@ export default function OverviewPage() {
             {/* 1. 📅 Today's Stats Section */}
             <div className="mb-8 animate-in">
                 <h2 className="text-xl font-bold text-gray-700 mb-4 flex items-center gap-2">
-                    📅 Today's Performance <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Live Updates</span>
+                    📅 Today's Performance <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Live Database</span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="glass-card p-6 rounded-2xl bg-gradient-to-br from-green-50 to-white border-green-100">
                         <div className="text-green-800 text-sm mb-1 font-bold uppercase tracking-wider">Today's Revenue</div>
-                        <div className="text-4xl font-bold text-green-700">₹{dailyStats.totalSales}</div>
+                        <div className="text-4xl font-bold text-green-700">₹{dailyStats.totalSales.toLocaleString()}</div>
                         <div className="text-green-600 text-xs mt-2 font-medium">
-                            Cash: ₹{dailyStats.cashSales} • Online: ₹{dailyStats.onlineSales}
+                            Cash: ₹{dailyStats.cashSales.toLocaleString()} • Online: ₹{dailyStats.onlineSales.toLocaleString()}
                         </div>
                     </div>
                     <div className="glass-card p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-white border-blue-100">
                         <div className="text-blue-800 text-sm mb-1 font-bold uppercase tracking-wider">Today's Orders</div>
                         <div className="text-4xl font-bold text-blue-700">{dailyStats.totalOrders}</div>
-                        <div className="text-blue-600 text-xs mt-2 font-medium">Avg. Ticket: ₹{dailyStats.totalOrders > 0 ? Math.round(dailyStats.totalSales / dailyStats.totalOrders) : 0}</div>
+                        <div className="text-blue-600 text-xs mt-2 font-medium">
+                            Avg. Ticket: ₹{dailyStats.totalOrders > 0 ? Math.round(dailyStats.totalSales / dailyStats.totalOrders) : 0}
+                        </div>
                     </div>
                     <div className="glass-card p-6 rounded-2xl bg-gradient-to-br from-yellow-50 to-white border-yellow-100">
                         <div className="text-yellow-800 text-sm mb-1 font-bold uppercase tracking-wider">Pending Now</div>
@@ -75,9 +97,9 @@ export default function OverviewPage() {
                     </div>
                 </div>
 
-                {/* Widget 2: Revenue Trend (Mock Graph) */}
+                {/* Widget 2: Revenue Trend (Mock Graph - To be connected to analytics API) */}
                 <div className="glass-card p-6 rounded-2xl animate-in" style={{ animationDelay: '0.2s' }}>
-                    <h3 className="font-bold text-[var(--brand-dark)] mb-4 flex items-center gap-2">📉 Revenue Trend <span className="text-xs text-gray-400 font-normal ml-auto">Last 7 Days</span></h3>
+                    <h3 className="font-bold text-[var(--brand-dark)] mb-4 flex items-center gap-2">📉 Revenue Trend <span className="text-xs text-gray-400 font-normal ml-auto">Last 7 Days (Demo)</span></h3>
                     <div className="flex items-end justify-between h-32 gap-2">
                         {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
                             <div key={i} className="w-full bg-blue-100 rounded-t-lg relative group hover:bg-blue-200 transition-colors" style={{ height: `${h}%` }}>
@@ -120,19 +142,23 @@ export default function OverviewPage() {
                     <h3 className="font-bold text-[var(--brand-dark)] mb-4 flex items-center gap-2">👥 Customer Insights</h3>
                     <div className="flex items-center gap-6">
                         <div className="relative w-24 h-24 rounded-full border-8 border-blue-100 flex items-center justify-center">
-                            <span className="text-xl font-bold text-blue-600">85%</span>
+                            <span className="text-xl font-bold text-blue-600">
+                                {customers.length > 0 ? 'Active' : '0%'}
+                            </span>
                             <svg className="absolute top-0 left-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
                                 <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="8" className="text-blue-500" strokeDasharray="289" strokeDashoffset="43" />
                             </svg>
                         </div>
                         <div>
                             <div className="mb-2">
-                                <div className="text-xs text-gray-400 uppercase font-bold">Returning</div>
-                                <div className="text-lg font-bold text-gray-800">124 Users</div>
+                                <div className="text-xs text-gray-400 uppercase font-bold">Total Customers</div>
+                                <div className="text-lg font-bold text-gray-800">{customers.length} Users</div>
                             </div>
                             <div>
-                                <div className="text-xs text-gray-400 uppercase font-bold">New</div>
-                                <div className="text-lg font-bold text-gray-800">28 Users</div>
+                                <div className="text-xs text-gray-400 uppercase font-bold">Returning</div>
+                                <div className="text-lg font-bold text-gray-800">
+                                    {customers.filter(c => c.totalOrders > 1).length} Users
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -148,17 +174,17 @@ export default function OverviewPage() {
                         {orders.slice(0, 5).map(order => (
                             <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-white hover:shadow-sm transition-all">
                                 <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${order.type === 'Dine-in' ? 'bg-orange-100 text-orange-600' :
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${order.type === 'DineIn' ? 'bg-orange-100 text-orange-600' :
                                         order.type === 'Takeaway' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
                                         }`}>
-                                        {order.type === 'Dine-in' ? '🍽️' : order.type === 'Takeaway' ? '🛍️' : '🛵'}
+                                        {order.type === 'DineIn' ? '🍽️' : order.type === 'Takeaway' ? '🛍️' : '🛵'}
                                     </div>
                                     <div>
                                         <div className="font-bold text-sm text-gray-800">
                                             {order.customer} <span className="text-xs font-normal text-gray-500">#{order.id}</span>
                                         </div>
                                         <div className="text-xs text-gray-500">
-                                            {order.items.length} items • {order.type} • {order.time}
+                                            {order.items.length} items • {order.type} • {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </div>
                                     </div>
                                 </div>
@@ -183,3 +209,4 @@ export default function OverviewPage() {
         </div>
     );
 }
+

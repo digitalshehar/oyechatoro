@@ -1,62 +1,37 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useSettings, exportData, importData } from '../../lib/storage';
+import React, { useState, useEffect } from 'react';
+import { useDbSettings } from '../../lib/db-hooks';
 
 export default function SettingsPage() {
-    const { settings, updateSettings } = useSettings();
-    const [activeTab, setActiveTab] = useState<'general' | 'operations' | 'receipts' | 'data'>('general');
-    const [formData, setFormData] = useState(settings);
+    const { settings, loading, updateSettings } = useDbSettings();
+    const [activeTab, setActiveTab] = useState<'general' | 'operations' | 'receipts'>('general');
+    const [formData, setFormData] = useState<any>(null);
     const [isSaved, setIsSaved] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        setFormData(settings);
+        if (settings) {
+            setFormData(settings);
+        }
     }, [settings]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        updateSettings(formData);
-        setIsSaved(true);
-        setTimeout(() => setIsSaved(false), 3000);
+        const success = await updateSettings(formData);
+        if (success) {
+            setIsSaved(true);
+            setTimeout(() => setIsSaved(false), 3000);
+        }
     };
 
-    const handleExport = () => {
-        const data = exportData();
-        if (!data) return;
-        const blob = new Blob([data], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `oye_chatoro_backup_${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const content = event.target?.result as string;
-            const result = importData(content);
-            if (result.success) {
-                alert('✅ Data restored successfully! The page will reload.');
-                window.location.reload();
-            } else {
-                alert('❌ Restore failed: ' + result.error);
-            }
-        };
-        reader.readAsText(file);
-    };
+    if (loading || !formData) {
+        return <div className="p-8 text-center text-gray-500">Loading settings...</div>;
+    }
 
     const tabs = [
         { id: 'general', label: 'General', icon: '🏢' },
         { id: 'operations', label: 'Operations', icon: '⏰' },
-        { id: 'receipts', label: 'Receipts', icon: '🧾' },
-        { id: 'data', label: 'Data Management', icon: '💾' },
+        { id: 'receipts', label: 'Receipts', icon: '🧾' }
     ];
 
     return (
@@ -80,8 +55,8 @@ export default function SettingsPage() {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
                         className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 whitespace-nowrap ${activeTab === tab.id
-                                ? 'bg-[var(--brand-primary)] text-white shadow-lg shadow-orange-200'
-                                : 'bg-white text-gray-500 hover:bg-gray-50'
+                            ? 'bg-[var(--brand-primary)] text-white shadow-lg shadow-orange-200'
+                            : 'bg-white text-gray-500 hover:bg-gray-50'
                             }`}
                     >
                         <span>{tab.icon}</span> {tab.label}
@@ -102,7 +77,7 @@ export default function SettingsPage() {
                                     <input
                                         type="text"
                                         className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
-                                        value={formData.name}
+                                        value={formData.name || ''}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                                     />
                                 </div>
@@ -111,7 +86,7 @@ export default function SettingsPage() {
                                     <input
                                         type="text"
                                         className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
-                                        value={formData.phone}
+                                        value={formData.phone || ''}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
                                     />
                                 </div>
@@ -120,7 +95,7 @@ export default function SettingsPage() {
                                     <textarea
                                         className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
                                         rows={2}
-                                        value={formData.address}
+                                        value={formData.address || ''}
                                         onChange={e => setFormData({ ...formData, address: e.target.value })}
                                     />
                                 </div>
@@ -129,7 +104,7 @@ export default function SettingsPage() {
                                     <input
                                         type="email"
                                         className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
-                                        value={formData.email}
+                                        value={formData.email || ''}
                                         onChange={e => setFormData({ ...formData, email: e.target.value })}
                                     />
                                 </div>
@@ -144,7 +119,7 @@ export default function SettingsPage() {
                                     <input
                                         type="text"
                                         className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
-                                        value={formData.currency}
+                                        value={formData.currency || ''}
                                         onChange={e => setFormData({ ...formData, currency: e.target.value })}
                                     />
                                 </div>
@@ -153,7 +128,7 @@ export default function SettingsPage() {
                                     <input
                                         type="number"
                                         className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
-                                        value={formData.taxRate}
+                                        value={formData.taxRate || 0}
                                         onChange={e => setFormData({ ...formData, taxRate: parseFloat(e.target.value) })}
                                     />
                                 </div>
@@ -162,7 +137,7 @@ export default function SettingsPage() {
                                     <input
                                         type="number"
                                         className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
-                                        value={formData.serviceCharge}
+                                        value={formData.serviceCharge || 0}
                                         onChange={e => setFormData({ ...formData, serviceCharge: parseFloat(e.target.value) })}
                                     />
                                 </div>
@@ -176,7 +151,7 @@ export default function SettingsPage() {
                     <div className="glass-card p-6 rounded-2xl">
                         <h2 className="text-xl font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">Store Hours</h2>
                         <div className="space-y-4">
-                            {formData.storeHours && Object.entries(formData.storeHours).map(([day, hours]) => (
+                            {formData.storeHours && Object.entries(formData.storeHours).map(([day, hours]: [string, any]) => (
                                 <div key={day} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
                                     <div className="w-32 font-bold text-gray-700">{day}</div>
                                     <div className="flex-1 flex gap-4 items-center">
@@ -188,7 +163,7 @@ export default function SettingsPage() {
                                             onChange={e => setFormData({
                                                 ...formData,
                                                 storeHours: {
-                                                    ...formData.storeHours!,
+                                                    ...formData.storeHours,
                                                     [day]: { ...hours, open: e.target.value }
                                                 }
                                             })}
@@ -202,7 +177,7 @@ export default function SettingsPage() {
                                             onChange={e => setFormData({
                                                 ...formData,
                                                 storeHours: {
-                                                    ...formData.storeHours!,
+                                                    ...formData.storeHours,
                                                     [day]: { ...hours, close: e.target.value }
                                                 }
                                             })}
@@ -215,7 +190,7 @@ export default function SettingsPage() {
                                             onChange={e => setFormData({
                                                 ...formData,
                                                 storeHours: {
-                                                    ...formData.storeHours!,
+                                                    ...formData.storeHours,
                                                     [day]: { ...hours, closed: e.target.checked }
                                                 }
                                             })}
@@ -241,10 +216,10 @@ export default function SettingsPage() {
                                         className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
                                         rows={3}
                                         placeholder="e.g. Thank you for dining with us!"
-                                        value={formData.receipt?.header}
+                                        value={formData.receipt?.header || ''}
                                         onChange={e => setFormData({
                                             ...formData,
-                                            receipt: { ...formData.receipt!, header: e.target.value }
+                                            receipt: { ...formData.receipt, header: e.target.value }
                                         })}
                                     />
                                 </div>
@@ -254,20 +229,20 @@ export default function SettingsPage() {
                                         className="w-full p-3 rounded-xl border border-gray-200 focus:border-[var(--brand-primary)] outline-none"
                                         rows={3}
                                         placeholder="e.g. Visit us again soon."
-                                        value={formData.receipt?.footer}
+                                        value={formData.receipt?.footer || ''}
                                         onChange={e => setFormData({
                                             ...formData,
-                                            receipt: { ...formData.receipt!, footer: e.target.value }
+                                            receipt: { ...formData.receipt, footer: e.target.value }
                                         })}
                                     />
                                 </div>
                                 <label className="flex items-center gap-2 cursor-pointer p-4 bg-gray-50 rounded-xl">
                                     <input
                                         type="checkbox"
-                                        checked={formData.receipt?.showLogo}
+                                        checked={formData.receipt?.showLogo || false}
                                         onChange={e => setFormData({
                                             ...formData,
-                                            receipt: { ...formData.receipt!, showLogo: e.target.checked }
+                                            receipt: { ...formData.receipt, showLogo: e.target.checked }
                                         })}
                                         className="w-5 h-5 rounded text-[var(--brand-primary)]"
                                     />
@@ -299,56 +274,15 @@ export default function SettingsPage() {
                     </div>
                 )}
 
-                {/* DATA TAB */}
-                {activeTab === 'data' && (
-                    <div className="glass-card p-6 rounded-2xl">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4 border-b border-gray-100 pb-2">Data Management</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="p-6 bg-blue-50 rounded-xl border border-blue-100">
-                                <h3 className="font-bold text-blue-800 mb-2">Backup Data</h3>
-                                <p className="text-sm text-blue-600 mb-4">Download a complete backup of your orders, menu, inventory, and settings.</p>
-                                <button
-                                    type="button"
-                                    onClick={handleExport}
-                                    className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
-                                >
-                                    Download Backup
-                                </button>
-                            </div>
-
-                            <div className="p-6 bg-orange-50 rounded-xl border border-orange-100">
-                                <h3 className="font-bold text-orange-800 mb-2">Restore Data</h3>
-                                <p className="text-sm text-orange-600 mb-4">Restore your system from a previously saved backup file. This will replace current data.</p>
-                                <input
-                                    type="file"
-                                    accept=".json"
-                                    ref={fileInputRef}
-                                    onChange={handleImport}
-                                    className="hidden"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="w-full py-3 bg-orange-600 text-white font-bold rounded-xl hover:bg-orange-700 transition-colors shadow-lg shadow-orange-200"
-                                >
-                                    Select Backup File
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Save Button (Not for Data tab) */}
-                {activeTab !== 'data' && (
-                    <div className="flex justify-end pt-6">
-                        <button
-                            type="submit"
-                            className="px-8 py-3 bg-[var(--brand-primary)] text-white font-bold rounded-xl shadow-lg shadow-orange-200 hover:opacity-90 transition-all transform hover:scale-105"
-                        >
-                            Save Changes
-                        </button>
-                    </div>
-                )}
+                {/* Save Button */}
+                <div className="flex justify-end pt-6">
+                    <button
+                        type="submit"
+                        className="px-8 py-3 bg-[var(--brand-primary)] text-white font-bold rounded-xl shadow-lg shadow-orange-200 hover:opacity-90 transition-all transform hover:scale-105"
+                    >
+                        Save Changes
+                    </button>
+                </div>
             </form>
         </div>
     );
