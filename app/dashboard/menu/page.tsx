@@ -54,14 +54,32 @@ export default function MenuManagerPage() {
     // Handlers
     const handleSaveCategory = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log('Attempting to save category:', catForm);
+
+        if (!catForm.name) {
+            alert('Category name is required');
+            return;
+        }
+
         const newCategory: MenuCategory = {
-            id: `cat_${Date.now()}`, // ID will be ignored by DB create, or used if we add uuid support
+            id: `cat_${Date.now()}`,
             name: catForm.name
         };
 
-        if (saveCategory) await saveCategory(newCategory);
-        setIsCatModalOpen(false);
-        setCatForm({ name: '' });
+        try {
+            if (saveCategory) {
+                await saveCategory(newCategory);
+                console.log('Category saved successfully');
+                setIsCatModalOpen(false);
+                setCatForm({ name: '' });
+            } else {
+                console.error('saveCategory function is missing');
+                alert('Internal Error: Database connection missing');
+            }
+        } catch (error) {
+            console.error('Failed to save category:', error);
+            alert('Failed to save category. Check console.');
+        }
     };
 
     const handleDeleteCategory = async (id: string) => {
@@ -405,7 +423,7 @@ export default function MenuManagerPage() {
                             </div>
                             <div className="flex justify-end gap-3 mt-6">
                                 <button type="button" onClick={() => setIsCatModalOpen(false)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg">Cancel</button>
-                                <button type="submit" className="btn btn-primary">Save Category</button>
+                                <button type="submit" className="px-6 py-2 bg-[var(--brand-primary)] text-white rounded-xl font-bold hover:shadow-lg transition-all">Save Category</button>
                             </div>
                         </form>
                     </div>

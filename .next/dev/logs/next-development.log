@@ -30,3 +30,38 @@ Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
 [01:20:16.360] Browser ERROR   uncaughtError: ReferenceError: BlogImage is not defined
 [01:20:24.008] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
 [01:25:29.759] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:48:10.465] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:48:16.183] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:48:16.615] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[01:48:17.478] Browser WARN    Image with src "/images/menu/burger.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[01:51:03.451] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:09:33.373] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:09:46.230] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:09:46.643] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[02:09:47.900] Browser WARN    Image with src "/images/menu/burger.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[02:13:50.022] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:14:10.350] Browser ERROR   `value` prop on `%s` should not be null. Consider using an empty string to clear the component or `undefined` for uncontrolled components. input
+[02:14:42.096] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:14:43.452] Browser WARN    Image with src "/images/menu/burger.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[02:33:03.205] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:39:12.774] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:40:18.029] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:49:47.980] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:49:56.671] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:55:50.931] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:55:52.802] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:55:53.131] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:55:53.756] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:55:54.064] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:55:54.335] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:56:14.074] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:56:16.947] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:56:17.264] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:56:17.583] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:57:21.058] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
+[02:57:21.496] Browser LOG     Attempting to save category: {"name":"South Indian Dish"}
