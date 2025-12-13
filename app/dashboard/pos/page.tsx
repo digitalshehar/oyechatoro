@@ -334,7 +334,7 @@ export default function POSPage() {
         setCart([]);
         setDiscountValue(0);
         setSelectedCustomer(null);
-        setParcelCharge(false);
+        setCharges({ packing: 0, delivery: 0 });
         setTipAmount(0);
         setOrderNotes('');
         setSelectedStaff('');
@@ -347,7 +347,7 @@ export default function POSPage() {
         setCart([]);
         setDiscountValue(0);
         setSelectedCustomer(null);
-        setParcelCharge(false);
+        setCharges({ packing: 0, delivery: 0 });
         setTipAmount(0);
         setOrderNotes('');
         setSelectedStaff('');
