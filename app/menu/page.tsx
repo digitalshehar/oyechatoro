@@ -92,7 +92,7 @@ export default function MenuPage() {
     };
 
     const handleRemoveFromCart = (item: MenuItem) => {
-        // Find cart item by menuItemId logic if possible, or name
+        // Reading file firstem by menuItemId logic if possible, or name
         const cartItem = cart.find(i => i.name === item.name);
         if (cartItem) {
             updateQuantity(cartItem.id, cartItem.quantity - 1);
