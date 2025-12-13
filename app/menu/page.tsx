@@ -3,6 +3,8 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useDbMenu, MenuItem, useDbSettings as useSettings, addServiceRequest, useDbCart, useDbOffers } from '../lib/db-hooks';
 
 function OffersCarousel() {
