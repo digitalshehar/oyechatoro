@@ -25,10 +25,7 @@ function OffersCarousel() {
                 {activeOffers.map((offer, i) => (
                     <div
                         key={offer.id}
-                        className="flex-shrink-0 w-72 h-32 rounded-xl bg-gradient-to-br text-white relative overflow-hidden shadow-lg snap-center group transition-transform hover:scale-[1.02] cursor-pointer"
-                        style={{
-                            background: `linear-gradient(135deg, ${offer.bgColor?.split(' ')[1].replace('from-', '') || '#f97316'}, ${offer.bgColor?.split(' ')[3].replace('to-', '') || '#ef4444'})`
-                        }}
+                        className={`flex-shrink-0 w-72 h-32 rounded-xl bg-gradient-to-br ${offer.bgColor || 'from-orange-400 to-red-500'} text-white relative overflow-hidden shadow-lg snap-center group transition-transform hover:scale-[1.02] cursor-pointer`}
                         onClick={() => copyToClipboard(offer.code)}
                     >
                         {/* Circles */}
