@@ -64,7 +64,8 @@ export default function MenuManagerPage() {
 
         const newCategory: MenuCategory = {
             id: `cat_${Date.now()}`,
-            name: catForm.name
+            name: catForm.name,
+            order: 0
         };
 
         try {
@@ -113,7 +114,8 @@ export default function MenuManagerPage() {
             isDigitalMenu: itemForm.isDigitalMenu !== false,
             isTrainMenu: itemForm.isTrainMenu || false,
             isFeatured: itemForm.isFeatured || false,
-            costPrice: Number(itemForm.costPrice) || 0
+            costPrice: Number(itemForm.costPrice) || 0,
+            order: 0
         };
 
         if (saveItem) await saveItem(newItem);

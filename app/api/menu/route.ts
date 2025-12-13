@@ -51,7 +51,6 @@ export async function GET(request: NextRequest) {
                 ...(isTrain && { isTrainMenu: true }),
             },
             include: { category: true },
-            include: { category: true },
             orderBy: [
                 { order: 'asc' },
                 { name: 'asc' }
