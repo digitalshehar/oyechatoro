@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useFavorites, useOffers } from './lib/storage';
 import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
 import MobileNav from './components/MobileNav';
+import OffersCarousel from './components/OffersCarousel';
 
 function RecentBlogPosts() {
     const { posts, loading } = useDbBlog();
@@ -445,63 +446,7 @@ export default function Home() {
                             <p className="section-subtitle text-xl text-gray-500">Limited time deals curated just for you</p>
                         </div>
 
-                        {/* Desktop Grid View */}
-                        <div className="hidden md:grid offers-grid grid-cols-3 gap-8">
-                            {activeOffers.map((offer, index) => (
-                                <div key={offer.id} className="offer-card glass-card p-8 rounded-3xl relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border border-white/50" style={{ animationDelay: `${index * 0.1}s` }}>
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-400 to-red-500 opacity-10 rounded-bl-full group-hover:scale-150 transition-transform duration-500"></div>
-                                    <div className="offer-badge bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold inline-block mb-4 shadow-md">{offer.discount} OFF</div>
-                                    <h3 className="offer-title text-3xl font-black mb-2 text-gray-800">{offer.code}</h3>
-                                    <p className="offer-desc text-gray-600 mb-6">{offer.description || 'Special discount'}</p>
-                                    <div className="offer-footer flex justify-between items-center border-t pt-4 border-gray-100">
-                                        <span className="offer-validity text-xs font-bold text-gray-400">Valid: {offer.expiry}</span>
-                                        <a href="https://wa.me/919509913792" className="btn btn-sm btn-primary rounded-xl px-4 py-2 text-sm shadow-lg shadow-orange-100">Claim Now →</a>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Mobile Story-Style View */}
-                        <div className="md:hidden overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-8 no-scrollbar">
-                            <div className="flex gap-4 w-max">
-                                {activeOffers.map((offer, index) => (
-                                    <div
-                                        key={offer.id}
-                                        className={`snap-center flex-shrink-0 w-[280px] h-[400px] rounded-3xl p-8 flex flex-col justify-between text-white shadow-2xl relative overflow-hidden bg-gradient-to-br ${offer.bgColor || 'from-orange-500 to-red-600'}`}
-                                        style={{ animationDelay: `${index * 0.1}s` }}
-                                    >
-                                        {/* Decorative circles */}
-                                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
-                                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-
-                                        <div className="relative z-10">
-                                            <div className="inline-block bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold mb-6 border border-white/20">
-                                                🔥 TRENDING
-                                            </div>
-                                            <div className="text-6xl font-black mb-4 drop-shadow-lg tracking-tighter">{offer.discount}</div>
-                                            <h3 className="text-3xl font-bold mb-2 leading-tight">{offer.code}</h3>
-                                            <p className="text-white/90 text-sm leading-relaxed font-medium">{offer.description || 'Special discount just for you!'}</p>
-                                        </div>
-
-                                        <div className="relative z-10">
-                                            <a
-                                                href="https://wa.me/919509913792"
-                                                className="block w-full bg-white text-gray-900 text-center font-bold py-4 rounded-2xl shadow-xl hover:scale-105 transition-transform active:scale-95"
-                                            >
-                                                Order Now 🚀
-                                            </a>
-                                            <p className="text-white/60 text-xs mt-4 text-center font-medium">Valid until {offer.expiry}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {activeOffers.length === 0 && (
-                            <div className="text-center py-12 text-gray-400 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                                <p className="text-lg font-medium">No active offers right now. Check back soon! 🎁</p>
-                            </div>
-                        )}
+                        <OffersCarousel theme="light" />
                     </div>
                 </section>
 
