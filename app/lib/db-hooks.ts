@@ -18,6 +18,8 @@ export interface Order {
     paymentStatus: 'Paid' | 'Unpaid';
     paymentMethod?: 'Cash' | 'UPI' | 'Card' | 'Online';
     discount?: any;
+    discountAmount?: number;
+    discountCode?: string;
     tip?: number;
     waiterName?: string;
     waiterCalled: boolean;
