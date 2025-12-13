@@ -76,8 +76,7 @@ export default function POSPage() {
     const [quickKeyItems, setQuickKeyItems] = useState<string[]>([]);
 
     // NEW: Enhanced Features State
-    const [parcelCharge, setParcelCharge] = useState(false);
-    const [parcelChargeAmount, setParcelChargeAmount] = useState(20); // NEW: Editable Charge
+    const [charges, setCharges] = useState({ packing: 0, delivery: 0 });
     const [tipAmount, setTipAmount] = useState(0);
     const [orderNotes, setOrderNotes] = useState('');
     const [selectedStaff, setSelectedStaff] = useState('');
@@ -370,8 +369,7 @@ export default function POSPage() {
     const discountAmount = discountType === 'percent'
         ? Math.round(subtotal * discountValue / 100)
         : discountValue;
-    const parcelAmount = parcelCharge && orderType !== 'Dine In' ? parcelChargeAmount : 0;
-    const taxableAmount = subtotal - discountAmount + parcelAmount;
+    const taxableAmount = subtotal - discountAmount + charges.packing + charges.delivery;
     const taxAmount = Math.round(taxableAmount * 0.05);
     const cartTotal = taxableAmount + taxAmount + tipAmount;
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -904,147 +902,210 @@ export default function POSPage() {
                     {/* Right Side - Cart */}
                     <div className={`w-full md:w-[400px] bg-white border-l flex flex-col ${activeTab === 'menu' ? 'hidden md:flex' : 'flex'}`}>
                         {/* Use CartView Component if extracted, or keep inline. For now, maintaining inline structure from original but mostly complete */}
-                        const [parcelChargeAmount, setParcelChargeAmount] = useState(20); // NEW: Editable Charge
-
-                        // ... (keep existing calculations) ...
-                        const parcelAmount = parcelCharge && orderType !== 'Dine In' ? parcelChargeAmount : 0;
-                        // ...
-
-                        // ... In JSX Cart Header ...
-                        <div className="bg-gray-800 text-white p-4 flex flex-col gap-2">
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xl">🛒</span>
-                                    <div>
-                                        <h2 className="font-bold">Current Order</h2>
-                                        <p className="text-xs text-gray-400">{cart.length} items • {tableNumber || orderType}</p>
-                                    </div>
-                                </div>
-                                <div className="flex gap-2">
-                                    <button onClick={() => setViewMode('floor')} className="md:hidden p-2 bg-white/10 rounded-lg">✕</button>
+                        <div className="bg-gray-800 text-white p-4 flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xl">🛒</span>
+                                <div>
+                                    <h2 className="font-bold">Current Order</h2>
+                                    <p className="text-xs text-gray-400">{cart.length} items • {tableNumber || orderType}</p>
                                 </div>
                             </div>
-                            {/* Mobile Number Input */}
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 min-w-[30%]">
                                 <input
                                     type="tel"
-                                    placeholder="📱 Customer Mobile"
-                                    className="flex-1 bg-gray-700 text-white border-0 rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-orange-500 placeholder-gray-400"
+                                    placeholder="📱 Mobile No."
                                     value={customerPhone}
                                     onChange={(e) => {
-                                        setCustomerPhone(e.target.value);
-                                        if (e.target.value.length === 10) searchCustomer(e.target.value);
+                                        const val = e.target.value;
+                                        setCustomerPhone(val);
+                                        if (val.length === 10) searchCustomer(val);
                                     }}
+                                    className="w-full bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-sm text-white placeholder-gray-400 outline-none focus:border-orange-500 transition-colors"
                                 />
-                                {selectedCustomer ? (
-                                    <div className="flex items-center gap-2 bg-green-600 px-3 rounded-lg text-xs font-bold truncate max-w-[100px]" title={selectedCustomer.name}>
+                                {customers.length > 0 && !selectedCustomer && (
+                                    <button onClick={() => setShowCustomerSearch(true)} className="p-2 bg-white/10 rounded-lg hover:bg-white/20">👤</button>
+                                )}
+                                {selectedCustomer && (
+                                    <div className="flex items-center gap-2 bg-orange-600 px-2 py-1 rounded-lg text-xs cursor-pointer" onClick={() => setShowCustomerSearch(true)}>
                                         👤 {selectedCustomer.name.split(' ')[0]}
                                     </div>
-                                ) : (
-                                    <button onClick={() => setShowCustomerSearch(true)} className="p-2 bg-white/10 rounded-lg hover:bg-white/20 text-xs">🔍</button>
                                 )}
+                                <button onClick={() => setViewMode('floor')} className="md:hidden p-2 bg-white/10 rounded-lg">✕</button>
                             </div>
                         </div>
 
-    // ... In Cart Summary ...
-                        {/* Parcel Charge */}
-                        <div className="flex justify-between items-center text-blue-600">
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    checked={parcelCharge}
-                                    onChange={(e) => setParcelCharge(e.target.checked)}
-                                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
-                                />
-                                <span>Parcel/Extra Charge</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <span className="text-xs">₹</span>
-                                <input
-                                    type="number"
-                                    className="w-16 text-right border-0 border-b border-blue-200 p-0 text-sm font-bold text-blue-600 focus:ring-0"
-                                    value={parcelChargeAmount}
-                                    onChange={(e) => setParcelChargeAmount(Number(e.target.value))}
-                                    disabled={!parcelCharge}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex justify-between text-gray-500"><span>GST (5%)</span><span>₹{taxAmount}</span></div>
-
-                        {/* Tip Control */}
-                        <div className="flex justify-between items-center text-pink-600">
-                            <span>Tip</span>
-                            {tipAmount > 0 ? (
-                                <div className="flex items-center gap-1">
-                                    <span>+₹{tipAmount}</span>
-                                    <button onClick={() => setTipAmount(0)} className="text-xs bg-red-100 text-red-500 rounded px-1">✕</button>
+                        {/* Cart Items List */}
+                        <div className="flex-1 overflow-y-auto p-2 space-y-2">
+                            {cart.length === 0 ? (
+                                <div className="h-full flex flex-col items-center justify-center text-gray-400 opacity-50">
+                                    <span className="text-4xl mb-2">🛒</span>
+                                    <p>Cart is empty</p>
                                 </div>
                             ) : (
-                                <div className="flex gap-1">
-                                    {[10, 20, 50].map(amt => (
-                                        <button key={amt} onClick={() => setTipAmount(amt)} className="text-[10px] bg-pink-50 px-1 rounded hover:bg-pink-100">+₹{amt}</button>
-                                    ))}
-                                    <button onClick={() => {
-                                        const val = prompt('Enter Tip Amount');
-                                        if (val) setTipAmount(Number(val));
-                                    }} className="text-[10px] bg-gray-100 px-1 rounded">Custom</button>
-                                </div>
+                                cart.map(item => (
+                                    <div key={item.id} className="bg-gray-50 p-3 rounded-xl border border-gray-100 flex gap-3 group relative">
+                                        <div className="flex-1">
+                                            <div className="flex justify-between items-start mb-1">
+                                                <span className="font-bold text-sm text-gray-800">{item.name}</span>
+                                                <span className="font-bold text-gray-800">₹{item.price * item.quantity}</span>
+                                            </div>
+                                            {item.modifiers && item.modifiers.length > 0 && (
+                                                <div className="text-xs text-gray-500 mb-1 flex flex-wrap gap-1">
+                                                    {item.modifiers.map((m, idx) => (
+                                                        <span key={idx} className="bg-white border px-1 rounded">{m.name}</span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            {item.note && <div className="text-xs text-orange-600 italic mb-1">Note: {item.note}</div>}
+                                            {editingNoteId === item.id ? (
+                                                <div className="flex gap-2 mt-1">
+                                                    <input
+                                                        autoFocus
+                                                        type="text"
+                                                        className="flex-1 text-xs border rounded px-1 py-0.5"
+                                                        defaultValue={item.note}
+                                                        onBlur={(e) => updateItemNote(item.id, e.target.value)}
+                                                        onKeyDown={(e) => e.key === 'Enter' && updateItemNote(item.id, e.currentTarget.value)}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <button onClick={() => setEditingNoteId(item.id)} className="text-[10px] text-blue-500 hover:underline">
+                                                    + {item.note ? 'Edit Note' : 'Add Note'}
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        <div className="flex flex-col items-center justify-between gap-2">
+                                            <div className="flex items-center gap-2 bg-white rounded-lg border shadow-sm px-1 py-0.5">
+                                                <button onClick={() => removeFromCart(item.id)} className="w-6 h-6 flex items-center justify-center text-red-500 hover:bg-red-50 rounded">-</button>
+                                                <span className="font-bold text-sm w-4 text-center">{item.quantity}</span>
+                                                <button onClick={() => addToCart({ ...item, modifiers: item.modifiers } as any)} className="w-6 h-6 flex items-center justify-center text-green-500 hover:bg-green-50 rounded">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
                             )}
                         </div>
-                        <div className="flex justify-between font-bold text-lg pt-2 border-t text-gray-900"><span>Total</span><span>₹{cartTotal}</span></div>
-                    </div>
 
-                    <textarea
-                        placeholder="📝 Order Notes..."
-                        value={orderNotes}
-                        onChange={e => setOrderNotes(e.target.value)}
-                        className="w-full text-xs p-2 bg-gray-50 rounded-lg mb-3 border-0 focus:ring-1 focus:ring-orange-500 resize-none h-8"
-                    />
+                        {/* Cart Summary/Footer */}
+                        <div className="bg-white border-t p-4 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+                            <div className="space-y-1 mb-3 text-sm">
+                                <div className="flex justify-between text-gray-500"><span>Subtotal</span><span>₹{subtotal}</span></div>
 
-                    <div className="grid grid-cols-4 gap-2 mb-3">
-                        <button onClick={() => setShowSalesModal(true)} className="col-span-1 py-3 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200">📊</button>
-                        <button onClick={holdCurrentOrder} className="col-span-1 py-3 rounded-xl font-bold text-blue-600 bg-blue-50 hover:bg-blue-100">⏸ Hold</button>
-                        <button onClick={printKOT} className="col-span-1 py-3 rounded-xl font-bold text-purple-600 bg-purple-50 hover:bg-purple-100">👨‍🍳 KOT</button>
-                        <button onClick={clearCart} className="col-span-1 py-3 rounded-xl font-bold text-red-600 bg-red-50 hover:bg-red-100">🗑</button>
-                    </div>
+                                {/* Discount Control */}
+                                <div className="flex justify-between items-center text-green-600">
+                                    <div className="flex items-center gap-1 cursor-pointer hover:bg-green-50 px-1 rounded" onClick={() => setDiscountType(prev => prev === 'percent' ? 'flat' : 'percent')}>
+                                        <span>Discount ({discountType === 'percent' ? '%' : '₹'})</span>
+                                    </div>
+                                    {discountValue > 0 ? (
+                                        <div className="flex items-center gap-1">
+                                            <span>-₹{discountAmount}</span>
+                                            <button onClick={() => setDiscountValue(0)} className="text-xs bg-red-100 text-red-500 rounded px-1">✕</button>
+                                        </div>
+                                    ) : (
+                                        <button onClick={() => {
+                                            const val = prompt('Enter Discount ' + (discountType === 'percent' ? '%' : 'Amount'));
+                                            if (val) setDiscountValue(Number(val));
+                                        }} className="text-xs bg-green-100 px-2 rounded">+ Add</button>
+                                    )}
+                                </div>
 
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => handlePayLater()}
-                            disabled={cart.length === 0}
-                            className="flex-1 py-4 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 rounded-xl font-bold shadow-lg shadow-yellow-200 transition-all disabled:opacity-50 disabled:shadow-none"
-                        >
-                            Pay Later
-                        </button>
-                        <button
-                            onClick={() => setShowCheckout(true)}
-                            disabled={cart.length === 0}
-                            className="flex-[2] py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold shadow-lg shadow-orange-200 transition-all disabled:opacity-50 disabled:shadow-none"
-                        >
-                            Charge ₹{cartTotal}
-                        </button>
+                                {/* Extra Charges Control */}
+                                <div className="flex justify-between items-center text-blue-600">
+                                    <div className="flex gap-2">
+                                        <span>Extra Charges</span>
+                                        <button
+                                            onClick={() => {
+                                                const p = prompt('Enter Packing Charge (₹)', charges.packing.toString());
+                                                const d = prompt('Enter Delivery Charge (₹)', charges.delivery.toString());
+                                                if (p !== null) setCharges(prev => ({ ...prev, packing: Number(p) }));
+                                                if (d !== null) setCharges(prev => ({ ...prev, delivery: Number(d) }));
+                                            }}
+                                            className="text-xs bg-blue-100 px-2 rounded hover:bg-blue-200"
+                                        >
+                                            ✏️ Edit
+                                        </button>
+                                    </div>
+                                    <div className="text-right text-xs">
+                                        {charges.packing > 0 && <div>Packing: ₹{charges.packing}</div>}
+                                        {charges.delivery > 0 && <div>Delivery: ₹{charges.delivery}</div>}
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between text-gray-500"><span>GST (5%)</span><span>₹{taxAmount}</span></div>
+
+                                {/* Tip Control */}
+                                <div className="flex justify-between items-center text-pink-600">
+                                    <span>Tip</span>
+                                    {tipAmount > 0 ? (
+                                        <div className="flex items-center gap-1">
+                                            <span>+₹{tipAmount}</span>
+                                            <button onClick={() => setTipAmount(0)} className="text-xs bg-red-100 text-red-500 rounded px-1">✕</button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex gap-1">
+                                            {[10, 20, 50].map(amt => (
+                                                <button key={amt} onClick={() => setTipAmount(amt)} className="text-[10px] bg-pink-50 px-1 rounded hover:bg-pink-100">+₹{amt}</button>
+                                            ))}
+                                            <button onClick={() => {
+                                                const val = prompt('Enter Tip Amount');
+                                                if (val) setTipAmount(Number(val));
+                                            }} className="text-[10px] bg-gray-100 px-1 rounded">Custom</button>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex justify-between font-bold text-lg pt-2 border-t text-gray-900"><span>Total</span><span>₹{cartTotal}</span></div>
+                            </div>
+
+                            <textarea
+                                placeholder="📝 Order Notes..."
+                                value={orderNotes}
+                                onChange={e => setOrderNotes(e.target.value)}
+                                className="w-full text-xs p-2 bg-gray-50 rounded-lg mb-3 border-0 focus:ring-1 focus:ring-orange-500 resize-none h-8"
+                            />
+
+                            <div className="grid grid-cols-4 gap-2 mb-3">
+                                <button onClick={() => setShowSalesModal(true)} className="col-span-1 py-3 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200">📊</button>
+                                <button onClick={holdCurrentOrder} className="col-span-1 py-3 rounded-xl font-bold text-blue-600 bg-blue-50 hover:bg-blue-100">⏸ Hold</button>
+                                <button onClick={printKOT} className="col-span-1 py-3 rounded-xl font-bold text-purple-600 bg-purple-50 hover:bg-purple-100">👨‍🍳 KOT</button>
+                                <button onClick={clearCart} className="col-span-1 py-3 rounded-xl font-bold text-red-600 bg-red-50 hover:bg-red-100">🗑</button>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => handlePayLater()}
+                                    disabled={cart.length === 0}
+                                    className="flex-1 py-4 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 rounded-xl font-bold shadow-lg shadow-yellow-200 transition-all disabled:opacity-50 disabled:shadow-none"
+                                >
+                                    Pay Later
+                                </button>
+                                <button
+                                    onClick={() => setShowCheckout(true)}
+                                    disabled={cart.length === 0}
+                                    className="flex-[2] py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold shadow-lg shadow-orange-200 transition-all disabled:opacity-50 disabled:shadow-none"
+                                >
+                                    Charge ₹{cartTotal}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                    </div>
-                </div >
-            )
-}
+            )}
 
-{/* Mobile Tab Bar */ }
-<div className="md:hidden bg-white border-t flex justify-around p-2">
-    <button onClick={() => setActiveTab('menu')} className={`flex flex-col items-center p-2 rounded-lg ${activeTab === 'menu' ? 'text-orange-500 bg-orange-50' : 'text-gray-400'}`}>
-        <span className="text-xl">🍔</span>
-        <span className="text-[10px] font-bold">Menu</span>
-    </button>
-    <button onClick={() => setActiveTab('cart')} className={`flex flex-col items-center p-2 rounded-lg relative ${activeTab === 'cart' ? 'text-orange-500 bg-orange-50' : 'text-gray-400'}`}>
-        <span className="text-xl">🛒</span>
-        <span className="text-[10px] font-bold">Cart</span>
-        {cart.length > 0 && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>}
-    </button>
-</div>
+            {/* Mobile Tab Bar */}
+            <div className="md:hidden bg-white border-t flex justify-around p-2">
+                <button onClick={() => setActiveTab('menu')} className={`flex flex-col items-center p-2 rounded-lg ${activeTab === 'menu' ? 'text-orange-500 bg-orange-50' : 'text-gray-400'}`}>
+                    <span className="text-xl">🍔</span>
+                    <span className="text-[10px] font-bold">Menu</span>
+                </button>
+                <button onClick={() => setActiveTab('cart')} className={`flex flex-col items-center p-2 rounded-lg relative ${activeTab === 'cart' ? 'text-orange-500 bg-orange-50' : 'text-gray-400'}`}>
+                    <span className="text-xl">🛒</span>
+                    <span className="text-[10px] font-bold">Cart</span>
+                    {cart.length > 0 && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>}
+                </button>
+            </div>
 
-{/* Modals */ }
+            {/* Modals */}
             <ModifierModal
                 show={showModifierModal}
                 itemName={selectedItemForMods?.name || ''}
@@ -1062,7 +1123,7 @@ export default function POSPage() {
                 cartCount={cartCount}
                 subtotal={subtotal}
                 discountAmount={discountAmount}
-                parcelAmount={parcelAmount}
+                parcelAmount={charges.packing + charges.delivery}
                 taxAmount={taxAmount}
                 tipAmount={tipAmount}
                 paymentMethod={paymentMethod}
@@ -1120,6 +1181,6 @@ export default function POSPage() {
                     setShowCustomerSearch(false);
                 }}
             />
-        </div >
+        </div>
     );
 }
