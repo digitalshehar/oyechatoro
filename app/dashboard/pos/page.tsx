@@ -369,7 +369,8 @@ export default function POSPage() {
     const discountAmount = discountType === 'percent'
         ? Math.round(subtotal * discountValue / 100)
         : discountValue;
-    const taxableAmount = subtotal - discountAmount + charges.packing + charges.delivery;
+    const parcelAmount = charges.packing + charges.delivery;
+    const taxableAmount = subtotal - discountAmount + parcelAmount;
     const taxAmount = Math.round(taxableAmount * 0.05);
     const cartTotal = taxableAmount + taxAmount + tipAmount;
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
