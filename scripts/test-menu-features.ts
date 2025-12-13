@@ -101,6 +101,7 @@ async function main() {
     console.log('\n--- Cleaning Up ---');
     await cleanup();
     console.log('✅ Cleanup Done');
+    await prisma.$disconnect();
 }
 
 main()
@@ -108,6 +109,7 @@ main()
         console.error(e);
         process.exit(1);
     })
-    .finally(async () => {
-        await prisma.$disconnect();
+    .then(async () => {
+        // Disconnect handled inside main if needed, but script exit cleans up
+        // or we can import getPrisma and disconnect
     });
