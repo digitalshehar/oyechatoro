@@ -150,7 +150,9 @@ export default function MenuPage() {
                 paymentMethod: 'Cash',
                 paymentStatus: 'Unpaid',
                 status: 'Pending',
-                discount: appliedOffer ? { code: appliedOffer.code, amount: discountAmount } : undefined
+                discount: appliedOffer ? { code: appliedOffer.code, amount: discountAmount } : undefined,
+                discountCode: appliedOffer?.code,
+                discountAmount: discountAmount
             };
 
             await fetch('/api/orders', {

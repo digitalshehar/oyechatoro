@@ -232,11 +232,11 @@ const OrdersPage = () => {
                             </div>
                             <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0 mt-2 md:mt-0">
                                 <div className="text-right min-w-[100px]">
-                                    {order.discountAmount > 0 ? (
+                                    {(order.discountAmount || (order.discount?.amount)) > 0 ? (
                                         <>
-                                            <div className="text-xs text-[var(--text-muted)] line-through">₹{Number(order.total) + Number(order.discountAmount)}</div>
+                                            <div className="text-xs text-[var(--text-muted)] line-through">₹{Number(order.total) + Number(order.discountAmount || order.discount?.amount || 0)}</div>
                                             <div className="text-xs font-bold text-green-600 mb-1">
-                                                🎁 {order.discountCode} (-₹{order.discountAmount})
+                                                🎁 {order.discountCode || order.discount?.code} (-₹{order.discountAmount || order.discount?.amount})
                                             </div>
                                             <div className="text-xs text-[var(--text-muted)]">Total Pay</div>
                                         </>

@@ -87,6 +87,8 @@ export async function POST(request: NextRequest) {
                     paymentStatus: body.paymentStatus || 'Unpaid',
                     paymentMethod: body.paymentMethod,
                     discount: body.discount,
+                    discountCode: body.discountCode,
+                    discountAmount: body.discountAmount,
                     tip: body.tip,
                     waiterName: body.waiterName,
                     dietary: body.dietary || [],
