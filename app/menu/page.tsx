@@ -255,7 +255,13 @@ export default function MenuPage() {
                     </div>
 
                     <h1 className="text-5xl font-black mb-2 gradient-text drop-shadow-2xl">Oye Chatoro</h1>
-                    <p className="text-white/70 text-sm font-medium tracking-widest uppercase">Premium Street Food Experience</p>
+                    <p className="text-white/70 text-sm font-medium tracking-widest uppercase mb-4">Premium Street Food Experience</p>
+
+                    <a href="tel:9509913792" className="glass px-6 py-2 rounded-full flex items-center gap-2 group hover:bg-white/10 transition-all border border-orange-500/30">
+                        <span className="text-xl group-hover:scale-110 transition-transform">📞</span>
+                        <span className="text-sm font-bold tracking-wider text-orange-400 group-hover:text-orange-300">9509913792</span>
+                    </a>
+
                     {tableNumber && (
                         <div className="mt-4 glass px-6 py-2 rounded-full text-sm font-bold border border-orange-500/30 shadow-lg">
                             🪑 Table {tableNumber}
@@ -363,9 +369,9 @@ export default function MenuPage() {
                                                                 )}
                                                                 {item.tags && item.tags.slice(0, 3).map(tag => (
                                                                     <span key={tag} className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${tag === 'Spicy' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                                                                            tag === 'Vegan' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-                                                                                tag === 'New' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                                                                                    'bg-white/10 text-white/70 border border-white/10'
+                                                                        tag === 'Vegan' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                                                                            tag === 'New' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                                                                                'bg-white/10 text-white/70 border border-white/10'
                                                                         }`}>
                                                                         {tag === 'Spicy' ? '🌶️ ' : ''}{tag}
                                                                     </span>
