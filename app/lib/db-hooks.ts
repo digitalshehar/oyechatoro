@@ -61,11 +61,13 @@ export interface MenuItem {
     recipe?: { inventoryItemId: number; quantity: number }[];
     categoryId: string;
     category?: MenuCategory;
+    order: number;
 }
 
 export interface MenuCategory {
     id: string;
     name: string;
+    order: number;
     items?: MenuItem[];
 }
 
@@ -357,7 +359,10 @@ export function useDbMenu() {
         const res = await fetch(`${API_BASE}/menu/categories/${id}`, {
             method: 'DELETE',
         });
-        if (!res.ok) throw new Error('Failed to delete category');
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.error || 'Failed to delete category');
+        }
         fetchMenu();
     };
 

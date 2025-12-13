@@ -96,6 +96,7 @@ model MenuCategory {
   id    String     @id @default(cuid())
   name  String
   items MenuItem[]
+  order Int        @default(0)
 }
 
 model MenuItem {
@@ -118,7 +119,9 @@ model MenuItem {
   categoryId    String
   cartItems     CartItem[]
   createdAt     DateTime     @default(now())
+  createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+  order         Int          @default(0)
 }
 
 enum ItemStatus {

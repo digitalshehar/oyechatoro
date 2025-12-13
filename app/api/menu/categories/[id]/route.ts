@@ -16,6 +16,15 @@ export async function DELETE(
 
         const { id } = await params;
 
+        // Check for usage
+        const itemCount = await prisma.menuItem.count({
+            where: { categoryId: id }
+        });
+
+        if (itemCount > 0) {
+            return NextResponse.json({ error: `Cannot delete: Category has ${itemCount} items.` }, { status: 400 });
+        }
+
         const category = await prisma.menuCategory.delete({
             where: { id },
         });

@@ -7,7 +7,11 @@ export async function GET() {
     try {
         const categories = await prisma.menuCategory.findMany({
             include: { items: true },
-            orderBy: { name: 'asc' },
+            include: { items: true },
+            orderBy: [
+                { order: 'asc' },
+                { name: 'asc' }
+            ],
         });
 
         return NextResponse.json(categories);

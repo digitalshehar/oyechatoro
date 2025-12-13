@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useDbMenu, MenuItem, MenuCategory, useDbInventory } from '../../lib/db-hooks';
 import { QRCodeSVG } from 'qrcode.react';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 export default function MenuManagerPage() {
     const { categories, items, saveCategory, deleteCategory, saveItem, deleteItem, loading } = useDbMenu();
@@ -168,6 +169,56 @@ export default function MenuManagerPage() {
         setRecipeForm(newForm);
     };
 
+    const reorder = (list: any[], startIndex: number, endIndex: number) => {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+        return result;
+    };
+
+    const onDragEnd = async (result: DropResult) => {
+        if (!result.destination) {
+            return;
+        }
+
+        if (result.source.droppableId === 'items') {
+            const items = reorder(
+                filteredItems,
+                result.source.index,
+                result.destination.index
+            );
+
+            // Need to update local state immediately for smooth UI provided we had state
+            // But filteredItems is derived. We must update the source "items".
+            // However, items is from hook.
+            // Best approach: Optimistically update UI via a local override or just call API and refetch.
+            // Since we don't have local override for items, we'll just call API and refetch.
+            // Actually, for smoothness, we should set a local state, but hooking into `useDbMenu` might be complex.
+            // Let's call API.
+
+            // Prepare payload
+            const updates = items.map((item: any, index: number) => ({
+                id: item.id,
+                order: index
+            }));
+
+            try {
+                await fetch('/api/menu/reorder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type: 'item', items: updates })
+                });
+                // Refetch to snap to new order
+                // refetch(); // need to expose refetch from hook or use query
+                window.location.reload(); // Temporary brute force to reflect changes or use refetch if available
+                // Actually `useDbMenu` exposes `refetch`.
+                // fetchMenu();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    };
+
     const menuUrl = typeof window !== 'undefined' ? `${window.location.origin}/menu` : '';
 
     if (loading && categories.length === 0) {
@@ -246,106 +297,105 @@ export default function MenuManagerPage() {
 
                     {/* Main Area - Items */}
                     <div className="flex-1 glass-card rounded-2xl p-6 flex flex-col">
-                        {selectedCategory ? (
-                            <>
-                                <div className="flex justify-between items-center mb-6">
-                                    <div>
-                                        <h1 className="text-3xl font-bold text-[var(--brand-dark)]">
-                                            {selectedCategory.name}
-                                            {selectedCategory.name.endsWith('🍕') || selectedCategory.name.endsWith('🍔') ? '' : ''}
-                                        </h1>
-                                        <p className="text-[var(--text-muted)]">
-                                            {activeTab === 'train' ? 'Manage Train Delivery Items' : 'Manage Restaurant Menu Items'}
-                                        </p>
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <input
-                                            type="text"
-                                            placeholder="Search items..."
-                                            className="px-4 py-2 border border-[var(--border-light)] rounded-xl outline-none focus:border-[var(--brand-primary)] bg-white/80"
-                                            value={searchTerm}
-                                            onChange={(e) => setSearchTerm(e.target.value)}
-                                        />
-                                        <button
-                                            onClick={() => {
-                                                setEditingItem(null);
-                                                setItemForm({
-                                                    ...itemForm,
-                                                    categoryId: selectedCategory.id,
-                                                    isTrainMenu: activeTab === 'train', // Auto-check if in train tab
-                                                    isDigitalMenu: activeTab !== 'train'
-                                                });
-                                                setIsItemModalOpen(true);
-                                            }}
-                                            className="px-4 py-2 bg-[var(--brand-primary)] text-white rounded-xl font-bold hover:shadow-lg transition-all"
-                                        >
-                                            + Add Item
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 animate-in">
-                                        {filteredItems.map(item => (
-                                            <div key={item.id} className="bg-white p-4 rounded-xl border border-[var(--border-light)] hover:shadow-md transition-all flex gap-4 group">
-                                                <div className="w-20 h-20 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative">
-                                                    {item.image ? (
-                                                        <Image
-                                                            src={item.image}
-                                                            alt={item.name}
-                                                            fill
-                                                            className="object-cover"
-                                                            sizes="80px"
-                                                        />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center text-2xl">🥘</div>
-                                                    )}
-                                                    {item.isFeatured && (
-                                                        <div className="absolute top-1 right-1 bg-yellow-400 text-white text-xs px-2 py-0.5 rounded-full shadow-sm font-bold">
-                                                            ⭐
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex justify-between items-start">
-                                                        <h4 className="font-bold text-[var(--text-main)] truncate">{item.name}</h4>
-                                                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                                    </div>
-                                                    <p className="text-xs text-[var(--text-muted)] line-clamp-2 my-1">{item.description}</p>
-                                                    <div className="flex flex-wrap gap-1 mt-1">
-                                                        {item.isTrainMenu && (
-                                                            <span className="text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded border border-red-200">Train 🚆</span>
-                                                        )}
-                                                        {item.isDigitalMenu && (
-                                                            <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200">Digital 📱</span>
-                                                        )}
-                                                    </div>
-                                                    <div className="flex justify-between items-center mt-2">
-                                                        <span className="font-bold text-[var(--brand-dark)]">₹{item.price}</span>
-                                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <button onClick={() => openRecipeModal(item)} className="text-orange-500 hover:bg-orange-50 p-1 rounded text-xs font-bold border border-orange-200" title="Link Recipe">🍳</button>
-                                                            <button onClick={() => openEditItem(item)} className="text-blue-500 hover:bg-blue-50 p-1 rounded">✏️</button>
-                                                            <button onClick={() => handleDeleteItem(item.id)} className="text-red-500 hover:bg-red-50 p-1 rounded">🗑️</button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {filteredItems.length === 0 && (
-                                        <div className="text-center py-12 text-[var(--text-muted)]">
-                                            No items found. Add some delicious food! 🍕
+                        <DragDropContext onDragEnd={onDragEnd}>
+                            {selectedCategory ? (
+                                <>
+                                    <div className="flex justify-between items-center mb-6">
+                                        <div>
+                                            <h1 className="text-3xl font-bold text-[var(--brand-dark)]">
+                                                {selectedCategory.name}
+                                            </h1>
+                                            <p className="text-[var(--text-muted)]">
+                                                {activeTab === 'train' ? 'Manage Train Delivery Items' : 'Manage Restaurant Menu Items'}
+                                            </p>
                                         </div>
-                                    )}
+                                        <div className="flex gap-4">
+                                            <input
+                                                type="text"
+                                                placeholder="Search items..."
+                                                className="px-4 py-2 border border-[var(--border-light)] rounded-xl outline-none focus:border-[var(--brand-primary)] bg-white/80"
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    setEditingItem(null);
+                                                    setItemForm({
+                                                        ...itemForm,
+                                                        categoryId: selectedCategory.id,
+                                                        isTrainMenu: activeTab === 'train',
+                                                        isDigitalMenu: activeTab !== 'train'
+                                                    });
+                                                    setIsItemModalOpen(true);
+                                                }}
+                                                className="px-4 py-2 bg-[var(--brand-primary)] text-white rounded-xl font-bold hover:shadow-lg transition-all"
+                                            >
+                                                + Add Item
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                                        <Droppable droppableId="items">
+                                            {(provided) => (
+                                                <div
+                                                    {...provided.droppableProps}
+                                                    ref={provided.innerRef}
+                                                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+                                                >
+                                                    {filteredItems.map((item, index) => (
+                                                        <Draggable key={item.id} draggableId={item.id} index={index}>
+                                                            {(provided) => (
+                                                                <div
+                                                                    ref={provided.innerRef}
+                                                                    {...provided.draggableProps}
+                                                                    {...provided.dragHandleProps}
+                                                                    className="bg-white p-4 rounded-xl border border-[var(--border-light)] hover:shadow-md transition-all flex gap-4 group"
+                                                                >
+                                                                    <div className="w-20 h-20 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative">
+                                                                        {item.image ? (
+                                                                            <Image src={item.image} alt={item.name} fill className="object-cover" sizes="80px" />
+                                                                        ) : (
+                                                                            <div className="w-full h-full flex items-center justify-center text-2xl">🥘</div>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <div className="flex justify-between items-start">
+                                                                            <h4 className="font-bold text-[var(--text-main)] truncate">{item.name}</h4>
+                                                                            <div className={`w-2 h-2 rounded-full ${item.veg ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                                                        </div>
+                                                                        <p className="text-xs text-[var(--text-muted)] line-clamp-2 my-1">{item.description}</p>
+                                                                        <div className="flex justify-between items-center mt-2">
+                                                                            <span className="font-bold text-[var(--brand-dark)]">₹{item.price}</span>
+                                                                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                                <button onClick={() => openEditItem(item)} className="text-blue-500 hover:bg-blue-50 p-1 rounded">✏️</button>
+                                                                                <button onClick={() => handleDeleteItem(item.id)} className="text-red-500 hover:bg-red-50 p-1 rounded">🗑️</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </Draggable>
+                                                    ))}
+                                                    {provided.placeholder}
+                                                </div>
+                                            )}
+                                        </Droppable>
+
+                                        {filteredItems.length === 0 && (
+                                            <div className="text-center py-12 text-[var(--text-muted)]">
+                                                No items found. Add some delicious food! 🍕
+                                            </div>
+                                        )}
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)]">
+                                    <div className="text-6xl mb-4">👈</div>
+                                    <p>Select a category to manage menu items</p>
                                 </div>
-                            </>
-                        ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)]">
-                                <div className="text-6xl mb-4">👈</div>
-                                <p>Select a category to manage menu items</p>
-                            </div>
-                        )}
+                            )}
+                        </DragDropContext>
                     </div>
                 </div>
             )}
