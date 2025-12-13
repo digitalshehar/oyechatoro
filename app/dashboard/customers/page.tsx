@@ -113,8 +113,8 @@ export default function CustomersPage() {
                                         <td className="p-4 pl-6">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm ${(customer.totalSpent || 0) > 2000
-                                                        ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 border-2 border-white ring-2 ring-yellow-100'
-                                                        : 'bg-indigo-50 text-indigo-600'
+                                                    ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900 border-2 border-white ring-2 ring-yellow-100'
+                                                    : 'bg-indigo-50 text-indigo-600'
                                                     }`}>
                                                     {getInitials(customer.name)}
                                                 </div>
@@ -223,10 +223,10 @@ export default function CustomersPage() {
                                         <div key={order.id} className="border rounded-xl p-4 flex justify-between items-center hover:border-indigo-200 transition-colors bg-gray-50 group">
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <span className="font-bold text-gray-800">Order #{order.id.slice(-6)}</span>
+                                                    <span className="font-bold text-gray-800">Order #{String(order.id)}</span>
                                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${order.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                                                            order.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
-                                                                'bg-orange-100 text-orange-700'
+                                                        order.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
+                                                            'bg-orange-100 text-orange-700'
                                                         }`}>
                                                         {order.status}
                                                     </span>
