@@ -13,7 +13,6 @@ export async function GET(request: NextRequest) {
 
         // Check DB Status before seeding
         // Check DB Status before seeding
-        /*
         const count = await prisma.menuItem.count();
         if (count === 0) {
             console.log('Starting Seeding...');
@@ -29,6 +28,7 @@ export async function GET(request: NextRequest) {
             const pizzaCat = await getOrCreateCategory('Pizza');
             const pastaCat = await getOrCreateCategory('Pasta');
             const chaatCat = await getOrCreateCategory('Chaat');
+            const drinksCat = await getOrCreateCategory('Drinks');
 
             // Seed Items
             await prisma.menuItem.createMany({
@@ -38,11 +38,12 @@ export async function GET(request: NextRequest) {
                     { name: 'White Sauce Pasta', slug: 'white-sauce-pasta', price: 249, description: 'Creamy white sauce penne pasta with veggies', categoryId: pastaCat.id, image: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb' },
                     { name: 'Red Sauce Pasta', slug: 'red-sauce-pasta', price: 229, description: 'Tangy tomato sauce pasta with basil', categoryId: pastaCat.id, image: 'https://images.unsplash.com/photo-1626844131082-256783844137' },
                     { name: 'Dahi Papdi Chaat', slug: 'dahi-papdi-chaat', price: 129, description: 'Crispy papdi with yogurt and chutneys', categoryId: chaatCat.id, image: 'https://images.unsplash.com/photo-1626132647523-66f5bf380027' },
+                    { name: 'Basket Chaat', slug: 'basket-chaat', price: 149, description: 'Crispy basket filled with sprouts and yogurt', categoryId: chaatCat.id, image: 'https://images.unsplash.com/photo-1515543958914-aa4d690a9c8b?auto=format&fit=crop&q=80' },
+                    { name: 'Cold Coffee', slug: 'cold-coffee', price: 149, description: 'Chilled creamy coffee', categoryId: drinksCat.id, image: 'https://images.unsplash.com/photo-1578314675249-a6910f80cc4e' },
                 ]
             });
             console.log('Seeding Complete');
         }
-        */
 
         const items = await prisma.menuItem.findMany({
             where: {
@@ -51,10 +52,7 @@ export async function GET(request: NextRequest) {
                 ...(isTrain && { isTrainMenu: true }),
             },
             include: { category: true },
-            orderBy: [
-                { order: 'asc' },
-                { name: 'asc' }
-            ],
+            orderBy: { name: 'asc' },
         });
 
         return NextResponse.json(items);
@@ -87,6 +85,7 @@ export async function POST(request: NextRequest) {
                 isFeatured: body.isFeatured ?? false,
                 costPrice: body.costPrice,
                 recipe: body.recipe,
+                tags: body.tags || [],
                 categoryId: body.categoryId,
                 slug: body.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Math.floor(Math.random() * 1000),
             },

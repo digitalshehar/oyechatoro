@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
+import ExportButton from './ExportButton';
+import ImportModal from './ImportModal';
 import Image from 'next/image';
 import { useDbMenu, MenuItem, MenuCategory, useDbInventory } from '../../lib/db-hooks';
 import { QRCodeSVG } from 'qrcode.react';
@@ -15,10 +18,13 @@ export default function MenuManagerPage() {
     const [activeTab, setActiveTab] = useState<'items' | 'train' | 'digital'>('items');
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+    const [isBulkProcessing, setIsBulkProcessing] = useState(false);
 
     // Modal States
     const [isCatModalOpen, setIsCatModalOpen] = useState(false);
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
     const [isRecipeModalOpen, setIsRecipeModalOpen] = useState(false);
 
     const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
@@ -27,7 +33,7 @@ export default function MenuManagerPage() {
     // Form States
     const [catForm, setCatForm] = useState({ name: '' });
     const [itemForm, setItemForm] = useState<Partial<MenuItem>>({
-        name: '', price: 0, costPrice: 0, description: '', categoryId: '', veg: true, status: 'Active', isDigitalMenu: true, isTrainMenu: false, isFeatured: false
+        name: '', price: 0, costPrice: 0, description: '', categoryId: '', veg: true, status: 'Active', isDigitalMenu: true, isTrainMenu: false, isFeatured: false, tags: []
     });
 
     // Recipe Form State
@@ -115,7 +121,8 @@ export default function MenuManagerPage() {
             isTrainMenu: itemForm.isTrainMenu || false,
             isFeatured: itemForm.isFeatured || false,
             costPrice: Number(itemForm.costPrice) || 0,
-            order: 0
+            order: 0,
+            tags: itemForm.tags || []
         };
 
         if (saveItem) await saveItem(newItem);
@@ -176,6 +183,41 @@ export default function MenuManagerPage() {
         const [removed] = result.splice(startIndex, 1);
         result.splice(endIndex, 0, removed);
         return result;
+    };
+
+    const toggleSelection = (id: string) => {
+        const newSet = new Set(selectedItems);
+        if (newSet.has(id)) newSet.delete(id);
+        else newSet.add(id);
+        setSelectedItems(newSet);
+    };
+
+    const handleBulkAction = async (action: 'delete' | 'updateStatus', status?: 'Active' | 'OutOfStock') => {
+        if (selectedItems.size === 0) return;
+        if (!confirm(`Apply ${action} to ${selectedItems.size} items?`)) return;
+
+        setIsBulkProcessing(true);
+        try {
+            const res = await fetch('/api/menu/bulk', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action,
+                    itemIds: Array.from(selectedItems),
+                    data: { status }
+                })
+            });
+            if (!res.ok) throw new Error('Bulk action failed');
+
+            // Reload to reflect changes
+            window.location.reload();
+        } catch (error) {
+            console.error(error);
+            alert('Failed to perform action');
+        } finally {
+            setIsBulkProcessing(false);
+            setSelectedItems(new Set());
+        }
     };
 
     const onDragEnd = async (result: DropResult) => {
@@ -311,7 +353,16 @@ export default function MenuManagerPage() {
                                                 {activeTab === 'train' ? 'Manage Train Delivery Items' : 'Manage Restaurant Menu Items'}
                                             </p>
                                         </div>
-                                        <div className="flex gap-4">
+                                        <div className="flex gap-4 items-center">
+                                            {selectedItems.size > 0 && (
+                                                <div className="flex gap-2 animate-in fade-in slide-in-from-right-4 mr-4 bg-yellow-50 px-3 py-1 rounded-xl border border-yellow-200">
+                                                    <span className="text-sm font-bold text-yellow-800">{selectedItems.size} Selected</span>
+                                                    <div className="h-4 w-px bg-yellow-300 mx-2"></div>
+                                                    <button onClick={() => handleBulkAction('updateStatus', 'OutOfStock')} className="text-xs font-bold text-red-600 hover:bg-red-100 px-2 py-1 rounded">🚫 Stock Out</button>
+                                                    <button onClick={() => handleBulkAction('updateStatus', 'Active')} className="text-xs font-bold text-green-600 hover:bg-green-100 px-2 py-1 rounded">✅ Stock In</button>
+                                                    <button onClick={() => handleBulkAction('delete')} className="text-xs font-bold text-gray-600 hover:bg-gray-100 px-2 py-1 rounded">🗑️ Delete</button>
+                                                </div>
+                                            )}
                                             <input
                                                 type="text"
                                                 placeholder="Search items..."
@@ -352,9 +403,17 @@ export default function MenuManagerPage() {
                                                                     ref={provided.innerRef}
                                                                     {...provided.draggableProps}
                                                                     {...provided.dragHandleProps}
-                                                                    className="bg-white p-4 rounded-xl border border-[var(--border-light)] hover:shadow-md transition-all flex gap-4 group"
+                                                                    className={`bg-white p-4 rounded-xl border transition-all flex gap-4 group relative ${selectedItems.has(item.id) ? 'border-[var(--brand-primary)] ring-1 ring-[var(--brand-primary)] bg-blue-50' : 'border-[var(--border-light)] hover:shadow-md'}`}
                                                                 >
-                                                                    <div className="w-20 h-20 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative">
+                                                                    <div className="absolute top-4 left-4 z-10">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={selectedItems.has(item.id)}
+                                                                            onChange={(e) => { e.stopPropagation(); toggleSelection(item.id); }}
+                                                                            className="w-5 h-5 rounded border-gray-300 text-[var(--brand-primary)] focus:ring-[var(--brand-primary)]"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="w-20 h-20 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0 relative ml-8">
                                                                         {item.image ? (
                                                                             <Image src={item.image} alt={item.name} fill className="object-cover" sizes="80px" />
                                                                         ) : (
@@ -583,6 +642,32 @@ export default function MenuManagerPage() {
                                     </label>
                                 </div>
                             </div>
+
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Tags</label>
+                                <div className="flex gap-2 flex-wrap mb-4">
+                                    {['Spicy', 'Vegan', 'Jain', 'Best Seller', 'New', 'Sweet'].map(tag => (
+                                        <button
+                                            key={tag}
+                                            type="button"
+                                            onClick={() => {
+                                                const currentTags = itemForm.tags || [];
+                                                const newTags = currentTags.includes(tag)
+                                                    ? currentTags.filter(t => t !== tag)
+                                                    : [...currentTags, tag];
+                                                setItemForm({ ...itemForm, tags: newTags });
+                                            }}
+                                            className={`px-3 py-1 rounded-full text-xs font-bold transition-all border ${(itemForm.tags || []).includes(tag)
+                                                ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]'
+                                                : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                                                }`}
+                                        >
+                                            {tag}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
                             <div className="flex gap-4 p-4 bg-gray-50 rounded-xl">
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input
@@ -603,6 +688,12 @@ export default function MenuManagerPage() {
                     </div>
                 </div>
             )}
+
+            <ImportModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onSuccess={() => { window.location.reload(); }}
+            />
             {/* Recipe Modal */}
             {isRecipeModalOpen && selectedItemForRecipe && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">

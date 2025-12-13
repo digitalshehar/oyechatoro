@@ -1,21 +1,5 @@
 {
-  "node": {
-    "60ea9fa2f471feae87a70a0604ad0340f25845c23b": {
-      "workers": {
-        "app/login/page": {
-          "moduleId": "[project]/.next-internal/server/app/login/page/actions.js { ACTIONS_MODULE0 => \"[project]/app/actions/auth.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false,
-          "exportedName": "authenticate",
-          "filename": "app/actions/auth.ts"
-        }
-      },
-      "layer": {
-        "app/login/page": "action-browser"
-      },
-      "filename": "app/actions/auth.ts",
-      "exportedName": "authenticate"
-    }
-  },
+  "node": {},
   "edge": {},
-  "encryptionKey": "TwFTyKtnIfPdwoTPaqYHCOHOHu8W0rOKgz0KR+Ar3NU="
+  "encryptionKey": "+x9UPPCU1DJCa+Do1EztPKYo9E5Gjk8QB8c9qtpLVOo="
 }

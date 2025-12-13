@@ -51,15 +51,43 @@ export default async function MenuItemPage({ params }: Props) {
         select: { id: true, name: true, slug: true, price: true, image: true, veg: true }
     });
 
-    // Mock Reviews (randomize slightly for effect)
     const MOCK_REVIEWS = [
         { id: 1, author: 'Pritam Yadav', rating: 5, date: '2 weeks ago', text: 'Hygiene is very good. Better food than others in Abu Road.' },
         { id: 2, author: 'Sagar Sachan', rating: 5, date: '1 month ago', text: 'Must visit place. Very tasty.' },
         { id: 3, author: 'Rider Boy', rating: 4, date: '3 weeks ago', text: 'Good food, worth the wait.' },
     ];
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: item.name,
+        image: item.image ? [item.image] : [],
+        description: item.description,
+        brand: {
+            '@type': 'Restaurant',
+            name: 'Oye Chatoro'
+        },
+        offers: {
+            '@type': 'Offer',
+            url: `https://oyechatoro.com/menu/${item.slug}`,
+            priceCurrency: 'INR',
+            price: item.price,
+            availability: 'https://schema.org/InStock',
+            itemCondition: 'https://schema.org/NewCondition'
+        },
+        aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: '4.8',
+            reviewCount: '124'
+        }
+    };
+
     return (
         <SiteLayout>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div className="min-h-screen bg-[var(--background-light)] pb-20">
                 {/* Hero / Image Section */}
                 <div className="relative h-64 md:h-96 w-full bg-gray-200">

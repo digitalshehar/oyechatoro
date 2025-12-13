@@ -515,6 +515,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../app/api/feed/products/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/feed/products">> = Specific
+  const handler = {} as typeof import("../../app/api/feed/products/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/api/finance/expenses/[id]/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/finance/expenses/[id]">> = Specific
@@ -578,6 +587,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../app/api/menu/bulk/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/menu/bulk">> = Specific
+  const handler = {} as typeof import("../../app/api/menu/bulk/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/api/menu/categories/[id]/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/menu/categories/[id]">> = Specific
@@ -591,6 +609,24 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/menu/categories">> = Specific
   const handler = {} as typeof import("../../app/api/menu/categories/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/api/menu/import/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/menu/import">> = Specific
+  const handler = {} as typeof import("../../app/api/menu/import/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/api/menu/reorder/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/menu/reorder">> = Specific
+  const handler = {} as typeof import("../../app/api/menu/reorder/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

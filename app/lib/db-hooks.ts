@@ -61,7 +61,8 @@ export interface MenuItem {
     recipe?: { inventoryItemId: number; quantity: number }[];
     categoryId: string;
     category?: MenuCategory;
-    order: number;
+    order?: number;
+    tags?: string[];
 }
 
 export interface MenuCategory {

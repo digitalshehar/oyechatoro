@@ -243,6 +243,12 @@
       "namedRegex": "^/api/customers/me(?:/)?$"
     },
     {
+      "page": "/api/feed/products",
+      "regex": "^/api/feed/products(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/feed/products(?:/)?$"
+    },
+    {
       "page": "/api/finance/expenses",
       "regex": "^/api/finance/expenses(?:/)?$",
       "routeKeys": {},
@@ -273,10 +279,28 @@
       "namedRegex": "^/api/menu(?:/)?$"
     },
     {
+      "page": "/api/menu/bulk",
+      "regex": "^/api/menu/bulk(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/menu/bulk(?:/)?$"
+    },
+    {
       "page": "/api/menu/categories",
       "regex": "^/api/menu/categories(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/menu/categories(?:/)?$"
+    },
+    {
+      "page": "/api/menu/import",
+      "regex": "^/api/menu/import(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/menu/import(?:/)?$"
+    },
+    {
+      "page": "/api/menu/reorder",
+      "regex": "^/api/menu/reorder(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/menu/reorder(?:/)?$"
     },
     {
       "page": "/api/offers",

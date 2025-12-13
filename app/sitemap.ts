@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
         const menuItems = await prisma.menuItem.findMany({
             where: { status: 'Active' },
-            select: { id: true, updatedAt: true }
+            select: { slug: true, updatedAt: true }
         });
 
         const blogPages: MetadataRoute.Sitemap = posts.map(post => ({
@@ -34,7 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }));
 
         const menuPages: MetadataRoute.Sitemap = menuItems.map(item => ({
-            url: `${baseUrl}/menu/${item.id}`,
+            url: `${baseUrl}/menu/${item.slug}`,
             lastModified: item.updatedAt,
             changeFrequency: 'weekly' as const,
             priority: 0.7

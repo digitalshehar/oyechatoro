@@ -121,6 +121,7 @@ model MenuItem {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   order         Int          @default(0)
+  tags          String[]     @default([])
 }
 
 enum ItemStatus {

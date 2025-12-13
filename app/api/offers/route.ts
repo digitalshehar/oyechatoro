@@ -8,10 +8,11 @@ export async function GET(request: NextRequest) {
         // But dashboard fetching usually authenticated.
         // Let's allow authenticated users (Staff need to see offers to apply?)
         // Or actually, `useDbOffers` is for dashboard management.
-        const session = await auth();
-        if (!session) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        // Public offers for Homepage
+        // const session = await auth();
+        // if (!session) {
+        //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // }
 
         const offers = await prisma.offer.findMany({
             orderBy: { createdAt: 'desc' }

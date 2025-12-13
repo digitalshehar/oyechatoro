@@ -361,6 +361,15 @@ export default function MenuPage() {
                                                                         ⭐ Best
                                                                     </span>
                                                                 )}
+                                                                {item.tags && item.tags.slice(0, 3).map(tag => (
+                                                                    <span key={tag} className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${tag === 'Spicy' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                                                                            tag === 'Vegan' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                                                                                tag === 'New' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                                                                                    'bg-white/10 text-white/70 border border-white/10'
+                                                                        }`}>
+                                                                        {tag === 'Spicy' ? '🌶️ ' : ''}{tag}
+                                                                    </span>
+                                                                ))}
                                                             </div>
                                                             <Link href={`/menu/${item.slug}`}>
                                                                 <h3 className="font-bold text-base mb-1 text-white leading-tight hover:text-orange-500 transition-colors cursor-pointer">{item.name}</h3>
