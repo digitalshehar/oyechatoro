@@ -1,1 +1,23 @@
-{}
+{
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/cart/route": "app/api/cart/route.js",
+  "/api/customers/route": "app/api/customers/route.js",
+  "/api/inventory/logs/route": "app/api/inventory/logs/route.js",
+  "/api/inventory/route": "app/api/inventory/route.js",
+  "/api/menu/categories/[id]/route": "app/api/menu/categories/[id]/route.js",
+  "/api/menu/categories/route": "app/api/menu/categories/route.js",
+  "/api/menu/route": "app/api/menu/route.js",
+  "/api/offers/route": "app/api/offers/route.js",
+  "/api/orders/route": "app/api/orders/route.js",
+  "/api/seed-admin/route": "app/api/seed-admin/route.js",
+  "/api/service-requests/route": "app/api/service-requests/route.js",
+  "/api/settings/route": "app/api/settings/route.js",
+  "/dashboard/kitchen/page": "app/dashboard/kitchen/page.js",
+  "/dashboard/menu/page": "app/dashboard/menu/page.js",
+  "/dashboard/orders/page": "app/dashboard/orders/page.js",
+  "/dashboard/overview/page": "app/dashboard/overview/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/pos/page": "app/dashboard/pos/page.js",
+  "/login/page": "app/login/page.js",
+  "/menu/page": "app/menu/page.js"
+}

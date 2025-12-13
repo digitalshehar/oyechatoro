@@ -65,16 +65,5 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     ],
 
     trustHost: true,
-    cookies: process.env.NODE_ENV === 'production' ? {
-        sessionToken: {
-            name: `__Secure-oyechatoro-v2-token`,
-            options: {
-                httpOnly: true,
-                sameSite: 'lax',
-                path: '/',
-                secure: true,
-                domain: '.oyechatoro.com',
-            },
-        },
-    } : undefined,
+
 });

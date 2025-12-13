@@ -1384,6 +1384,10 @@ img, video {
   height: 100vh;
 }
 
+.max-h-40 {
+  max-height: 10rem;
+}
+
 .max-h-60 {
   max-height: 15rem;
 }
@@ -1410,10 +1414,6 @@ img, video {
 
 .max-h-\[90vh\] {
   max-height: 90vh;
-}
-
-.max-h-40 {
-  max-height: 10rem;
 }
 
 .min-h-\[100px\] {
@@ -6604,6 +6604,11 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .group:hover .group-hover\:text-gray-600 {
   --tw-text-opacity: 1;
   color: rgb(75 85 99 / var(--tw-text-opacity, 1));
+}
+
+.group:hover .group-hover\:text-orange-300 {
+  --tw-text-opacity: 1;
+  color: rgb(253 186 116 / var(--tw-text-opacity, 1));
 }
 
 .group:hover .group-hover\:text-white {
