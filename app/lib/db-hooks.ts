@@ -38,6 +38,7 @@ export interface Customer {
     totalSpent: number;
     loyaltyPoints: number;
     lastVisit: string;
+    details?: any; // { address, notes, etc }
 }
 
 export interface MenuItem {

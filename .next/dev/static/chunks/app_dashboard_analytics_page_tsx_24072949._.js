@@ -8,7 +8,7 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/lib/storage.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$db$2d$hooks$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/lib/db-hooks.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 'use client';
@@ -18,32 +18,19 @@ function AnalyticsPage() {
     _s();
     const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('sales');
     const [dateRange, setDateRange] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('7d');
-    const [data, setData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getAnalyticsData"])('7d'));
-    const [menuData, setMenuData] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
-    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
-        "AnalyticsPage.useEffect": ()=>{
-            setData((0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getAnalyticsData"])(dateRange));
-            setMenuData((0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getMenuEngineeringData"])());
-            const handleUpdate = {
-                "AnalyticsPage.useEffect.handleUpdate": ()=>{
-                    setData((0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getAnalyticsData"])(dateRange));
-                    setMenuData((0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getMenuEngineeringData"])());
-                }
-            }["AnalyticsPage.useEffect.handleUpdate"];
-            window.addEventListener('ordersUpdated', handleUpdate);
-            window.addEventListener('menuUpdated', handleUpdate);
-            window.addEventListener('storage', handleUpdate);
-            return ({
-                "AnalyticsPage.useEffect": ()=>{
-                    window.removeEventListener('ordersUpdated', handleUpdate);
-                    window.removeEventListener('menuUpdated', handleUpdate);
-                    window.removeEventListener('storage', handleUpdate);
-                }
-            })["AnalyticsPage.useEffect"];
-        }
-    }["AnalyticsPage.useEffect"], [
-        dateRange
-    ]);
+    const { data, loading } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$db$2d$hooks$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useDbAnalytics"])(dateRange);
+    const menuData = data?.menuEngineering;
+    // Loading State
+    if (loading || !data) {
+        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            className: "p-8 text-center text-gray-500",
+            children: "Loading analytics..."
+        }, void 0, false, {
+            fileName: "[project]/app/dashboard/analytics/page.tsx",
+            lineNumber: 14,
+            columnNumber: 16
+        }, this);
+    }
     const handleExport = ()=>{
         if (activeTab === 'sales') {
             const headers = [
@@ -70,9 +57,9 @@ function AnalyticsPage() {
                 'Cost',
                 'Revenue',
                 'Profit',
-                'Margin'
+                'Class'
             ];
-            const rows = menuData.items.map((i)=>`${i.name},${i.category},${i.sales},${i.cost},${i.revenue},${i.profit},${i.margin}`);
+            const rows = menuData.items.map((i)=>`${i.name},Food,${i.sales},${i.cost},${i.revenue},${i.profit},${i.category}`);
             const csvContent = "data:text/csv;charset=utf-8," + [
                 headers.join(','),
                 ...rows
@@ -99,7 +86,7 @@ function AnalyticsPage() {
                                 children: "Analytics & Insights"
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 61,
+                                lineNumber: 47,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -107,13 +94,13 @@ function AnalyticsPage() {
                                 children: "Track performance and optimize your menu"
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 62,
+                                lineNumber: 48,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                        lineNumber: 60,
+                        lineNumber: 46,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -129,7 +116,7 @@ function AnalyticsPage() {
                                         children: "Last 7 Days"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 71,
+                                        lineNumber: 57,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -137,7 +124,7 @@ function AnalyticsPage() {
                                         children: "Last 30 Days"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 72,
+                                        lineNumber: 58,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -145,7 +132,7 @@ function AnalyticsPage() {
                                         children: "This Month"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 73,
+                                        lineNumber: 59,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
@@ -153,13 +140,13 @@ function AnalyticsPage() {
                                         children: "This Year"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 74,
+                                        lineNumber: 60,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 66,
+                                lineNumber: 52,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -168,19 +155,19 @@ function AnalyticsPage() {
                                 children: "Export Report"
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 77,
+                                lineNumber: 63,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                        lineNumber: 64,
+                        lineNumber: 50,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                lineNumber: 59,
+                lineNumber: 45,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -192,7 +179,7 @@ function AnalyticsPage() {
                         children: "Sales Analytics"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                        lineNumber: 83,
+                        lineNumber: 69,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -201,13 +188,13 @@ function AnalyticsPage() {
                         children: "Menu Engineering (AI)"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                        lineNumber: 89,
+                        lineNumber: 75,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                lineNumber: 82,
+                lineNumber: 68,
                 columnNumber: 13
             }, this),
             activeTab === 'sales' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -224,7 +211,7 @@ function AnalyticsPage() {
                                         children: "Total Revenue"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 102,
+                                        lineNumber: 88,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -235,7 +222,7 @@ function AnalyticsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 103,
+                                        lineNumber: 89,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -243,13 +230,13 @@ function AnalyticsPage() {
                                         children: "For selected period"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 104,
+                                        lineNumber: 90,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 101,
+                                lineNumber: 87,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -260,7 +247,7 @@ function AnalyticsPage() {
                                         children: "Total Orders"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 107,
+                                        lineNumber: 93,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -268,7 +255,7 @@ function AnalyticsPage() {
                                         children: data.summary.totalOrders
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 108,
+                                        lineNumber: 94,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -279,13 +266,13 @@ function AnalyticsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 109,
+                                        lineNumber: 95,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 106,
+                                lineNumber: 92,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -296,7 +283,7 @@ function AnalyticsPage() {
                                         children: "Peak Hour"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 112,
+                                        lineNumber: 98,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -310,7 +297,7 @@ function AnalyticsPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 113,
+                                        lineNumber: 99,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -318,19 +305,19 @@ function AnalyticsPage() {
                                         children: "Busiest time of day"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 116,
+                                        lineNumber: 102,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 111,
+                                lineNumber: 97,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                        lineNumber: 100,
+                        lineNumber: 86,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -344,7 +331,7 @@ function AnalyticsPage() {
                                         children: "📈 Revenue Trend"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 124,
+                                        lineNumber: 110,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -369,12 +356,12 @@ function AnalyticsPage() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                            lineNumber: 135,
+                                                            lineNumber: 121,
                                                             columnNumber: 49
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 131,
+                                                        lineNumber: 117,
                                                         columnNumber: 45
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -382,13 +369,13 @@ function AnalyticsPage() {
                                                         children: d.date
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 139,
+                                                        lineNumber: 125,
                                                         columnNumber: 45
                                                     }, this)
                                                 ]
                                             }, i, true, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 130,
+                                                lineNumber: 116,
                                                 columnNumber: 41
                                             }, this);
                                         }) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -396,18 +383,18 @@ function AnalyticsPage() {
                                             children: "No data available"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                            lineNumber: 143,
+                                            lineNumber: 129,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 125,
+                                        lineNumber: 111,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 123,
+                                lineNumber: 109,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -418,7 +405,7 @@ function AnalyticsPage() {
                                         children: "🏆 Top Selling Items"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 150,
+                                        lineNumber: 136,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -433,7 +420,7 @@ function AnalyticsPage() {
                                                                 children: item.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                lineNumber: 155,
+                                                                lineNumber: 141,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -444,13 +431,13 @@ function AnalyticsPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                lineNumber: 156,
+                                                                lineNumber: 142,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 154,
+                                                        lineNumber: 140,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -462,42 +449,42 @@ function AnalyticsPage() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                            lineNumber: 159,
+                                                            lineNumber: 145,
                                                             columnNumber: 45
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 158,
+                                                        lineNumber: 144,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, i, true, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 153,
+                                                lineNumber: 139,
                                                 columnNumber: 37
                                             }, this)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             className: "text-center py-8 text-gray-400",
                                             children: "No sales data yet"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                            lineNumber: 166,
+                                            lineNumber: 152,
                                             columnNumber: 37
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 151,
+                                        lineNumber: 137,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 149,
+                                lineNumber: 135,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                        lineNumber: 121,
+                        lineNumber: 107,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -508,7 +495,7 @@ function AnalyticsPage() {
                                 children: "⏰ Peak Hours Activity"
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 174,
+                                lineNumber: 160,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -533,12 +520,12 @@ function AnalyticsPage() {
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                    lineNumber: 186,
+                                                    lineNumber: 172,
                                                     columnNumber: 49
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 181,
+                                                lineNumber: 167,
                                                 columnNumber: 41
                                             }, this),
                                             i % 3 === 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -546,31 +533,31 @@ function AnalyticsPage() {
                                                 children: h.hour
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 192,
+                                                lineNumber: 178,
                                                 columnNumber: 45
                                             }, this)
                                         ]
                                     }, i, true, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 180,
+                                        lineNumber: 166,
                                         columnNumber: 37
                                     }, this);
                                 })
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 175,
+                                lineNumber: 161,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                        lineNumber: 173,
+                        lineNumber: 159,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                lineNumber: 98,
+                lineNumber: 84,
                 columnNumber: 17
             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "animate-in fade-in slide-in-from-bottom-4",
@@ -586,7 +573,7 @@ function AnalyticsPage() {
                                         children: "Menu Engineering Matrix"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 205,
+                                        lineNumber: 191,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -600,7 +587,7 @@ function AnalyticsPage() {
                                                         children: "⭐"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 209,
+                                                        lineNumber: 195,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -608,7 +595,7 @@ function AnalyticsPage() {
                                                         children: "Stars"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 210,
+                                                        lineNumber: 196,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -616,13 +603,13 @@ function AnalyticsPage() {
                                                         children: "High Profit, High Popularity"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 211,
+                                                        lineNumber: 197,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 208,
+                                                lineNumber: 194,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -633,7 +620,7 @@ function AnalyticsPage() {
                                                         children: "🚜"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 214,
+                                                        lineNumber: 200,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -641,7 +628,7 @@ function AnalyticsPage() {
                                                         children: "Plowhorses"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 215,
+                                                        lineNumber: 201,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -649,13 +636,13 @@ function AnalyticsPage() {
                                                         children: "Low Profit, High Popularity"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 216,
+                                                        lineNumber: 202,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 213,
+                                                lineNumber: 199,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -666,7 +653,7 @@ function AnalyticsPage() {
                                                         children: "🧩"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 219,
+                                                        lineNumber: 205,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -674,7 +661,7 @@ function AnalyticsPage() {
                                                         children: "Puzzles"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 220,
+                                                        lineNumber: 206,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -682,13 +669,13 @@ function AnalyticsPage() {
                                                         children: "High Profit, Low Popularity"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 221,
+                                                        lineNumber: 207,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 218,
+                                                lineNumber: 204,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -699,7 +686,7 @@ function AnalyticsPage() {
                                                         children: "🐕"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 224,
+                                                        lineNumber: 210,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -707,7 +694,7 @@ function AnalyticsPage() {
                                                         children: "Dogs"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 225,
+                                                        lineNumber: 211,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -715,13 +702,13 @@ function AnalyticsPage() {
                                                         children: "Low Profit, Low Popularity"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 226,
+                                                        lineNumber: 212,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 223,
+                                                lineNumber: 209,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -729,7 +716,7 @@ function AnalyticsPage() {
                                                 children: "PROFITABILITY"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 230,
+                                                lineNumber: 216,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -737,19 +724,19 @@ function AnalyticsPage() {
                                                 children: "POPULARITY"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 231,
+                                                lineNumber: 217,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 206,
+                                        lineNumber: 192,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 204,
+                                lineNumber: 190,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -765,12 +752,94 @@ function AnalyticsPage() {
                                                         children: "Star Items"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 239,
+                                                        lineNumber: 225,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "text-2xl font-bold text-green-600",
                                                         children: menuData?.stars.length || 0
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                                        lineNumber: 226,
+                                                        columnNumber: 37
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                                lineNumber: 224,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "text-3xl",
+                                                children: "⭐"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                                lineNumber: 228,
+                                                columnNumber: 33
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                        lineNumber: 223,
+                                        columnNumber: 29
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "glass-card p-6 rounded-2xl flex items-center justify-between",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "text-sm text-gray-500",
+                                                        children: "Plowhorses"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                                        lineNumber: 232,
+                                                        columnNumber: 37
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "text-2xl font-bold text-yellow-600",
+                                                        children: menuData?.plowhorses.length || 0
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                                        lineNumber: 233,
+                                                        columnNumber: 37
+                                                    }, this)
+                                                ]
+                                            }, void 0, true, {
+                                                fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                                lineNumber: 231,
+                                                columnNumber: 33
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                className: "text-3xl",
+                                                children: "🚜"
+                                            }, void 0, false, {
+                                                fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                                lineNumber: 235,
+                                                columnNumber: 33
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                        lineNumber: 230,
+                                        columnNumber: 29
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "glass-card p-6 rounded-2xl flex items-center justify-between",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                children: [
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "text-sm text-gray-500",
+                                                        children: "Puzzles"
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
+                                                        lineNumber: 239,
+                                                        columnNumber: 37
+                                                    }, this),
+                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                        className: "text-2xl font-bold text-blue-600",
+                                                        children: menuData?.puzzles.length || 0
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
                                                         lineNumber: 240,
@@ -784,7 +853,7 @@ function AnalyticsPage() {
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "text-3xl",
-                                                children: "⭐"
+                                                children: "🧩"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
                                                 lineNumber: 242,
@@ -803,15 +872,15 @@ function AnalyticsPage() {
                                                 children: [
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "text-sm text-gray-500",
-                                                        children: "Plowhorses"
+                                                        children: "Dogs"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
                                                         lineNumber: 246,
                                                         columnNumber: 37
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "text-2xl font-bold text-yellow-600",
-                                                        children: menuData?.plowhorses.length || 0
+                                                        className: "text-2xl font-bold text-red-600",
+                                                        children: menuData?.dogs.length || 0
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
                                                         lineNumber: 247,
@@ -825,7 +894,7 @@ function AnalyticsPage() {
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "text-3xl",
-                                                children: "🚜"
+                                                children: "🐕"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
                                                 lineNumber: 249,
@@ -836,99 +905,17 @@ function AnalyticsPage() {
                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
                                         lineNumber: 244,
                                         columnNumber: 29
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "glass-card p-6 rounded-2xl flex items-center justify-between",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "text-sm text-gray-500",
-                                                        children: "Puzzles"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 253,
-                                                        columnNumber: 37
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "text-2xl font-bold text-blue-600",
-                                                        children: menuData?.puzzles.length || 0
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 254,
-                                                        columnNumber: 37
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 252,
-                                                columnNumber: 33
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "text-3xl",
-                                                children: "🧩"
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 256,
-                                                columnNumber: 33
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 251,
-                                        columnNumber: 29
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "glass-card p-6 rounded-2xl flex items-center justify-between",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                children: [
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "text-sm text-gray-500",
-                                                        children: "Dogs"
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 260,
-                                                        columnNumber: 37
-                                                    }, this),
-                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                        className: "text-2xl font-bold text-red-600",
-                                                        children: menuData?.dogs.length || 0
-                                                    }, void 0, false, {
-                                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 261,
-                                                        columnNumber: 37
-                                                    }, this)
-                                                ]
-                                            }, void 0, true, {
-                                                fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 259,
-                                                columnNumber: 33
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                                className: "text-3xl",
-                                                children: "🐕"
-                                            }, void 0, false, {
-                                                fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 263,
-                                                columnNumber: 33
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                        lineNumber: 258,
-                                        columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 236,
+                                lineNumber: 222,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                        lineNumber: 202,
+                        lineNumber: 188,
                         columnNumber: 21
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -941,12 +928,12 @@ function AnalyticsPage() {
                                     children: "Detailed Analysis"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                    lineNumber: 271,
+                                    lineNumber: 257,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 270,
+                                lineNumber: 256,
                                 columnNumber: 25
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -963,7 +950,7 @@ function AnalyticsPage() {
                                                         children: "Item Name"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 277,
+                                                        lineNumber: 263,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -971,7 +958,7 @@ function AnalyticsPage() {
                                                         children: "Category"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 278,
+                                                        lineNumber: 264,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -979,7 +966,7 @@ function AnalyticsPage() {
                                                         children: "Sales Vol."
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 279,
+                                                        lineNumber: 265,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -987,7 +974,7 @@ function AnalyticsPage() {
                                                         children: "Cost"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 280,
+                                                        lineNumber: 266,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -995,7 +982,7 @@ function AnalyticsPage() {
                                                         children: "Revenue"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 281,
+                                                        lineNumber: 267,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1003,7 +990,7 @@ function AnalyticsPage() {
                                                         children: "Profit"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 282,
+                                                        lineNumber: 268,
                                                         columnNumber: 41
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -1011,18 +998,18 @@ function AnalyticsPage() {
                                                         children: "Class"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 283,
+                                                        lineNumber: 269,
                                                         columnNumber: 41
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                lineNumber: 276,
+                                                lineNumber: 262,
                                                 columnNumber: 37
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                            lineNumber: 275,
+                                            lineNumber: 261,
                                             columnNumber: 33
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -1036,7 +1023,7 @@ function AnalyticsPage() {
                                                                 children: item.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                lineNumber: 289,
+                                                                lineNumber: 275,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1044,7 +1031,7 @@ function AnalyticsPage() {
                                                                 children: "Food"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                lineNumber: 290,
+                                                                lineNumber: 276,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1052,7 +1039,7 @@ function AnalyticsPage() {
                                                                 children: item.sales
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                lineNumber: 291,
+                                                                lineNumber: 277,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1063,7 +1050,7 @@ function AnalyticsPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                lineNumber: 292,
+                                                                lineNumber: 278,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1074,7 +1061,7 @@ function AnalyticsPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                lineNumber: 293,
+                                                                lineNumber: 279,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1085,7 +1072,7 @@ function AnalyticsPage() {
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                lineNumber: 294,
+                                                                lineNumber: 280,
                                                                 columnNumber: 45
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -1100,18 +1087,18 @@ function AnalyticsPage() {
                                                                     children: item.category
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                    lineNumber: 296,
+                                                                    lineNumber: 282,
                                                                     columnNumber: 49
                                                                 }, this)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                                lineNumber: 295,
+                                                                lineNumber: 281,
                                                                 columnNumber: 45
                                                             }, this)
                                                         ]
                                                     }, item.id, true, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 288,
+                                                        lineNumber: 274,
                                                         columnNumber: 41
                                                     }, this)),
                                                 (!menuData?.items || menuData.items.length === 0) && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
@@ -1121,51 +1108,55 @@ function AnalyticsPage() {
                                                         children: "No data available. Start selling to see insights!"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                        lineNumber: 309,
+                                                        lineNumber: 295,
                                                         columnNumber: 45
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                                    lineNumber: 308,
+                                                    lineNumber: 294,
                                                     columnNumber: 41
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                            lineNumber: 286,
+                                            lineNumber: 272,
                                             columnNumber: 33
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                    lineNumber: 274,
+                                    lineNumber: 260,
                                     columnNumber: 29
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                                lineNumber: 273,
+                                lineNumber: 259,
                                 columnNumber: 25
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/analytics/page.tsx",
-                        lineNumber: 269,
+                        lineNumber: 255,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/analytics/page.tsx",
-                lineNumber: 201,
+                lineNumber: 187,
                 columnNumber: 17
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/analytics/page.tsx",
-        lineNumber: 58,
+        lineNumber: 44,
         columnNumber: 9
     }, this);
 }
-_s(AnalyticsPage, "ZY5TuXMKKrVzXfl3S1U+sbWBzbA=");
+_s(AnalyticsPage, "5DFlz5S37RlQMogw7LyFinYOPAM=", false, function() {
+    return [
+        __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$db$2d$hooks$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useDbAnalytics"]
+    ];
+});
 _c = AnalyticsPage;
 var _c;
 __turbopack_context__.k.register(_c, "AnalyticsPage");

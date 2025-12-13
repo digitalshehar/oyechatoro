@@ -202,7 +202,7 @@ export default function CustomersPage() {
                                     <p className="text-gray-300 flex items-center gap-2 text-sm mt-1">
                                         <span>📞 {selectedCustomer.phone}</span>
                                         <span>•</span>
-                                        <span>📍 {selectedCustomer.address || 'No Address'}</span>
+                                        <span>📍 {selectedCustomer.details?.address || 'No Address'}</span>
                                     </p>
                                 </div>
                             </div>

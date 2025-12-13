@@ -8,7 +8,7 @@ __turbopack_context__.s([
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/lib/storage.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$db$2d$hooks$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/lib/db-hooks.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 'use client';
@@ -16,7 +16,7 @@ var _s = __turbopack_context__.k.signature();
 ;
 function InventoryPage() {
     _s();
-    const { inventory, stockLogs, wastageLogs, addItem, updateItem, deleteItem, recordWastage } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useInventory"])();
+    const { inventory, stockLogs, wastageLogs, addItem, updateItem, deleteItem, recordWastage } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$db$2d$hooks$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useDbInventory"])();
     const [searchTerm, setSearchTerm] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('');
     const [filterStatus, setFilterStatus] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('All Status');
     // Modal States
@@ -985,21 +985,21 @@ function InventoryPage() {
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "space-y-3",
-                            children: stockLogs.filter((log)=>log.itemId === selectedItemForHistory.id).length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                            children: stockLogs.filter((log)=>log.inventoryItemId === selectedItemForHistory.id).length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                 className: "text-gray-500 text-center py-4",
                                 children: "No history available."
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/inventory/page.tsx",
                                 lineNumber: 293,
                                 columnNumber: 33
-                            }, this) : stockLogs.filter((log)=>log.itemId === selectedItemForHistory.id).map((log)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            }, this) : stockLogs.filter((log)=>log.inventoryItemId === selectedItemForHistory.id).map((log)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100",
                                     children: [
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                             children: [
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "font-medium text-gray-800",
-                                                    children: log.reason
+                                                    children: log.reason || log.type
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/inventory/page.tsx",
                                                     lineNumber: 298,
@@ -1007,7 +1007,7 @@ function InventoryPage() {
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "text-xs text-gray-500",
-                                                    children: new Date(log.timestamp).toLocaleString()
+                                                    children: new Date(log.createdAt).toLocaleString()
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/inventory/page.tsx",
                                                     lineNumber: 299,
@@ -1246,9 +1246,9 @@ function InventoryPage() {
         columnNumber: 9
     }, this);
 }
-_s(InventoryPage, "w0ww2tKf5MFbFllksC9/om1jrr0=", false, function() {
+_s(InventoryPage, "LQ2/99rRRul8DjyT6+G5sby8gs8=", false, function() {
     return [
-        __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$storage$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useInventory"]
+        __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$db$2d$hooks$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useDbInventory"]
     ];
 });
 _c = InventoryPage;
