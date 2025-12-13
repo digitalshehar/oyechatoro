@@ -3,9 +3,61 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { useDbMenu, MenuItem, useDbSettings as useSettings, addServiceRequest, useDbCart } from '../lib/db-hooks';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useDbMenu, MenuItem, useDbSettings as useSettings, addServiceRequest, useDbCart, useDbOffers } from '../lib/db-hooks';
+
+function OffersCarousel() {
+    const { offers } = useDbOffers();
+    const activeOffers = offers.filter(o => o.status === 'Active');
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        alert(`Code ${text} copied!`);
+    };
+
+    if (activeOffers.length === 0) return null;
+
+    return (
+        <div className="relative z-30 -mt-10 mb-8 max-w-7xl mx-auto px-4">
+            <h2 className="text-white/80 font-bold uppercase tracking-widest text-xs mb-3 pl-2">Special Offers</h2>
+            <div className="flex overflow-x-auto gap-4 py-2 no-scrollbar snap-x">
+                {activeOffers.map((offer, i) => (
+                    <div
+                        key={offer.id}
+                        className="flex-shrink-0 w-72 h-32 rounded-xl bg-gradient-to-br text-white relative overflow-hidden shadow-lg snap-center group transition-transform hover:scale-[1.02] cursor-pointer"
+                        style={{
+                            background: `linear-gradient(135deg, ${offer.bgColor?.split(' ')[1].replace('from-', '') || '#f97316'}, ${offer.bgColor?.split(' ')[3].replace('to-', '') || '#ef4444'})`
+                        }}
+                        onClick={() => copyToClipboard(offer.code)}
+                    >
+                        {/* Circles */}
+                        <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-[#0a0a0a] rounded-full z-10" />
+                        <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-[#0a0a0a] rounded-full z-10" />
+                        <div className="absolute top-1/2 left-3 right-3 h-px border-t-2 border-dashed border-white/20" />
+
+                        <div className="h-full flex flex-col justify-between p-4 relative z-20">
+                            <div className="flex justify-between items-start">
+                                <span className="bg-white/20 px-2 py-0.5 rounded text-[10px] font-bold uppercase backdrop-blur-sm">
+                                    {offer.type === 'Percentage' ? '% OFF' : 'FLAT OFF'}
+                                </span>
+                                <span className="font-mono font-bold text-sm opacity-80">{offer.expiry?.toString()}</span>
+                            </div>
+
+                            <div className="flex justify-between items-end">
+                                <div>
+                                    <div className="text-3xl font-black leading-none">{offer.discount}</div>
+                                    <div className="text-[10px] font-medium opacity-90 mt-1 max-w-[140px] truncate">{offer.description || 'Save big today!'}</div>
+                                </div>
+                                <div className="bg-white text-black font-mono font-bold text-xs px-2 py-1 rounded border-2 border-dashed border-gray-300">
+                                    {offer.code}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
 
 export default function MenuPage() {
     const router = useRouter();
@@ -222,6 +274,9 @@ export default function MenuPage() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
                 </button>
             </header>
+
+            {/* Special Offers Carousel */}
+            <OffersCarousel />
 
             {/* Sticky Navigation */}
             <div className={`sticky top-0 z-40 transition-all duration-500 ${scrolled ? 'glass-dark shadow-2xl' : ''}`}>
