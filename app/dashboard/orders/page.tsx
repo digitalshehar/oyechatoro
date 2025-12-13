@@ -231,7 +231,20 @@ const OrdersPage = () => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0 mt-2 md:mt-0">
-                                <div className="text-right min-w-[100px]"><div className="text-xs text-[var(--text-muted)]">Total Amount</div><div className="font-bold text-xl md:text-2xl text-[var(--brand-primary)]">₹{order.total}</div></div>
+                                <div className="text-right min-w-[100px]">
+                                    {order.discountAmount > 0 ? (
+                                        <>
+                                            <div className="text-xs text-[var(--text-muted)] line-through">₹{Number(order.total) + Number(order.discountAmount)}</div>
+                                            <div className="text-xs font-bold text-green-600 mb-1">
+                                                🎁 {order.discountCode} (-₹{order.discountAmount})
+                                            </div>
+                                            <div className="text-xs text-[var(--text-muted)]">Total Pay</div>
+                                        </>
+                                    ) : (
+                                        <div className="text-xs text-[var(--text-muted)]">Total Amount</div>
+                                    )}
+                                    <div className="font-bold text-xl md:text-2xl text-[var(--brand-primary)]">₹{order.total}</div>
+                                </div>
                                 <div className="flex gap-2 flex-1 md:flex-none justify-end">
                                     <button onClick={() => printBill(order)} className="p-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors" title="Print Bill">🖨️</button>
                                     {order.paymentStatus === 'Unpaid' && <button onClick={() => updateOrder(order.id, { paymentStatus: 'Paid' })} className="p-3 bg-green-100 hover:bg-green-200 text-green-700 rounded-xl font-medium" title="Mark as Paid">💰</button>}

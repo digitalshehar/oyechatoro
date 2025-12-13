@@ -4,8 +4,12 @@ import React, { useState, useMemo } from 'react';
 import { useDbOffers, DbOffer } from '../../lib/db-hooks';
 
 export default function OffersPage() {
-    const { offers, loading, saveOffer, deleteOffer } = useDbOffers();
+    const { offers, loading, saveOffer, updateOffer, deleteOffer } = useDbOffers();
     const [showForm, setShowForm] = useState(false);
+    const [editId, setEditId] = useState<string | null>(null);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [activeMenu, setActiveMenu] = useState<string | null>(null);
+
     const [newItem, setNewItem] = useState<Partial<DbOffer>>({
         code: '',
         discount: '',
@@ -26,42 +30,73 @@ export default function OffersPage() {
         return { active, totalRedemptions, topOffer };
     }, [offers]);
 
-    const handleCreate = async () => {
+    const resetForm = () => {
+        setNewItem({
+            code: '',
+            discount: '',
+            type: 'Percentage',
+            expiry: '',
+            status: 'Active',
+            usage: 0,
+            description: '',
+            bgColor: 'from-orange-400 to-red-500'
+        });
+        setEditId(null);
+        setShowForm(false);
+    };
+
+    const handleCreateOrUpdate = async () => {
         if (!newItem.code || !newItem.discount || !newItem.expiry) return;
 
-        const success = await saveOffer({
+        const data = {
             code: newItem.code.toUpperCase(),
             discount: newItem.discount,
             type: newItem.type,
             expiry: newItem.expiry,
-            status: 'Active',
+            status: newItem.status,
             description: newItem.description,
             bgColor: newItem.bgColor
-        });
+        };
+
+        let success = false;
+        if (editId && updateOffer) {
+            success = await updateOffer(editId, data);
+        } else {
+            success = await saveOffer(data);
+        }
 
         if (success) {
-            setShowForm(false);
-            setNewItem({
-                code: '',
-                discount: '',
-                type: 'Percentage',
-                expiry: '',
-                status: 'Active',
-                usage: 0,
-                description: '',
-                bgColor: 'from-orange-400 to-red-500'
-            });
+            resetForm();
         }
+    };
+
+    const handleEdit = (offer: any) => {
+        setNewItem({ ...offer });
+        setEditId(offer.id);
+        setShowForm(true);
+        setActiveMenu(null);
+    };
+
+    const handleToggleStatus = async (offer: any) => {
+        if (!updateOffer) return;
+        const newStatus = offer.status === 'Active' ? 'Inactive' : 'Active';
+        await updateOffer(offer.id, { status: newStatus });
     };
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
-        // Toast could go here, for now rely on UI feedback if added
     };
 
     // Component for the Ticket Card to reuse in Preview
     const TicketCard = ({ offer, preview = false }: { offer: any, preview?: boolean }) => (
         <div className={`relative group w-full ${preview ? 'scale-90 origin-top' : ''}`}>
+            {/* Status Indicator (Only on real cards) */}
+            {!preview && (
+                <div className={`absolute -top-2 -right-2 z-20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm border border-white/20 ${offer.status === 'Active' ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'}`}>
+                    {offer.status}
+                </div>
+            )}
+
             <div className={`h-40 rounded-2xl bg-gradient-to-br ${offer.bgColor} text-white relative overflow-hidden shadow-lg transition-transform hover:-translate-y-1`}>
                 {/* Decorative Circles */}
                 <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-[var(--background)] rounded-full z-10" />
@@ -88,7 +123,7 @@ export default function OffersPage() {
                     {/* Bottom Part */}
                     <div className="flex justify-between items-end pt-4">
                         <div>
-                            <div className="text-xs text-white/80 mb-1">{offer.description || 'Valid on all orders'}</div>
+                            <div className="text-xs text-white/80 mb-1 max-w-[150px] truncate">{offer.description || 'Valid on all orders'}</div>
                             <div
                                 onClick={() => !preview && copyToClipboard(offer.code)}
                                 className={`inline-flex items-center gap-2 bg-white text-gray-900 px-3 py-1.5 rounded-lg font-bold font-mono tracking-wider shadow-sm ${!preview ? 'cursor-pointer hover:bg-gray-100 active:scale-95 transition-all' : ''}`}
@@ -99,26 +134,51 @@ export default function OffersPage() {
                             </div>
                         </div>
                         {!preview && (
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (confirm('Delete this coupon?')) deleteOffer(offer.id);
-                                }}
-                                className="w-8 h-8 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/30 text-white transition-colors"
-                            >
-                                🗑️
-                            </button>
+                            <div className="relative">
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === offer.id ? null : offer.id); }}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full bg-black/20 hover:bg-black/30 text-white transition-colors"
+                                >
+                                    ⋮
+                                </button>
+                                {activeMenu === offer.id && (
+                                    <div className="absolute bottom-full right-0 mb-2 w-32 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-30 animate-in fade-in zoom-in-95">
+                                        <button onClick={() => handleEdit(offer)} className="w-full text-left px-4 py-2text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 text-xs font-bold">
+                                            ✏️ Edit
+                                        </button>
+                                        <button onClick={() => { handleToggleStatus(offer); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 text-xs font-bold">
+                                            {offer.status === 'Active' ? '⏸️ Pause' : '▶️ Activate'}
+                                        </button>
+                                        <button onClick={() => { setDeleteId(offer.id); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 text-xs font-bold border-t border-gray-100">
+                                            🗑️ Delete
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
+            {/* Delete Confirmation Modal */}
+            {deleteId === offer.id && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-in zoom-in-95">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Coupon?</h3>
+                        <p className="text-gray-500 mb-6">Are you sure you want to delete <span className="font-bold text-gray-800">{offer.code}</span>? This action cannot be undone.</p>
+                        <div className="flex justify-end gap-3">
+                            <button onClick={() => setDeleteId(null)} className="px-4 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
+                            <button onClick={() => { deleteOffer(offer.id); setDeleteId(null); }} className="px-4 py-2 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 shadow-lg shadow-red-200">Yes, Delete</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 
     if (loading) return <div className="p-12 text-center text-gray-500">Loading offers...</div>;
 
     return (
-        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+        <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8" onClick={() => setActiveMenu(null)}>
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-end gap-4 animate-in">
                 <div>
@@ -129,7 +189,7 @@ export default function OffersPage() {
                 </div>
                 {!showForm && (
                     <button
-                        onClick={() => setShowForm(true)}
+                        onClick={() => { resetForm(); setShowForm(true); }}
                         className="px-6 py-2.5 bg-gray-900 text-white rounded-xl font-bold shadow-lg hover:bg-gray-800 hover:shadow-xl transition-all flex items-center gap-2"
                     >
                         <span>+</span> Create New Offer
@@ -157,12 +217,12 @@ export default function OffersPage() {
                 </div>
             )}
 
-            {/* Creation Form */}
+            {/* Creation/Edit Form */}
             {showForm && (
                 <div className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden animate-in zoom-in-95 duration-200">
                     <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-gray-800">Create New Coupon</h2>
-                        <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+                        <h2 className="text-xl font-bold text-gray-800">{editId ? 'Edit Coupon' : 'Create New Coupon'}</h2>
+                        <button onClick={resetForm} className="text-gray-400 hover:text-gray-600">✕</button>
                     </div>
                     <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Form Inputs */}
@@ -217,15 +277,29 @@ export default function OffersPage() {
                                     className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none transition-colors"
                                 />
                             </div>
+                            {editId && (
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Status</label>
+                                    <select
+                                        value={newItem.status}
+                                        onChange={e => setNewItem({ ...newItem, status: e.target.value as any })}
+                                        className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-indigo-500 outline-none transition-colors"
+                                    >
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            )}
                             <div className="md:col-span-2">
                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Theme</label>
-                                <div className="flex gap-3">
+                                <div className="flex gap-3 flex-wrap">
                                     {[
                                         'from-orange-400 to-red-500',
                                         'from-blue-400 to-indigo-500',
                                         'from-emerald-400 to-teal-600',
                                         'from-violet-400 to-fuchsia-600',
-                                        'from-gray-700 to-black'
+                                        'from-gray-700 to-black',
+                                        'from-pink-500 to-rose-500'
                                     ].map(c => (
                                         <button
                                             key={c}
@@ -246,8 +320,10 @@ export default function OffersPage() {
                         </div>
                     </div>
                     <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-                        <button onClick={() => setShowForm(false)} className="px-5 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
-                        <button onClick={handleCreate} className="px-6 py-2 bg-gray-900 text-white font-bold rounded-lg hover:bg-black transition-transform active:scale-95">Create Coupon</button>
+                        <button onClick={resetForm} className="px-5 py-2 text-gray-600 font-bold hover:bg-gray-100 rounded-lg">Cancel</button>
+                        <button onClick={handleCreateOrUpdate} className="px-6 py-2 bg-gray-900 text-white font-bold rounded-lg hover:bg-black transition-transform active:scale-95">
+                            {editId ? 'Update Coupon' : 'Create Coupon'}
+                        </button>
                     </div>
                 </div>
             )}
@@ -259,11 +335,14 @@ export default function OffersPage() {
                 ))}
 
                 {offers.length === 0 && !showForm && (
-                    <div className="col-span-full py-20 text-center">
-                        <div className="text-4xl mb-4">🎟️</div>
-                        <h3 className="text-xl font-bold text-gray-400">No coupons yet</h3>
-                        <p className="text-gray-400">Create one to boost your sales!</p>
-                    </div>
+                    <button
+                        onClick={() => { resetForm(); setShowForm(true); }}
+                        className="col-span-full py-20 text-center border-2 border-dashed border-gray-200 rounded-3xl hover:bg-gray-50 hover:border-gray-300 transition-all group cursor-pointer"
+                    >
+                        <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">🎟️</div>
+                        <h3 className="text-xl font-bold text-gray-400 group-hover:text-gray-600">No coupons yet</h3>
+                        <p className="text-gray-400 group-hover:text-gray-500">Click to create your first offer!</p>
+                    </button>
                 )}
             </div>
         </div>

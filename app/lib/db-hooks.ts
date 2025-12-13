@@ -961,6 +961,23 @@ export function useDbOffers() {
         return false;
     };
 
+    const updateOffer = async (id: string, data: any) => {
+        try {
+            const res = await fetch(`${API_BASE}/offers/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            if (res.ok) {
+                fetchOffers();
+                return true;
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        return false;
+    };
+
     const deleteOffer = async (id: string) => {
         try {
             const res = await fetch(`${API_BASE}/offers/${id}`, { method: 'DELETE' });
@@ -975,7 +992,7 @@ export function useDbOffers() {
     };
 
     // Alias saveOffer to match old hook if needed, or just expose it
-    return { offers, loading, saveOffer, deleteOffer };
+    return { offers, loading, saveOffer, updateOffer, deleteOffer };
 }
 
 // ==================== SERVICE REQUESTS HOOK ====================
