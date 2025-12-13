@@ -232,17 +232,24 @@ const OrdersPage = () => {
                             </div>
                             <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0 mt-2 md:mt-0">
                                 <div className="text-right min-w-[100px]">
-                                    {(order.discountAmount || (order.discount?.amount)) > 0 ? (
-                                        <>
-                                            <div className="text-xs text-[var(--text-muted)] line-through">₹{Number(order.total) + Number(order.discountAmount || order.discount?.amount || 0)}</div>
-                                            <div className="text-xs font-bold text-green-600 mb-1">
-                                                🎁 {order.discountCode || order.discount?.code} (-₹{order.discountAmount || order.discount?.amount})
-                                            </div>
-                                            <div className="text-xs text-[var(--text-muted)]">Total Pay</div>
-                                        </>
-                                    ) : (
-                                        <div className="text-xs text-[var(--text-muted)]">Total Amount</div>
-                                    )}
+                                    {(() => {
+                                        const discount = order.discount as any;
+                                        const amount = Number(order.discountAmount || discount?.amount || 0);
+                                        const code = order.discountCode || discount?.code;
+
+                                        if (amount > 0) {
+                                            return (
+                                                <>
+                                                    <div className="text-xs text-[var(--text-muted)] line-through">₹{Number(order.total) + amount}</div>
+                                                    <div className="text-xs font-bold text-green-600 mb-1">
+                                                        🎁 {code} (-₹{amount})
+                                                    </div>
+                                                    <div className="text-xs text-[var(--text-muted)]">Total Pay</div>
+                                                </>
+                                            );
+                                        }
+                                        return <div className="text-xs text-[var(--text-muted)]">Total Amount</div>;
+                                    })()}
                                     <div className="font-bold text-xl md:text-2xl text-[var(--brand-primary)]">₹{order.total}</div>
                                 </div>
                                 <div className="flex gap-2 flex-1 md:flex-none justify-end">
