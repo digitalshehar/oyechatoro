@@ -86,9 +86,7 @@ export async function POST(request: NextRequest) {
                     mobile: body.mobile,
                     paymentStatus: body.paymentStatus || 'Unpaid',
                     paymentMethod: body.paymentMethod,
-                    discount: body.discount,
-                    discountCode: body.discountCode,
-                    discountAmount: body.discountAmount,
+                    discount: body.discount, // Saves { code, amount } as JSON
                     tip: body.tip,
                     waiterName: body.waiterName,
                     dietary: body.dietary || [],
