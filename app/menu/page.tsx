@@ -147,7 +147,6 @@ export default function MenuPage() {
                 type: 'DineIn',
                 table: tableNumber || undefined,
                 customer: 'Digital Menu Customer',
-                paymentMethod: 'Cash',
                 paymentStatus: 'Unpaid',
                 paymentMethod: 'Cash',
                 discount: appliedOffer ? { code: appliedOffer.code, amount: discountAmount } : null
