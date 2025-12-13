@@ -70,8 +70,12 @@ export default function MenuPage() {
     const [mounted, setMounted] = useState(false);
     const [scrolled, setScrolled] = useState(false);
 
-    const [tableNumber, setTableNumber] = useState<string | null>(null);
-    const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+    // Coupon State
+    const { offers } = useDbOffers();
+    const [couponCode, setCouponCode] = useState('');
+    const [appliedOffer, setAppliedOffer] = useState<any>(null);
+    const [discountAmount, setDiscountAmount] = useState(0);
+    const [discountError, setDiscountError] = useState('');
 
     const navRef = useRef<HTMLElement>(null);
 
@@ -144,8 +148,37 @@ export default function MenuPage() {
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+    const handleApplyCoupon = () => {
+        setDiscountError('');
+        const offer = offers.find(o => o.code === couponCode && o.status === 'Active');
+
+        if (!offer) {
+            setDiscountError('Invalid or inactive coupon');
+            return;
+        }
+
+        // Logic (could be expanded)
+        let discount = 0;
+        if (offer.type === 'Percentage') {
+            // Extract number from string like "20%" or "20"
+            const val = parseFloat(offer.discount);
+            discount = Math.round((cartTotal * val) / 100);
+        } else {
+            const val = parseFloat(offer.discount);
+            discount = val;
+        }
+
+        if (discount > cartTotal) discount = cartTotal;
+
+        setAppliedOffer(offer);
+        setDiscountAmount(discount);
+        setCouponCode('');
+    };
+
     const checkout = async () => {
         if (cart.length === 0) return;
+
+        const finalTotal = cartTotal - discountAmount;
 
         // First, submit to database so it appears in dashboard
         try {
@@ -155,13 +188,14 @@ export default function MenuPage() {
                     quantity: item.quantity,
                     price: item.price
                 })),
-                total: cartTotal,
+                total: finalTotal, // Use discounted total
                 type: 'DineIn',
                 table: tableNumber || undefined,
                 customer: 'Digital Menu Customer',
                 paymentMethod: 'Cash',
                 paymentStatus: 'Unpaid',
-                status: 'Pending'
+                status: 'Pending',
+                discount: appliedOffer ? { code: appliedOffer.code, amount: discountAmount } : undefined
             };
 
             await fetch('/api/orders', {
@@ -177,12 +211,20 @@ export default function MenuPage() {
         // Then open WhatsApp for confirmation
         let message = `New Order from Table ${tableNumber || 'Unknown'}:\n\n`;
         cart.forEach(item => message += `- ${item.quantity}x ${item.name} - ₹${item.price * item.quantity}\n`);
-        message += `\n*Total: ₹${cartTotal}*`;
+
+        if (appliedOffer) {
+            message += `\nSubtotal: ₹${cartTotal}`;
+            message += `\nDiscount (${appliedOffer.code}): -₹${discountAmount}`;
+        }
+
+        message += `\n*Total Pay: ₹${finalTotal}*`;
         window.open(`https://wa.me/919509913792?text=${encodeURIComponent(message)}`, '_blank');
 
         // Clear cart after order
         clearCart();
         setIsCartOpen(false);
+        setAppliedOffer(null);
+        setDiscountAmount(0);
     };
 
     const handleServiceRequest = (type: 'Call' | 'Bill' | 'Water') => {
@@ -490,24 +532,67 @@ export default function MenuPage() {
                         </div>
 
                         {cart.length > 0 && (
-                            <div className="p-6 border-t border-white/10 glass-dark">
-                                <div className="flex justify-between items-center mb-6">
-                                    <span className="text-lg font-bold text-white/70">Total</span>
-                                    <span className="text-4xl font-black gradient-text">₹{cartTotal}</span>
+                            <div className="flex justify-between items-center mb-6">
+                                <span className="text-lg font-bold text-white/70">Subtotal</span>
+                                <span className="text-2xl font-bold text-white">₹{cartTotal}</span>
+                            </div>
+
+                                 {/* Coupon Section */}
+                        <div className="mb-6">
+                            {appliedOffer ? (
+                                <div className="bg-green-500/20 border border-green-500/30 p-3 rounded-xl flex justify-between items-center">
+                                    <div>
+                                        <div className="text-green-400 font-bold text-sm">Coupon Applied</div>
+                                        <div className="text-xs text-white/60">{appliedOffer.code}</div>
+                                    </div>
+                                    <button onClick={() => { setAppliedOffer(null); setDiscountAmount(0); }} className="text-white/40 hover:text-white px-2">×</button>
                                 </div>
-                                <button
-                                    onClick={checkout}
-                                    className="w-full py-5 bg-gradient-to-r from-orange-500 to-red-500 font-black text-xl rounded-2xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
-                                >
-                                    <span>Place Order</span>
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>
-                                </button>
-                                <p className="text-center text-xs text-white/40 mt-4">Order via WhatsApp 📱</p>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        placeholder="Coupon Code"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-orange-500/50 text-sm font-bold uppercase placeholder-white/20"
+                                    />
+                                    <button
+                                        onClick={handleApplyCoupon}
+                                        className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl font-bold text-sm transition-colors"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                            )}
+                            {discountError && <div className="text-red-400 text-xs font-bold mt-2 ml-1">{discountError}</div>}
+                        </div>
+
+                        {appliedOffer && (
+                            <div className="flex justify-between items-center mb-6 text-green-400">
+                                <span className="text-lg font-bold">Discount</span>
+                                <span className="text-xl font-black">-₹{discountAmount}</span>
                             </div>
                         )}
+
+                        <div className="flex justify-between items-center mb-6 border-t border-white/10 pt-4">
+                            <span className="text-lg font-bold text-white/70">Total Pay</span>
+                            <span className="text-4xl font-black gradient-text">₹{cartTotal - discountAmount}</span>
+                        </div>
+
+                        <button
+                            onClick={checkout}
+                            className="w-full py-5 bg-gradient-to-r from-orange-500 to-red-500 font-black text-xl rounded-2xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                        >
+                            <span>Place Order</span>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+                        </button>
+                        <p className="text-center text-xs text-white/40 mt-4">Order via WhatsApp 📱</p>
                     </div>
+                        )}
                 </div>
-            )}
-        </div>
+                </div>
+    )
+}
+        </div >
     );
 }
