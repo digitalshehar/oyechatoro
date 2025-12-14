@@ -51,7 +51,7 @@ export interface MenuItem {
     price: number;
     description?: string;
     veg: boolean;
-    status: 'Active' | 'OutOfStock';
+    status: 'Active' | 'OutOfStock' | 'LowStock';
     image?: string;
     isDigitalMenu: boolean;
     isTrainMenu: boolean;
@@ -371,7 +371,7 @@ export function useDbMenu() {
         fetchMenu();
     };
 
-    return { items, categories, loading, refetch: fetchMenu, saveItem, deleteItem, saveCategory, deleteCategory };
+    return { items, categories, loading, refetch: fetchMenu, saveItem, updateItem: saveItem, deleteItem, saveCategory, deleteCategory };
 }
 
 // ==================== BLOG API HOOKS ====================

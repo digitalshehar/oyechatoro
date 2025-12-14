@@ -6,7 +6,7 @@ import { ChefHeader, TicketCard, ItemView, PrepView } from '../../components/che
 
 export default function KitchenPage() {
     const { orders: allOrders, updateOrder, refetch: refetchOrders } = useDbOrders();
-    const { items: menuItems, categories } = useDbMenu();
+    const { items: menuItems, categories, updateItem } = useDbMenu();
 
     const [viewMode, setViewMode] = useState<'active' | 'history' | 'stats' | 'prep'>('active');
     const [currentTime, setCurrentTime] = useState(Date.now());
@@ -227,7 +227,12 @@ export default function KitchenPage() {
                     )}
 
                     {viewMode === 'stats' && (
-                        <ItemView items={aggregatedItems} />
+                        <ItemView
+                            items={aggregatedItems}
+                            menuItems={menuItems}
+                            onUpdateItem={(id, updates) => updateItem(id, updates)}
+                            categories={categories}
+                        />
                     )}
                 </>
             )}
