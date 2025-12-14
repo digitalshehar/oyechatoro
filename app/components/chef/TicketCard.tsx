@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Order } from '../../lib/db-hooks';
+import ItemTimer from './ItemTimer';
 
 interface TicketCardProps {
     order: Order;
@@ -106,6 +107,11 @@ export default function TicketCard({ order, onUpdateStatus, onPrintKOT, currentT
                         <span className="mt-1.5 w-2 h-2 rounded-full bg-gray-300 shrink-0"></span>
                         <span className="leading-tight">
                             {item.quantity}x {item.name}
+                            {!isHistory && (
+                                <span className="ml-2 relative inline-block align-middle">
+                                    <ItemTimer id={`${order.id}-${idx}`} />
+                                </span>
+                            )}
                             {item.modifiers && item.modifiers.length > 0 && (
                                 <div className="text-sm font-normal text-gray-500">
                                     {item.modifiers.map((m: any) => `+ ${m.name}`).join(', ')}

@@ -8,8 +8,8 @@ interface ChefHeaderProps {
     setIsTVMode: (v: boolean) => void;
     setShowPrepModal: (v: boolean) => void;
     setShowWasteModal: (v: boolean) => void;
-    viewMode: 'active' | 'history' | 'stats' | 'prep';
-    setViewMode: (v: 'active' | 'history' | 'stats' | 'prep') => void;
+    viewMode: 'active' | 'history' | 'stats' | 'prep' | 'logs';
+    setViewMode: (v: 'active' | 'history' | 'stats' | 'prep' | 'logs') => void;
     filter: 'all' | 'dine-in' | 'takeaway';
     setFilter: (v: 'all' | 'dine-in' | 'takeaway') => void;
     stationFilter: string;
@@ -46,7 +46,7 @@ export default function ChefHeader({
                 </div>
                 <div className="flex flex-col gap-2 w-full md:w-auto">
                     <div className="flex bg-gray-700 p-1 rounded-xl w-full">
-                        {['active', 'history', 'stats', 'prep'].map(mode => (
+                        {['active', 'history', 'stats', 'prep', 'logs'].map(mode => (
                             <button key={mode} onClick={() => setViewMode(mode as any)} className={`flex-1 px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold capitalize ${viewMode === mode ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}>{mode}</button>
                         ))}
                     </div>

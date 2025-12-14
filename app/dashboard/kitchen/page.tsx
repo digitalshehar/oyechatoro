@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useDbOrders, Order, useDbMenu } from '../../lib/db-hooks';
-import { ChefHeader, TicketCard, ItemView, PrepView } from '../../components/chef';
+import { ChefHeader, TicketCard, ItemView, PrepView, ShiftLogView } from '../../components/chef';
 
 export default function KitchenPage() {
     const { orders: allOrders, updateOrder, refetch: refetchOrders } = useDbOrders();
     const { items: menuItems, categories, updateItem } = useDbMenu();
 
-    const [viewMode, setViewMode] = useState<'active' | 'history' | 'stats' | 'prep'>('active');
+    const [viewMode, setViewMode] = useState<'active' | 'history' | 'stats' | 'prep' | 'logs'>('active');
     const [currentTime, setCurrentTime] = useState(Date.now());
     const [isSoundEnabled, setIsSoundEnabled] = useState(true);
     const [isTVMode, setIsTVMode] = useState(false);
@@ -184,6 +184,17 @@ export default function KitchenPage() {
         }
     };
 
+    // Helper for Stock Control
+    const handleUpdateItem = async (id: string, updates: any) => {
+        const item = menuItems.find(i => i.id === id);
+        if (!item) return;
+
+        // We need to pass the full item merged with updates, because saveItem expects a MenuItem object
+        // and uses its ID to determine route.
+        const updatedItem = { ...item, ...updates };
+        await updateItem(updatedItem);
+    };
+
     return (
         <div className="p-4 h-full flex flex-col min-h-screen bg-gray-50">
             <ChefHeader
@@ -230,9 +241,17 @@ export default function KitchenPage() {
                         <ItemView
                             items={aggregatedItems}
                             menuItems={menuItems}
-                            onUpdateItem={(id, updates) => updateItem(id, updates)}
+                            onUpdateItem={handleUpdateItem}
                             categories={categories}
                         />
+                    )}
+
+                    {viewMode === 'prep' && (
+                        <PrepView />
+                    )}
+
+                    {viewMode === 'logs' && (
+                        <ShiftLogView />
                     )}
                 </>
             )}
