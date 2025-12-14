@@ -8,19 +8,20 @@ interface ChefHeaderProps {
     setIsTVMode: (v: boolean) => void;
     setShowPrepModal: (v: boolean) => void;
     setShowWasteModal: (v: boolean) => void;
-    viewMode: 'active' | 'history' | 'stats';
-    setViewMode: (v: 'active' | 'history' | 'stats') => void;
+    viewMode: 'active' | 'history' | 'stats' | 'prep';
+    setViewMode: (v: 'active' | 'history' | 'stats' | 'prep') => void;
     filter: 'all' | 'dine-in' | 'takeaway';
     setFilter: (v: 'all' | 'dine-in' | 'takeaway') => void;
-    stationFilter: 'all' | 'tandoor' | 'chinese' | 'curry';
-    setStationFilter: (v: 'all' | 'tandoor' | 'chinese' | 'curry') => void;
+    stationFilter: string;
+    setStationFilter: (v: string) => void;
     displayedCount: number;
     onLogout: () => void;
+    categories?: string[];
 }
 
 export default function ChefHeader({
     soundEnabled, setSoundEnabled, setIsTVMode, setShowPrepModal, setShowWasteModal,
-    viewMode, setViewMode, filter, setFilter, stationFilter, setStationFilter, displayedCount, onLogout
+    viewMode, setViewMode, filter, setFilter, stationFilter, setStationFilter, displayedCount, onLogout, categories = []
 }: ChefHeaderProps) {
     return (
         <div className="sticky top-0 z-20 bg-gray-900/95 backdrop-blur-sm pb-4 pt-2 -mx-2 px-2 md:mx-0 md:px-0 md:static md:bg-transparent md:p-0 md:mb-8">
@@ -45,7 +46,7 @@ export default function ChefHeader({
                 </div>
                 <div className="flex flex-col gap-2 w-full md:w-auto">
                     <div className="flex bg-gray-700 p-1 rounded-xl w-full">
-                        {['active', 'history', 'stats'].map(mode => (
+                        {['active', 'history', 'stats', 'prep'].map(mode => (
                             <button key={mode} onClick={() => setViewMode(mode as any)} className={`flex-1 px-3 py-1.5 rounded-lg text-xs md:text-sm font-bold capitalize ${viewMode === mode ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'}`}>{mode}</button>
                         ))}
                     </div>
@@ -57,9 +58,9 @@ export default function ChefHeader({
                         </select>
                         <select value={stationFilter} onChange={(e) => setStationFilter(e.target.value as any)} className="bg-gray-700 text-white text-xs md:text-sm rounded-lg px-3 py-2 border-none outline-none font-bold">
                             <option value="all">All Stations</option>
-                            <option value="tandoor">Tandoor 🔥</option>
-                            <option value="chinese">Chinese 🥢</option>
-                            <option value="curry">Curry 🥘</option>
+                            {categories.map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
                         </select>
                     </div>
                 </div>

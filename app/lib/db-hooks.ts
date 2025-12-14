@@ -356,13 +356,17 @@ export function useDbMenu() {
         fetchMenu();
     };
 
-    const deleteCategory = async (id: string) => {
-        const res = await fetch(`${API_BASE}/menu/categories/${id}`, {
+    const deleteCategory = async (id: string, force = false) => {
+        const url = force
+            ? `${API_BASE}/menu/categories/${id}?force=true`
+            : `${API_BASE}/menu/categories/${id}`;
+
+        const res = await fetch(url, {
             method: 'DELETE',
         });
         if (!res.ok) {
             const data = await res.json();
-            throw new Error(data.error || 'Failed to delete category');
+            throw new Error(data.error || 'Failed to delete category'); // Contains "Category has X items"
         }
         fetchMenu();
     };

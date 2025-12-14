@@ -605,6 +605,14 @@ export default function POSPage() {
             waiterName: selectedStaff,
             waiterCalled: false,
             notes: orderNotes,
+            dietary: (() => {
+                const tags: string[] = [];
+                const combinedNotes = (orderNotes + ' ' + cart.map(i => i.note || '').join(' ')).toLowerCase();
+                if (combinedNotes.includes('jain')) tags.push('Jain');
+                if (combinedNotes.includes('vegan')) tags.push('Vegan');
+                if (combinedNotes.includes('allergy') || combinedNotes.includes('allergic')) tags.push('Allergy');
+                return tags;
+            })(),
         };
 
 
@@ -654,7 +662,15 @@ export default function POSPage() {
                 amount: discountAmount
             } : undefined,
             tip: tipAmount,
-            waiterName: selectedStaff
+            waiterName: selectedStaff,
+            dietary: (() => {
+                const tags: string[] = [];
+                const combinedNotes = (orderNotes + ' ' + cart.map(i => i.note || '').join(' ')).toLowerCase();
+                if (combinedNotes.includes('jain')) tags.push('Jain');
+                if (combinedNotes.includes('vegan')) tags.push('Vegan');
+                if (combinedNotes.includes('allergy') || combinedNotes.includes('allergic')) tags.push('Allergy');
+                return tags;
+            })(),
         };
 
         createDbOrder(orderData).catch(console.error);

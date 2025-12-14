@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import ExportButton from './ExportButton';
 import ImportModal from './ImportModal';
@@ -9,6 +9,7 @@ import { useDbMenu, MenuItem, MenuCategory, useDbInventory } from '../../lib/db-
 import { QRCodeSVG } from 'qrcode.react';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import TopSellingWidget from './TopSellingWidget';
 
 export default function MenuManagerPage() {
     const { categories, items, saveCategory, deleteCategory, saveItem, deleteItem, loading } = useDbMenu();
@@ -91,10 +92,30 @@ export default function MenuManagerPage() {
     };
 
     const handleDeleteCategory = async (id: string) => {
-        if (confirm('Are you sure? This will delete the category and all its items.')) {
+        if (!confirm('Are you sure you want to delete this category?')) return;
+
+        try {
             if (deleteCategory) {
                 await deleteCategory(id);
                 if (selectedCategoryId === id) setSelectedCategoryId(null);
+            }
+        } catch (error: any) {
+            // Check if error is about items existing
+            if (error.message && error.message.includes('has') && error.message.includes('items')) {
+                if (confirm(`${error.message}\n\nDo you want to delete the category AND all its items?`)) {
+                    try {
+                        if (deleteCategory) {
+                            await deleteCategory(id, true); // Force delete
+                            if (selectedCategoryId === id) setSelectedCategoryId(null);
+                        }
+                    } catch (forceError: any) {
+                        console.error('Force delete failed:', forceError);
+                        alert(forceError.message || 'Failed to force delete category');
+                    }
+                }
+            } else {
+                console.error('Delete failed:', error);
+                alert(error.message || 'Failed to delete category');
             }
         }
     };
@@ -140,6 +161,37 @@ export default function MenuManagerPage() {
     const handleDeleteItem = async (id: string) => {
         if (confirm('Delete this item?')) {
             if (deleteItem) await deleteItem(id);
+        }
+    };
+
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                setItemForm(prev => ({ ...prev, image: data.url }));
+            } else {
+                alert('Upload failed: ' + (data.error || 'Unknown error'));
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Error uploading image');
+        } finally {
+            setIsUploading(false);
         }
     };
 
@@ -274,6 +326,9 @@ export default function MenuManagerPage() {
             <div className="flex justify-between items-center mb-2">
                 <h1 className="text-3xl font-bold text-[var(--brand-dark)]">Menu Management <span className="text-sm font-normal text-gray-400 bg-gray-100 px-2 py-1 rounded-full ml-2">Live Database</span></h1>
             </div>
+
+            {/* Quick Stats Widget */}
+            <TopSellingWidget />
 
             {/* Top Tabs */}
             <div className="flex gap-4">
@@ -544,147 +599,240 @@ export default function MenuManagerPage() {
             {/* Add/Edit Item Modal */}
             {isItemModalOpen && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-lg animate-in">
-                        <h2 className="text-2xl font-bold mb-4">{editingItem ? 'Edit Item' : 'Add New Item'}</h2>
-                        <form onSubmit={handleSaveItem} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Category</label>
-                                <select
-                                    className="w-full px-4 py-2 border rounded-xl"
-                                    value={itemForm.categoryId}
-                                    onChange={e => setItemForm({ ...itemForm, categoryId: e.target.value })}
-                                >
-                                    <option value="">Select Category</option>
-                                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                </select>
-                            </div>
+                    <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-in shadow-2xl flex flex-col">
 
+                        {/* Modal Header */}
+                        <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
                             <div>
-                                <label className="block text-sm font-medium mb-1">Item Name</label>
-                                <input
-                                    required
-                                    className="w-full px-4 py-2 border rounded-xl"
-                                    value={itemForm.name}
-                                    onChange={e => setItemForm({ ...itemForm, name: e.target.value })}
-                                />
+                                <h2 className="text-2xl font-bold text-gray-800">{editingItem ? 'Edit Item' : 'New Menu Item'}</h2>
+                                <p className="text-sm text-gray-500">Fill in the details for your delicious food</p>
                             </div>
+                            <button onClick={() => setIsItemModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">✕</button>
+                        </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                        <form onSubmit={handleSaveItem} className="p-6 flex flex-col lg:flex-row gap-8">
+
+                            {/* LEFT COLUMN: Visuals & Basics (Width 40%) */}
+                            <div className="w-full lg:w-5/12 space-y-6">
+                                {/* Image Uploader */}
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Price (₹)</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        className="w-full px-4 py-2 border rounded-xl"
-                                        value={itemForm.price}
-                                        onChange={e => setItemForm({ ...itemForm, price: Number(e.target.value) })}
-                                    />
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Item Image</label>
+                                    <div className="relative group">
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            onChange={handleImageUpload}
+                                            className="hidden"
+                                            accept="image/*"
+                                        />
+                                        <div
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className={`aspect-video rounded-2xl overflow-hidden border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 transition-all cursor-pointer ${itemForm.image ? 'border-none' : 'hover:border-orange-400 hover:bg-orange-50'}`}
+                                        >
+                                            {isUploading ? (
+                                                <div className="flex flex-col items-center text-orange-500 animate-pulse">
+                                                    <span className="text-2xl mb-1">⬆️</span>
+                                                    <span className="font-bold text-sm">Uploading...</span>
+                                                </div>
+                                            ) : itemForm.image ? (
+                                                <>
+                                                    <Image
+                                                        src={itemForm.image}
+                                                        alt="Preview"
+                                                        fill
+                                                        className="object-cover group-hover:opacity-75 transition-opacity"
+                                                    />
+                                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <span className="bg-black/50 text-white px-3 py-1 rounded-full text-xs font-bold">Change Image</span>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="text-center p-4">
+                                                    <span className="text-4xl mb-2 block">📷</span>
+                                                    <span className="text-sm text-gray-400 font-medium">Click to Upload Image</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="mt-2 text-center text-xs text-gray-400">
+                                            OR paste URL below
+                                        </div>
+                                        <input
+                                            type="text"
+                                            className="mt-1 w-full px-4 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-[var(--brand-primary)] outline-none"
+                                            value={itemForm.image || ''}
+                                            onChange={e => setItemForm({ ...itemForm, image: e.target.value })}
+                                            placeholder="https://example.com/food.jpg"
+                                        />
+                                    </div>
                                 </div>
+
+                                {/* Dietary Toggle */}
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Cost Price (₹)</label>
-                                    <input
-                                        type="number"
-                                        className="w-full px-4 py-2 border rounded-xl"
-                                        value={itemForm.costPrice || ''}
-                                        onChange={e => setItemForm({ ...itemForm, costPrice: Number(e.target.value) })}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1">Type</label>
-                                    <div className="mt-2 text-sm font-bold text-green-700 bg-green-50 px-3 py-2 rounded-xl border border-green-200 inline-block">
-                                        🥗 100% Pure Veg
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Dietary Type</label>
+                                    <div className="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-xl">
+                                        <button
+                                            type="button"
+                                            onClick={() => setItemForm({ ...itemForm, veg: true })}
+                                            className={`py-2 px-4 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all ${itemForm.veg ? 'bg-white text-green-700 shadow-sm border border-green-200' : 'text-gray-500 hover:text-gray-700'}`}
+                                        >
+                                            <span className="w-2 h-2 rounded-full bg-green-500"></span> Veg
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setItemForm({ ...itemForm, veg: false })}
+                                            className={`py-2 px-4 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all ${!itemForm.veg ? 'bg-white text-red-700 shadow-sm border border-red-200' : 'text-gray-500 hover:text-gray-700'}`}
+                                        >
+                                            <span className="w-2 h-2 rounded-full bg-red-500"></span> Non-Veg
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Image URL</label>
-                                <input
-                                    type="text"
-                                    className="w-full px-4 py-2 border rounded-xl"
-                                    value={itemForm.image || ''}
-                                    onChange={e => setItemForm({ ...itemForm, image: e.target.value })}
-                                    placeholder="https://..."
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Description</label>
-                                <textarea
-                                    className="w-full px-4 py-2 border rounded-xl"
-                                    rows={3}
-                                    value={itemForm.description || ''}
-                                    onChange={e => setItemForm({ ...itemForm, description: e.target.value })}
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="flex gap-4 p-4 bg-gray-50 rounded-xl">
-                                    <label className="flex items-center gap-2 cursor-pointer">
+                            {/* RIGHT COLUMN: Details & Settings (Width 60%) */}
+                            <div className="w-full lg:w-7/12 space-y-6">
+                                {/* Basic Info */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Item Name</label>
                                         <input
-                                            type="checkbox"
-                                            checked={itemForm.isDigitalMenu !== false} // Default to true if undefined
-                                            onChange={e => setItemForm({ ...itemForm, isDigitalMenu: e.target.checked })}
-                                            className="w-4 h-4 rounded text-[var(--brand-primary)]"
+                                            required
+                                            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[var(--brand-primary)] outline-none font-medium"
+                                            value={itemForm.name}
+                                            onChange={e => setItemForm({ ...itemForm, name: e.target.value })}
+                                            placeholder="e.g. Butter Chicken"
                                         />
-                                        <span className="text-sm font-medium">Digital Menu 📱</span>
-                                    </label>
-                                </div>
-                                <div className="flex gap-4 p-4 bg-red-50 rounded-xl">
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={itemForm.isTrainMenu || false}
-                                            onChange={e => setItemForm({ ...itemForm, isTrainMenu: e.target.checked })}
-                                            className="w-4 h-4 rounded text-red-600"
-                                        />
-                                        <span className="text-sm font-medium text-red-800">Train Menu 🚆</span>
-                                    </label>
-                                </div>
-                            </div>
+                                    </div>
 
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Tags</label>
-                                <div className="flex gap-2 flex-wrap mb-4">
-                                    {['Spicy', 'Vegan', 'Jain', 'Best Seller', 'New', 'Sweet'].map(tag => (
-                                        <button
-                                            key={tag}
-                                            type="button"
-                                            onClick={() => {
-                                                const currentTags = itemForm.tags || [];
-                                                const newTags = currentTags.includes(tag)
-                                                    ? currentTags.filter(t => t !== tag)
-                                                    : [...currentTags, tag];
-                                                setItemForm({ ...itemForm, tags: newTags });
-                                            }}
-                                            className={`px-3 py-1 rounded-full text-xs font-bold transition-all border ${(itemForm.tags || []).includes(tag)
-                                                ? 'bg-[var(--brand-primary)] text-white border-[var(--brand-primary)]'
-                                                : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
-                                                }`}
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                                        <select
+                                            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-[var(--brand-primary)] outline-none bg-white"
+                                            value={itemForm.categoryId}
+                                            onChange={e => setItemForm({ ...itemForm, categoryId: e.target.value })}
                                         >
-                                            {tag}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                                            <option value="">Select Category</option>
+                                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                        </select>
+                                    </div>
 
-                            <div className="flex gap-4 p-4 bg-gray-50 rounded-xl">
-                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Price (₹)</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-3 text-gray-400 font-bold">₹</span>
+                                            <input
+                                                type="number"
+                                                required
+                                                className="w-full pl-8 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-[var(--brand-primary)] outline-none font-bold text-lg"
+                                                value={itemForm.price}
+                                                onChange={e => setItemForm({ ...itemForm, price: Number(e.target.value) })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Cost Price (Optional)</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-3 text-gray-400 font-bold">₹</span>
+                                            <input
+                                                type="number"
+                                                className="w-full pl-8 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-400 outline-none text-gray-600"
+                                                value={itemForm.costPrice || ''}
+                                                onChange={e => setItemForm({ ...itemForm, costPrice: Number(e.target.value) })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
+                                        <textarea
+                                            className="w-full px-4 py-2 border rounded-xl focus:ring-2 focus:ring-[var(--brand-primary)] outline-none text-sm min-h-[80px]"
+                                            rows={2}
+                                            value={itemForm.description || ''}
+                                            onChange={e => setItemForm({ ...itemForm, description: e.target.value })}
+                                            placeholder="Describe the dish..."
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Availability & Tags Box */}
+                                <div className="bg-gray-50 rounded-2xl p-4 space-y-4 border border-gray-100">
+                                    <div className="flex gap-4">
+                                        <label className="flex-1 flex items-center justify-between p-3 bg-white rounded-xl border cursor-pointer hover:border-blue-400 transition-all">
+                                            <span className="flex items-center gap-2 font-bold text-blue-700">📱 Digital Menu</span>
+                                            <input
+                                                type="checkbox"
+                                                checked={itemForm.isDigitalMenu !== false}
+                                                onChange={e => setItemForm({ ...itemForm, isDigitalMenu: e.target.checked })}
+                                                className="w-5 h-5 accent-blue-600"
+                                            />
+                                        </label>
+                                        <label className="flex-1 flex items-center justify-between p-3 bg-white rounded-xl border cursor-pointer hover:border-red-400 transition-all">
+                                            <span className="flex items-center gap-2 font-bold text-red-700">🚆 Train Menu</span>
+                                            <input
+                                                type="checkbox"
+                                                checked={itemForm.isTrainMenu || false}
+                                                onChange={e => setItemForm({ ...itemForm, isTrainMenu: e.target.checked })}
+                                                className="w-5 h-5 accent-red-600"
+                                            />
+                                        </label>
+                                    </div>
+
+                                    <div className="pt-2 border-t border-gray-200">
+                                        <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Tags</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {['Spicy', 'Vegan', 'Jain', 'Best Seller', 'New', 'Sweet'].map(tag => (
+                                                <button
+                                                    key={tag}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const currentTags = itemForm.tags || [];
+                                                        const newTags = currentTags.includes(tag) ? currentTags.filter(t => t !== tag) : [...currentTags, tag];
+                                                        setItemForm({ ...itemForm, tags: newTags });
+                                                    }}
+                                                    className={`px-3 py-1 rounded-full text-xs font-bold transition-all border ${(itemForm.tags || []).includes(tag)
+                                                        ? 'bg-gray-800 text-white border-gray-800'
+                                                        : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
+                                                        }`}
+                                                >
+                                                    {tag}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <label className="flex items-center gap-3 p-3 rounded-xl hover:bg-yellow-50 transition-colors cursor-pointer w-full">
                                     <input
                                         type="checkbox"
                                         checked={itemForm.isFeatured || false}
                                         onChange={e => setItemForm({ ...itemForm, isFeatured: e.target.checked })}
-                                        className="w-4 h-4 rounded text-[var(--brand-primary)]"
+                                        className="w-5 h-5 accent-yellow-500"
                                     />
-                                    <span className="text-sm font-medium">Featured Item ⭐</span>
+                                    <div>
+                                        <span className="font-bold text-gray-800">Feature this Item ⭐</span>
+                                        <p className="text-xs text-gray-500">Show at the top of the menu recommendations</p>
+                                    </div>
                                 </label>
-                            </div>
 
-                            <div className="flex justify-end gap-3 mt-6">
-                                <button type="button" onClick={() => setIsItemModalOpen(false)} className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg">Cancel</button>
-                                <button type="submit" className="btn btn-primary">Save Item</button>
                             </div>
                         </form>
+
+                        {/* Footer Actions */}
+                        <div className="p-4 border-t bg-gray-50 flex justify-end gap-3 rounded-b-2xl sticky bottom-0 z-10">
+                            <button
+                                type="button"
+                                onClick={() => setIsItemModalOpen(false)}
+                                className="px-6 py-3 font-bold text-gray-500 hover:bg-gray-200 rounded-xl transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSaveItem}
+                                className="px-8 py-3 bg-[var(--brand-primary)] text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-orange-600 transition-all flex items-center gap-2"
+                            >
+                                {editingItem ? '💾 Save Changes' : '✨ Create Item'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

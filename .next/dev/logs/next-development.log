@@ -1,12 +1,431 @@
-[00:00:16.794] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:06:42.059] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:07:36.207] Browser ERROR   unhandledRejection: Error: Cannot delete: Category has 1 items.
-[01:14:57.444] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[01:36:03.235] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[01:36:03.271] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[01:37:33.034] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+[00:01:08.344] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:09.211] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:06:51.198] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:08:55.686] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:09:37.640] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:09:40.563] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:14:15.285] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:14:26.092] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:14:26.346] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
 Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[01:57:51.138] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[02:51:40.568] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[02:54:40.077] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[02:55:13.236] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:15:07.313] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:01.082] Browser ERROR   uncaughtError: ReferenceError: fileInputRef is not defined
+[00:25:48.618] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:25:49.917] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:49.917] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:49.918] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:49.918] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:50.143] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:50.143] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:50.143] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:50.143] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:50.746] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:50.746] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:51.019] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:51.019] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:51.267] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:51.267] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:51.368] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:51.368] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:52.211] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:52.211] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:52.534] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |            ^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `selectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:25:52.534] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
+Ecmascript file had an error
+  165 |     };
+  166 |
+> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
+      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  168 |     const [isUploading, setIsUploading] = useState(false);
+  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
+  170 |
+
+the name `setSelectedItemForRecipe` is defined multiple times
+
+Import traces:
+  Client Component Browser:
+    ./app/dashboard/menu/page.tsx [Client Component Browser]
+    ./app/dashboard/menu/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/dashboard/menu/page.tsx [Client Component SSR]
+    ./app/dashboard/menu/page.tsx [Server Component]
+[00:26:53.515] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:27:18.211] Browser WARN    Image with src "http://localhost:3000/uploads/menu/menu-1765671929557-414090338.png" has "fill" and parent element with invalid "position". Provided "static" should be one of absolute,fixed,relative.
+[00:27:42.741] Browser WARN    Image with src "http://localhost:3000/uploads/menu/menu-1765671954167-894155947.jpg" has "fill" and parent element with invalid "position". Provided "static" should be one of absolute,fixed,relative.
+[00:29:23.128] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:29:27.987] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:29:28.466] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:30:17.637] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:30:17.860] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:35:47.138] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:35:47.415] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:37:29.968] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:42:38.607] Browser WARN    Image with src "http://localhost:3000/uploads/menu/menu-1765672850020-528445087.jpg" has "fill" and parent element with invalid "position". Provided "static" should be one of absolute,fixed,relative.
+[00:43:09.953] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:43:10.201] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading

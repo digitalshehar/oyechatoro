@@ -195,16 +195,13 @@ export default function ClientLayout({ children, session }: { children: React.Re
 
                             <div className="text-xs font-bold text-[var(--text-light)] uppercase tracking-wider mb-2 px-4 mt-6">Insights</div>
                             <Link href="/dashboard/analytics" className={linkClass('/dashboard/analytics')}>
-                                <span>📈</span> Analytics
+                                <span>📈</span> Reports & Analytics
                             </Link>
                             <Link href="/dashboard/customers" className={linkClass('/dashboard/customers')}>
                                 <span>👥</span> Customers
                             </Link>
                             <Link href="/dashboard/reviews" className={linkClass('/dashboard/reviews')}>
                                 <span>⭐</span> Reviews
-                            </Link>
-                            <Link href="/dashboard/finance" className={linkClass('/dashboard/finance')}>
-                                <span>💰</span> Finance
                             </Link>
                             <Link href="/dashboard/audit" className={linkClass('/dashboard/audit')}>
                                 <span>🛡️</span> Audit Logs
@@ -224,9 +221,6 @@ export default function ClientLayout({ children, session }: { children: React.Re
                             <div className="text-xs font-bold text-[var(--text-light)] uppercase tracking-wider mb-2 px-4 mt-6">Supply Chain</div>
                             <Link href="/dashboard/suppliers" className={linkClass('/dashboard/suppliers')}>
                                 <span>🚚</span> Suppliers & POs
-                            </Link>
-                            <Link href="/dashboard/menu-engineering" className={linkClass('/dashboard/menu-engineering')}>
-                                <span>📊</span> Menu Engineering
                             </Link>
 
                             <div className="text-xs font-bold text-[var(--text-light)] uppercase tracking-wider mb-2 px-4 mt-6">Configuration</div>

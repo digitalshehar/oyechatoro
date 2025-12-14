@@ -16,14 +16,28 @@ export async function DELETE(
 
         const { id } = await params;
 
+        const { searchParams } = new URL(request.url);
+        const force = searchParams.get('force') === 'true';
+
         // Check for usage
         const itemCount = await prisma.menuItem.count({
             where: { categoryId: id }
         });
 
-        if (itemCount > 0) {
-            return NextResponse.json({ error: `Cannot delete: Category has ${itemCount} items.` }, { status: 400 });
+        if (itemCount > 0 && !force) {
+            return NextResponse.json({
+                error: `Cannot delete: Category has ${itemCount} items.`,
+                count: itemCount
+            }, { status: 400 });
         }
+
+        if (force && itemCount > 0) {
+            // Delete associated items first
+            await prisma.menuItem.deleteMany({
+                where: { categoryId: id }
+            });
+        }
+
 
         const category = await prisma.menuCategory.delete({
             where: { id },
