@@ -18,9 +18,14 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-        // Try a simple query
+        // Try a simple count
         const count = await prisma.menuItem.count();
         status.connection = `Connected! Item Count: ${count}`;
+
+        // Try fetching one item to check serialization/model issues
+        const sampleItem = await prisma.menuItem.findFirst();
+        (status as any).sampleItem = sampleItem;
+
         return NextResponse.json(status);
     } catch (e: any) {
         console.error('DB Connection Test Failed:', e);
