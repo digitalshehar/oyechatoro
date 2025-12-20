@@ -10,6 +10,10 @@ const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 
             if (res.ok) return res;
             if (res.status === 429 || res.status >= 500) {
                 // Retryable error
+                try {
+                    const text = await res.clone().text();
+                    console.warn(`Fetch failed (${res.status}). Body:`, text);
+                } catch (e) { /* ignore */ }
                 console.warn(`Fetch failed (${res.status}). Retrying ${i + 1}/${retries}...`);
                 await new Promise(r => setTimeout(r, backoff * (i + 1)));
                 continue;
