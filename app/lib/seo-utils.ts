@@ -470,7 +470,8 @@ export async function getPrepForecasting(items: any[], orders: any[], apiKey: st
     1. Group by Ingredient/Task.
     2. Provide quantity estimates (e.g., "5kg", "2 Liters").
     3. Include a "Reason" based on order frequency.
-    4. Return only a JSON array of objects: [ { "task": "string", "qty": "string", "urgency": "High" | "Medium", "reason": "string" } ]
+    4. MUST include a "station" field (e.g., "Pizza", "Chaat", "Tandoor", "Chinese", "Main Course") based on the dishes likely to use that ingredient.
+    5. Return only a JSON array of objects: [ { "task": "string", "qty": "string", "urgency": "High" | "Medium", "reason": "string", "station": "string" } ]
     `;
 
     let attempts = 0;

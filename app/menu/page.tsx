@@ -5,7 +5,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useDbMenu, MenuItem, useDbSettings as useSettings, addServiceRequest, useDbCart, useDbOffers } from '../lib/db-hooks';
+import { useDbMenu, MenuItem, useDbSettings as useSettings, addServiceRequest, useDbCart, useDbOffers, getSocket } from '../lib/db-hooks';
 
 import OffersCarousel from '../components/OffersCarousel';
 
@@ -181,18 +181,27 @@ export default function MenuPage() {
                 status: 'Pending'
             };
 
-            await fetch('/api/orders', {
+            const res = await fetch('/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)
             });
 
-            // Success
-            alert('✅ Order Placed! Kitchen has received your order.');
-            clearCart();
-            setIsCartOpen(false);
-            setAppliedOffer(null);
-            setDiscountAmount(0);
+            if (res.ok) {
+                const newOrder = await res.json();
+                // Real-time update to dashboard
+                const socket = getSocket();
+                socket.emit('new-order', newOrder);
+
+                // Success
+                alert('✅ Order Placed! Kitchen has received your order.');
+                clearCart();
+                setIsCartOpen(false);
+                setAppliedOffer(null);
+                setDiscountAmount(0);
+            } else {
+                throw new Error('Failed to create order');
+            }
         } catch (e) {
             console.error('Failed to submit order:', e);
             alert('Something went wrong. Please call waiter.');
@@ -238,7 +247,12 @@ export default function MenuPage() {
                 paymentMethod: 'Cash',
                 status: 'Pending'
             };
-            fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+            const res = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+            if (res.ok) {
+                const newOrder = await res.json();
+                const socket = getSocket();
+                socket.emit('new-order', newOrder);
+            }
         } catch (e) { }
 
         // Clear cart after order

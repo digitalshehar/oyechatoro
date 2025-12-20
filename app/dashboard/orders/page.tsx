@@ -225,6 +225,30 @@ const OrdersPage = () => {
                                 </div>
                             </div>
                             <div className="flex flex-row md:flex-row items-center gap-3 w-full md:w-auto justify-between md:justify-end border-t border-dashed md:border-t-0 pt-3 md:pt-0 mt-1 md:mt-0">
+                                {order.waiterCalled && (
+                                    <div className="flex items-center gap-2 bg-orange-100 border border-orange-200 px-3 py-2 rounded-xl animate-pulse">
+                                        <span className="text-xl">👨‍🍳</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black text-orange-800 uppercase leading-none">Chef Calling</span>
+                                            <button
+                                                onClick={async (e) => {
+                                                    e.stopPropagation();
+                                                    try {
+                                                        const res = await fetch('/api/kitchen/comms', {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({ orderId: order.id, action: 'resolve_waiter' })
+                                                        });
+                                                        if (res.ok) updateOrder(order.id, { waiterCalled: false });
+                                                    } catch (err) { }
+                                                }}
+                                                className="text-[9px] font-bold text-orange-600 hover:text-orange-900 underline text-left"
+                                            >
+                                                Acknowledge
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="text-left md:text-right min-w-[70px] md:min-w-[100px]">
                                     <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase">Total</div>
                                     <div className="font-bold text-lg md:text-2xl text-[var(--brand-primary)]">{isRevenueVisible ? `₹${order.total}` : '****'}</div>

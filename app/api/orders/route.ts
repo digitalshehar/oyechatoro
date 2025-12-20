@@ -22,21 +22,27 @@ export async function GET(request: NextRequest) {
 
         // Role-based filtering
         // @ts-ignore
-        if (session.user?.role === 'Customer') {
+        const userRole = session.user?.role;
+        if (userRole === 'Customer') {
             if (session.user?.id) {
                 where.userId = session.user.id;
             } else {
                 return NextResponse.json([]); // No ID
             }
+        } else if (userRole === 'Admin') {
+            // Admins see everything
         } else {
-            // Data Isolation: Restrict Staff/Managers to their store
+            // Managers/Staff: Data Isolation: Restrict to their store OR Guest orders (storeId: null)
             const storeId = (session.user as any).storeId;
             if (storeId) {
-                where.storeId = storeId;
+                where.OR = [
+                    { storeId: storeId },
+                    { storeId: null }
+                ];
             } else {
-                // SECURITY: If storeId is missing (and not Customer), DO NOT SHOW ALL.
-                // This prevents new/broken accounts from seeing Head Office data.
-                return NextResponse.json([]);
+                // SECURITY: If storeId is missing and not Admin/Customer, DO NOT SHOW ALL.
+                // But allow seeing Guest orders (null storeId) if they are staff.
+                where.storeId = null;
             }
         }
 

@@ -157,8 +157,14 @@ export default function TicketCard({
 
             {/* Safety Banner */}
             {isAllergy && (
-                <div className={`${tvMode ? 'py-4 text-3xl' : 'py-2 text-xl'} bg-purple-600 text-white text-center font-bold animate-pulse ring-4 ring-purple-300 ring-inset`}>
-                    ⚠️ ALLERGY ALERT ⚠️
+                <div className={`${tvMode ? 'py-4 text-3xl' : 'py-2 text-xl'} bg-red-600 text-white text-center font-black animate-pulse ring-4 ring-red-300 ring-inset uppercase tracking-tighter`}>
+                    ⚠️ SEVERE ALLERGY ALERT ⚠️
+                </div>
+            )}
+
+            {order.waiterCalled && (
+                <div className={`${tvMode ? 'py-3 text-2xl' : 'py-1.5 text-sm'} bg-orange-500 text-white text-center font-black animate-pulse border-b border-orange-600 uppercase tracking-widest`}>
+                    🛎️ Server Requested by Kitchen 🛎️
                 </div>
             )}
 
@@ -186,11 +192,23 @@ export default function TicketCard({
                         <span className={`${tvMode ? 'text-lg' : 'text-xs'} text-gray-500 font-bold uppercase tracking-widest`}>{order.type}</span>
                     </div>
                     {/* Nutritional/Safety Icons */}
-                    <div className="flex gap-1">
-                        {isJain && <span className="text-xl" title="Jain Food">🥬</span>}
-                        {isVegan && <span className="text-xl" title="Vegan">🌱</span>}
-                        {isAllergy && <span className="text-xl" title="Allergy Warning">🥜</span>}
-                        {isGlutenFree && <span className="text-sm bg-orange-400 text-white px-1 rounded font-black">GF</span>}
+                    <div className="flex gap-2 items-center">
+                        {isJain && (
+                            <div className="flex flex-col items-center">
+                                <span className="text-2xl" title="Jain (No Onion Garlic)">🥬</span>
+                                <span className="text-[8px] font-black text-green-600 uppercase">JAIN</span>
+                            </div>
+                        )}
+                        {isVegan && (
+                            <div className="flex flex-col items-center">
+                                <span className="text-2xl" title="Vegan">🌱</span>
+                                <span className="text-[8px] font-black text-green-700 uppercase">VEGAN</span>
+                            </div>
+                        )}
+                        {isAllergy && <span className="text-2xl animate-bounce" title="Allergy Warning">🥜</span>}
+                        {isGlutenFree && (
+                            <div className="bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded shadow-sm">GF</div>
+                        )}
                     </div>
                 </div>
                 <div className="text-right flex flex-col items-end gap-2">

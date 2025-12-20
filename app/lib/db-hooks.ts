@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getSocket } from './socket';
+export { getSocket };
 
 const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 3, backoff = 1000) => {
     for (let i = 0; i < retries; i++) {

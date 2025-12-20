@@ -6,6 +6,11 @@ interface PrepTask {
     id: string;
     text: string;
     completed: boolean;
+    station?: string;
+}
+
+interface PrepViewProps {
+    currentStation?: string;
 }
 
 const DEFAULT_TASKS = [
@@ -18,7 +23,7 @@ const DEFAULT_TASKS = [
     { id: '7', text: 'Clean Workstations', completed: false },
 ];
 
-export default function PrepView() {
+export default function PrepView({ currentStation = 'all' }: PrepViewProps) {
     const [tasks, setTasks] = useState<PrepTask[]>([]);
     const [newTask, setNewTask] = useState('');
     const [isLoadingAi, setIsLoadingAi] = useState(false);
@@ -105,7 +110,8 @@ export default function PrepView() {
                                         const aiTasks = suggestions.map((s: any) => ({
                                             id: `ai-${Date.now()}-${Math.random()}`,
                                             text: `✨ AI: ${s.task} (${s.qty}) - ${s.reason}`,
-                                            completed: false
+                                            completed: false,
+                                            station: s.station
                                         }));
                                         saveTasks([...tasks, ...aiTasks]);
                                     }
@@ -132,31 +138,33 @@ export default function PrepView() {
 
             {/* Task List */}
             <div className="space-y-3">
-                {tasks.map(task => (
-                    <div
-                        key={task.id}
-                        className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${task.completed
-                            ? 'bg-green-50 border-green-200 opacity-75'
-                            : 'bg-white border-gray-200 shadow-sm hover:shadow-md'
-                            }`}
-                    >
-                        <input
-                            type="checkbox"
-                            checked={task.completed}
-                            onChange={() => toggleTask(task.id)}
-                            className="w-6 h-6 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
-                        />
-                        <span className={`flex-1 text-lg ${task.completed ? 'line-through text-gray-500' : 'font-bold text-gray-800'}`}>
-                            {task.text}
-                        </span>
-                        <button
-                            onClick={() => deleteTask(task.id)}
-                            className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                {tasks
+                    .filter(t => currentStation === 'all' || !t.station || t.station === 'all' || t.station.toLowerCase() === currentStation.toLowerCase())
+                    .map(task => (
+                        <div
+                            key={task.id}
+                            className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${task.completed
+                                ? 'bg-green-50 border-green-200 opacity-75'
+                                : 'bg-white border-gray-200 shadow-sm hover:shadow-md'
+                                }`}
                         >
-                            ✕
-                        </button>
-                    </div>
-                ))}
+                            <input
+                                type="checkbox"
+                                checked={task.completed}
+                                onChange={() => toggleTask(task.id)}
+                                className="w-6 h-6 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
+                            />
+                            <span className={`flex-1 text-lg ${task.completed ? 'line-through text-gray-500' : 'font-bold text-gray-800'}`}>
+                                {task.text}
+                            </span>
+                            <button
+                                onClick={() => deleteTask(task.id)}
+                                className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    ))}
 
                 {/* Add New */}
                 <form onSubmit={addTask} className="flex gap-2 mt-4">

@@ -13,14 +13,25 @@ export async function POST(req: Request) {
         const { orderId, action, message } = body;
 
         if (action === 'call_waiter') {
-            await prisma.order.update({
+            const order = await prisma.order.findUnique({ where: { id: parseInt(orderId) } });
+            const updated = await prisma.order.update({
                 where: { id: parseInt(orderId) },
                 data: {
                     waiterCalled: true,
-                    notes: message ? `[CHEF CALL: ${message}]` : undefined
+                    notes: message ? `${order?.notes || ''}\n[CHEF CALL: ${message}]` : undefined
                 }
             });
-            return NextResponse.json({ success: true, message: 'Waiter called' });
+            return NextResponse.json({ success: true, order: updated });
+        }
+
+        if (action === 'resolve_waiter') {
+            const updated = await prisma.order.update({
+                where: { id: parseInt(orderId) },
+                data: {
+                    waiterCalled: false
+                }
+            });
+            return NextResponse.json({ success: true, order: updated });
         }
 
         return new NextResponse('Invalid Action', { status: 400 });

@@ -19,11 +19,12 @@ interface ChefHeaderProps {
     categories?: string[];
     newOrderCount?: number;
     onTestSound?: () => void;
+    hasHighAllergy?: boolean;
 }
 
 export default function ChefHeader({
     soundEnabled, setSoundEnabled, setIsTVMode, setShowPrepModal, setShowWasteModal,
-    viewMode, setViewMode, filter, setFilter, stationFilter, setStationFilter, displayedCount, onLogout, categories = [], newOrderCount = 0, onTestSound
+    viewMode, setViewMode, filter, setFilter, stationFilter, setStationFilter, displayedCount, onLogout, categories = [], newOrderCount = 0, onTestSound, hasHighAllergy = false
 }: ChefHeaderProps) {
     return (
         <div className="sticky top-0 z-20 bg-gray-50/95 backdrop-blur-sm pb-4 pt-2 -mx-2 px-2 md:mx-0 md:px-0 md:static md:bg-transparent md:p-0 md:mb-6">
@@ -53,8 +54,14 @@ export default function ChefHeader({
                     <div className="flex bg-gray-100 rounded-xl p-1 gap-1">
                         <button
                             onClick={() => setViewMode('new')}
-                            className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-3 md:px-6 py-2 rounded-lg font-bold transition-all text-xs md:text-sm ${viewMode === 'new' ? 'bg-yellow-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-200'}`}
+                            className={`flex items-center justify-center gap-2 px-3 md:px-6 py-2 rounded-lg font-bold transition-all text-xs md:text-sm relative ${viewMode === 'new' ? 'bg-yellow-500 text-white shadow-md' : 'text-gray-500 hover:bg-gray-200'}`}
                         >
+                            {hasHighAllergy && (
+                                <span className="absolute -top-1 -right-1 flex h-4 w-4">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-4 w-4 bg-red-500 text-[8px] items-center justify-center">⚠️</span>
+                                </span>
+                            )}
                             NEW
                             {newOrderCount > 0 && (
                                 <span className={`flex items-center justify-center w-4 h-4 md:w-5 md:h-5 rounded-full text-[10px] md:text-xs ${viewMode === 'new' ? 'bg-white text-yellow-600' : 'bg-red-500 text-white'}`}>

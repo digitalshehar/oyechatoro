@@ -310,7 +310,8 @@ export default function KitchenPage() {
                         stationFilter, setStationFilter, displayedCount: filteredOrders.length,
                         onLogout: () => console.log('logout'), categories: categories.map(c => c.name),
                         newOrderCount: allOrders.filter(o => o.status === 'Pending' || updatedOrderIds.has(o.id)).length,
-                        onTestSound: () => playSound('new')
+                        onTestSound: () => playSound('new'),
+                        hasHighAllergy: allOrders.some(o => (o.status === 'Pending' || o.status === 'Cooking') && ((o.notes || '').toLowerCase().includes('allergy') || (o.notes || '').toLowerCase().includes('allergic')))
                     }}
                 />
             )}
@@ -421,7 +422,7 @@ export default function KitchenPage() {
                         )}
 
                         {!isTVMode && viewMode === 'prep' && (
-                            <PrepView />
+                            <PrepView currentStation={stationFilter} />
                         )}
 
                         {!isTVMode && viewMode === 'logs' && (
