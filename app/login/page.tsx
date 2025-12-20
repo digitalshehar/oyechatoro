@@ -1,11 +1,14 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { authenticate } from '../actions/auth';
-import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginPage() {
     const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
+    const searchParams = useSearchParams();
+    const message = searchParams.get('message');
 
     return (
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black font-sans selection:bg-orange-500 selection:text-white">
@@ -26,12 +29,18 @@ export default function LoginPage() {
 
                     {/* Header */}
                     <div className="text-center mb-10">
-                        <div className="w-20 h-20 mx-auto bg-gradient-to-br from-orange-400 to-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-900/40 mb-6 transform rotate-3 hover:rotate-6 transition-transform duration-500">
+                        <Link href="/" className="inline-block w-20 h-20 mx-auto bg-gradient-to-br from-orange-400 to-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-900/40 mb-6 transform rotate-3 hover:rotate-6 transition-transform duration-500 hover:scale-105 cursor-pointer">
                             <span className="text-4xl">🥘</span>
-                        </div>
-                        <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Oye Chatoro</h1>
-                        <p className="text-white/60 font-medium tracking-wide">Admin Dashboard Access</p>
+                        </Link>
+                        <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Welcome Back!</h1>
+                        <p className="text-white/60 font-medium tracking-wide">Sign in to continue ordering</p>
                     </div>
+
+                    {message && (
+                        <div className="p-4 bg-green-500/20 border border-green-500/50 text-green-200 text-sm font-bold rounded-xl mb-6 animate-in fade-in flex items-center gap-3">
+                            <span>✅</span> {message}
+                        </div>
+                    )}
 
                     {/* Form */}
                     <form action={formAction} className="space-y-6">
@@ -44,8 +53,7 @@ export default function LoginPage() {
                                     type="email"
                                     required
                                     className="w-full pl-12 pr-4 py-4 rounded-xl bg-black/40 border border-white/10 text-white placeholder-white/30 focus:border-orange-500 focus:bg-black/60 focus:ring-1 focus:ring-orange-500/50 outline-none transition-all font-medium"
-                                    placeholder="admin@oyechatoro.com"
-                                    defaultValue="admin@oyechatoro.com"
+                                    placeholder="you@example.com"
                                 />
                             </div>
                         </div>
@@ -78,24 +86,26 @@ export default function LoginPage() {
                             {isPending ? (
                                 <span className="flex items-center justify-center gap-2">
                                     <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                                    Authenticating...
+                                    Signing in...
                                 </span>
                             ) : (
-                                'Enter Dashboard'
+                                'Sign In'
                             )}
                         </button>
                     </form>
 
-                    <div className="mt-8 text-center">
-                        <p className="text-white/20 text-xs">
-                            Secure System • Authorized Personnel Only
-                        </p>
+                    <div className="mt-8 text-center text-white/40 text-sm flex flex-col gap-4">
+                        <Link href="/" className="hover:text-white hover:underline transition-colors">
+                            ← Back to Home
+                        </Link>
+                        <div>
+                            Don't have an account?{' '}
+                            <Link href="/signup" className="text-orange-400 font-bold hover:text-orange-300 hover:underline transition-colors">
+                                Create Account
+                            </Link>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none">
-                <span className="text-white/5 text-[10rem] font-black leading-none tracking-tighter mix-blend-overlay">LOGIN</span>
             </div>
         </div>
     );
