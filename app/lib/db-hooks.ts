@@ -314,8 +314,8 @@ export function useDbOrders() {
         socket.on('status-updated', handleStatusUpdate);
         socket.on('order-updated', handleOrderUpdate);
 
-        // Keep polling as backup/sync, but less frequent (30s)
-        const interval = setInterval(fetchOrders, 30000);
+        // Keep polling as backup/sync, fast polling for serverless (3s)
+        const interval = setInterval(fetchOrders, 3000);
 
         return () => {
             clearInterval(interval);
