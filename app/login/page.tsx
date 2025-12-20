@@ -1,11 +1,11 @@
 'use client';
 
-import { useActionState, useEffect } from 'react';
+import { useActionState, Suspense } from 'react';
 import { authenticate } from '../actions/auth';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function LoginPage() {
+function LoginForm() {
     const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
     const searchParams = useSearchParams();
     const message = searchParams.get('message');
@@ -107,6 +107,18 @@ export default function LoginPage() {
                     </div>
                 </div>
             </div>
+
+            <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none">
+                <span className="text-white/5 text-[10rem] font-black leading-none tracking-tighter mix-blend-overlay">LOGIN</span>
+            </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+            <LoginForm />
+        </Suspense>
     );
 }
