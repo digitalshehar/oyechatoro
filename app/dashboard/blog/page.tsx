@@ -18,6 +18,38 @@ export default function BlogManagerPage() {
     const [focusKeyword, setFocusKeyword] = useState('');
     const [seoScore, setSeoScore] = useState(0);
 
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleBlogImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'blog');
+
+            const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!res.ok) throw new Error('Upload failed');
+
+            const data = await res.json();
+            if (data.url) {
+                setCurrentPost(prev => ({ ...prev, image: data.url }));
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('Failed to upload image');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     useEffect(() => {
         let score = 0;
         if (currentPost.title) {
@@ -214,27 +246,27 @@ export default function BlogManagerPage() {
             {!isEditing ? (
                 // --- LIST VIEW ---
                 <>
-                    <div className="flex justify-between items-center mb-8 animate-in">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 animate-in">
                         <div>
-                            <h1 className="text-3xl font-bold text-[var(--brand-dark)]">Blog Manager</h1>
-                            <p className="text-[var(--text-muted)]">Create, edit, and optimize your content</p>
+                            <h1 className="text-2xl md:text-3xl font-bold text-[var(--brand-dark)]">Blog Manager</h1>
+                            <p className="text-sm text-[var(--text-muted)]">Create and optimize your content</p>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar">
                             <button
                                 onClick={() => setShowCategoryModal(true)}
-                                className="px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm"
+                                className="px-3 md:px-4 py-2.5 md:py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm text-xs md:text-sm whitespace-nowrap"
                             >
-                                📂 Manage Categories
+                                📂 Categories
                             </button>
                             <button
                                 onClick={() => setShowTagsModal(true)}
-                                className="px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm"
+                                className="px-3 md:px-4 py-2.5 md:py-3 bg-white border border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-all shadow-sm text-xs md:text-sm whitespace-nowrap"
                             >
-                                🏷️ Manage Tags
+                                🏷️ Tags
                             </button>
                             <button
                                 onClick={handleCreate}
-                                className="px-6 py-3 bg-[var(--brand-primary)] text-white rounded-xl font-bold shadow-lg shadow-orange-200 hover:bg-[var(--brand-secondary)] transition-all flex items-center gap-2"
+                                className="px-4 md:px-6 py-2.5 md:py-3 bg-[var(--brand-primary)] text-white rounded-xl font-bold shadow-lg shadow-orange-200 hover:bg-[var(--brand-secondary)] transition-all flex items-center gap-2 text-xs md:text-sm whitespace-nowrap"
                             >
                                 <span>+</span> New Post
                             </button>
@@ -315,8 +347,8 @@ export default function BlogManagerPage() {
                             </div>
                         ) : (
                             posts.map(post => (
-                                <div key={post.id} className="glass-card p-4 rounded-xl flex gap-6 items-center group hover:bg-white/80 transition-all border border-transparent hover:border-gray-200">
-                                    <div className="relative w-32 h-24 shrink-0">
+                                <div key={post.id} className="glass-card p-3 md:p-4 rounded-xl flex gap-3 md:gap-6 items-center group hover:bg-white/80 transition-all border border-transparent hover:border-gray-200">
+                                    <div className="relative w-20 md:w-32 h-16 md:h-24 shrink-0">
                                         <Image
                                             src={post.image || 'https://via.placeholder.com/150'}
                                             alt={post.title}
@@ -324,41 +356,39 @@ export default function BlogManagerPage() {
                                             className="object-cover rounded-lg shadow-sm"
                                             unoptimized
                                         />
-                                        <span className={`absolute top-2 left-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded shadow-sm ${post.status === 'Draft' ? 'bg-gray-800 text-white' : 'bg-green-500 text-white'
+                                        <span className={`absolute top-1 left-1 px-1.5 py-0.5 text-[8px] md:text-[10px] font-bold uppercase tracking-wider rounded shadow-sm ${post.status === 'Draft' ? 'bg-gray-800 text-white' : 'bg-green-500 text-white'
                                             }`}>
                                             {post.status || 'Published'}
                                         </span>
                                     </div>
 
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="px-2 py-0.5 bg-orange-50 text-orange-700 text-xs font-bold rounded-md border border-orange-100">{post.category?.name || 'News'}</span>
-                                            {post.isRecipe && <span className="px-2 py-0.5 bg-yellow-50 text-yellow-700 text-xs font-bold rounded-md border border-yellow-100">🍳 Recipe</span>}
-                                            <span className="text-xs text-gray-400 flex items-center gap-1">
+                                        <div className="flex items-center gap-1.5 md:gap-2 mb-0.5 md:mb-1">
+                                            <span className="px-1.5 py-0.5 bg-orange-50 text-orange-700 text-[10px] font-bold rounded border border-orange-100">{post.category?.name || 'News'}</span>
+                                            {post.isRecipe && <span className="px-1.5 py-0.5 bg-yellow-50 text-yellow-700 text-[10px] font-bold rounded border border-yellow-100">🍳</span>}
+                                            <span className="text-[10px] text-gray-400 flex items-center gap-1">
                                                 <span>👁️ {post.views || 0}</span>
-                                                <span>•</span>
-                                                <span>❤️ {post.likes || 0}</span>
                                             </span>
                                         </div>
-                                        <h3 className="font-bold text-lg text-gray-800 truncate">{post.title}</h3>
-                                        <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
+                                        <h3 className="font-bold text-sm md:text-lg text-gray-800 truncate">{post.title}</h3>
+                                        <div className="flex items-center gap-2 md:gap-4 text-[10px] md:text-xs text-gray-500">
                                             <span>{post.date}</span>
-                                            <span>•</span>
-                                            <span>{post.readingTime || '1 min read'}</span>
+                                            <span className="hidden md:inline">•</span>
+                                            <span className="hidden md:inline">{post.readingTime || '1 min read'}</span>
                                         </div>
                                     </div>
 
-                                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="flex gap-1 md:gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                         <button
                                             onClick={() => handleEdit(post)}
-                                            className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                                            className="p-2 md:p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-xs"
                                             title="Edit"
                                         >
                                             ✏️
                                         </button>
                                         <button
                                             onClick={() => handleDelete(post.id)}
-                                            className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                                            className="p-2 md:p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors text-xs"
                                             title="Delete"
                                         >
                                             🗑️
@@ -373,43 +403,42 @@ export default function BlogManagerPage() {
                 // --- EDITOR VIEW ---
                 <div className="flex flex-col h-full animate-in">
                     {/* Toolbar */}
-                    <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 sticky top-0 z-10">
-                        <div className="flex items-center gap-4">
-                            <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-gray-600">← Back</button>
-                            <div className="h-6 w-px bg-gray-200"></div>
-                            <div className="flex bg-gray-100 p-1 rounded-lg">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 bg-white p-3 md:p-4 rounded-2xl shadow-sm border border-gray-100 sticky top-0 z-10 gap-3">
+                        <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
+                            <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-gray-600 text-sm">←</button>
+                            <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
+                            <div className="flex bg-gray-100 p-1 rounded-lg flex-1 md:flex-none">
                                 <button
                                     onClick={() => setActiveTab('edit')}
-                                    className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeTab === 'edit' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
+                                    className={`flex-1 md:px-4 py-1.5 rounded-md text-[10px] md:text-sm font-bold transition-all ${activeTab === 'edit' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
                                 >
                                     ✏️ Edit
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('preview')}
-                                    className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeTab === 'preview' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
+                                    className={`flex-1 md:px-4 py-1.5 rounded-md text-[10px] md:text-sm font-bold transition-all ${activeTab === 'preview' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
                                 >
-                                    👁️ Preview
+                                    👁️ Pre
                                 </button>
                                 <button
                                     onClick={() => setActiveTab('seo')}
-                                    className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${activeTab === 'seo' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
+                                    className={`flex-1 md:px-4 py-1.5 rounded-md text-[10px] md:text-sm font-bold transition-all ${activeTab === 'seo' ? 'bg-white shadow text-gray-800' : 'text-gray-500 hover:text-gray-700'}`}
                                 >
-                                    🚀 SEO ({seoScore})
+                                    🚀 SEO
                                 </button>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 w-full md:w-auto">
                             <select
                                 value={currentPost.status || 'Draft'}
                                 onChange={e => setCurrentPost({ ...currentPost, status: e.target.value as any })}
-                                className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2"
+                                className="flex-1 md:flex-none bg-gray-50 border border-gray-200 text-gray-700 text-xs rounded-lg block p-2"
                             >
                                 <option value="Draft">Draft</option>
                                 <option value="Published">Published</option>
-                                <option value="Scheduled">Scheduled</option>
                             </select>
-                            <button onClick={handleSave} className="px-6 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 shadow-lg shadow-green-200 transition-all">
-                                Save Changes
+                            <button onClick={handleSave} className="px-4 md:px-6 py-2 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 shadow-lg shadow-green-200 transition-all text-xs md:text-sm">
+                                Save
                             </button>
                         </div>
                     </div>
@@ -527,15 +556,32 @@ export default function BlogManagerPage() {
 
                                             <div>
                                                 <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Featured Image</label>
-                                                <input
-                                                    type="text"
-                                                    value={currentPost.image || ''}
-                                                    onChange={e => setCurrentPost({ ...currentPost, image: e.target.value })}
-                                                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm"
-                                                    placeholder="Image URL..."
-                                                />
+                                                <div className="flex gap-2 mb-2">
+                                                    <input
+                                                        type="text"
+                                                        value={currentPost.image || ''}
+                                                        onChange={e => setCurrentPost({ ...currentPost, image: e.target.value })}
+                                                        className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-sm"
+                                                        placeholder="Image URL..."
+                                                    />
+                                                    <input
+                                                        type="file"
+                                                        ref={fileInputRef}
+                                                        onChange={handleBlogImageUpload}
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => fileInputRef.current?.click()}
+                                                        disabled={isUploading}
+                                                        className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-200 disabled:opacity-50"
+                                                    >
+                                                        {isUploading ? '...' : '📁'}
+                                                    </button>
+                                                </div>
                                                 {currentPost.image && (
-                                                    <div className="relative w-full h-32 mt-2">
+                                                    <div className="relative w-full h-32 mt-2 group">
                                                         <Image
                                                             src={currentPost.image}
                                                             alt="Preview"
@@ -543,6 +589,15 @@ export default function BlogManagerPage() {
                                                             className="object-cover rounded-lg border border-gray-100"
                                                             unoptimized
                                                         />
+                                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setCurrentPost({ ...currentPost, image: '' })}
+                                                                className="text-white bg-red-500/80 p-1.5 rounded-full hover:bg-red-500"
+                                                            >
+                                                                🗑️
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>

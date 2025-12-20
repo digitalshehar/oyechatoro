@@ -21,19 +21,22 @@ export async function GET(request: NextRequest) {
         const where: any = {};
 
         // Role-based filtering
-        // Role-based filtering
         // @ts-ignore
         if (session.user?.role === 'Customer') {
-            // Assume we link by mobile or userId if available
-            // Need logical OR if we track both.
-            // For now, if user has email/phone, we match.
-            // But session user might not have phone populated in session object (just id/email/name).
-            // Better to match userId if we store it.
-            // Order schema inspection needed. Assuming 'userId' maps to Customer ID.
             if (session.user?.id) {
                 where.userId = session.user.id;
             } else {
                 return NextResponse.json([]); // No ID
+            }
+        } else {
+            // Data Isolation: Restrict Staff/Managers to their store
+            const storeId = (session.user as any).storeId;
+            if (storeId) {
+                where.storeId = storeId;
+            } else {
+                // SECURITY: If storeId is missing (and not Customer), DO NOT SHOW ALL.
+                // This prevents new/broken accounts from seeing Head Office data.
+                return NextResponse.json([]);
             }
         }
 
@@ -70,19 +73,44 @@ export async function POST(request: NextRequest) {
 
         // If session exists, link it
         const userId = session?.user?.id || body.userId;
+        const storeId = (session?.user as any)?.storeId || body.storeId; // Prioritize session store, else body (for customers)
 
-        // Start a transaction to ensure Order and Inventory are consistent
+        // Start a transaction to ensure Order, Customer, and Inventory are consistent
         const result = await prisma.$transaction(async (tx) => {
-            // 1. Create the Order
+            let finalUserId = userId;
+
+            // 1. CRM Integration: Upsert Customer if mobile is provided
+            if (body.mobile) {
+                const customer = await tx.customer.upsert({
+                    where: { phone: body.mobile },
+                    update: {
+                        name: body.customer, // Update name in case it changed
+                        totalOrders: { increment: 1 },
+                        totalSpent: { increment: Number(body.total) },
+                        lastVisit: new Date(),
+                    },
+                    create: {
+                        name: body.customer,
+                        phone: body.mobile,
+                        totalOrders: 1,
+                        totalSpent: Number(body.total),
+                        loyaltyPoints: Math.floor(Number(body.total) / 100), // Basic loyalty: 1 point per 100rs
+                    },
+                });
+                finalUserId = customer.id;
+            }
+
+            // 2. Create the Order
             const order = await tx.order.create({
                 data: {
+                    storeId: storeId,
                     customer: body.customer,
                     items: body.items,
                     total: body.total,
                     status: body.status || 'Pending',
                     type: body.type || 'DineIn',
                     table: body.table,
-                    userId: userId,
+                    userId: finalUserId,
                     mobile: body.mobile,
                     paymentStatus: body.paymentStatus || 'Unpaid',
                     paymentMethod: body.paymentMethod,

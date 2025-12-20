@@ -32,6 +32,24 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
         }
     };
 
+    const downloadTemplate = () => {
+        const headers = ['Name', 'Price', 'Category', 'Description', 'Veg', 'Status', 'Image', 'Tags'];
+        const rows = [
+            ['Butter Chicken', '350', 'Main Course', 'Rich tomato based gravy', 'No', 'Active', '', 'Spicy, Best Seller'],
+            ['Paneer Tikka', '280', 'Starters', 'Grilled cottage cheese', 'Yes', 'Active', '', 'Vegan, Popular']
+        ];
+        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "menu_import_template.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const handleUpload = async () => {
         if (!file) return;
         setUploading(true);
@@ -67,11 +85,19 @@ export default function ImportModal({ isOpen, onClose, onSuccess }: Props) {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-lg animate-in">
-                <h2 className="text-2xl font-bold mb-4">Import Menu (Excel/CSV)</h2>
+            <div className="bg-white rounded-3xl p-8 w-full max-w-lg animate-in shadow-2xl">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-black text-gray-800">Import Menu</h2>
+                    <button
+                        onClick={downloadTemplate}
+                        className="text-xs font-bold text-blue-600 hover:underline bg-blue-50 px-2 py-1 rounded"
+                    >
+                        📥 Download Template
+                    </button>
+                </div>
 
-                <div className="space-y-4">
-                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50">
+                <div className="space-y-6">
+                    <div className="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center bg-gray-50/50 hover:bg-gray-50 transition-colors group cursor-pointer relative">
                         <input
                             type="file"
                             accept=".csv"

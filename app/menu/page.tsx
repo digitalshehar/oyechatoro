@@ -21,6 +21,9 @@ export default function MenuPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [mounted, setMounted] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [lang, setLang] = useState<'en' | 'hi'>('en');
+    const [customerName, setCustomerName] = useState('');
+    const [customerPhone, setCustomerPhone] = useState('');
 
     const [tableNumber, setTableNumber] = useState<string | null>(null);
     const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
@@ -45,6 +48,9 @@ export default function MenuPage() {
             const table = params.get('table');
             if (table) setTableNumber(table);
 
+            const langParam = params.get('lang');
+            if (langParam === 'hi') setLang('hi');
+
             const handleScroll = () => setScrolled(window.scrollY > 50);
             window.addEventListener('scroll', handleScroll);
             return () => window.removeEventListener('scroll', handleScroll);
@@ -52,16 +58,25 @@ export default function MenuPage() {
     }, [categories]);
 
     const digitalMenuItems = useMemo(() => {
-        return items.filter((item: MenuItem) => item.isDigitalMenu !== false && item.status === 'Active' && item.veg);
+        return items
+            .filter((item: MenuItem) => item.isDigitalMenu !== false && item.status === 'Active' && item.veg)
+            .sort((a, b) => a.price - b.price);
     }, [items]);
 
     const filteredItems = useMemo(() => {
         if (!searchQuery) return digitalMenuItems;
         const lowerQuery = searchQuery.toLowerCase();
-        return digitalMenuItems.filter((item: MenuItem) =>
-            item.name.toLowerCase().includes(lowerQuery) ||
-            (item.description || '').toLowerCase().includes(lowerQuery)
-        );
+        return digitalMenuItems.filter((item: MenuItem) => {
+            const nameEN = item.name.toLowerCase();
+            const descEN = (item.description || '').toLowerCase();
+            const nameHI = (item.translations?.hi?.name || '').toLowerCase();
+            const descHI = (item.translations?.hi?.description || '').toLowerCase();
+
+            return nameEN.includes(lowerQuery) ||
+                descEN.includes(lowerQuery) ||
+                nameHI.includes(lowerQuery) ||
+                descHI.includes(lowerQuery);
+        });
     }, [digitalMenuItems, searchQuery]);
 
     const groupedItems = useMemo(() => {
@@ -130,26 +145,28 @@ export default function MenuPage() {
         setCouponCode('');
     };
 
-    const checkout = async () => {
+    const handleDirectOrder = async () => {
         if (cart.length === 0) return;
 
         const finalTotal = cartTotal - discountAmount;
 
-        // First, submit to database so it appears in dashboard
         try {
             const orderData = {
                 items: cart.map(item => ({
+                    id: item.menuItemId,
                     name: item.name,
                     quantity: item.quantity,
                     price: item.price
                 })),
-                total: finalTotal, // Use discounted total
+                total: finalTotal,
                 type: 'DineIn',
                 table: tableNumber || undefined,
-                customer: 'Digital Menu Customer',
+                customer: customerName || (tableNumber ? `Table ${tableNumber}` : 'Digital Menu Customer'),
+                mobile: customerPhone || undefined,
                 paymentStatus: 'Unpaid',
                 paymentMethod: 'Cash',
-                discount: appliedOffer ? { code: appliedOffer.code, amount: discountAmount } : null
+                discount: appliedOffer ? { code: appliedOffer.code, amount: discountAmount } : null,
+                status: 'Pending'
             };
 
             await fetch('/api/orders', {
@@ -157,13 +174,29 @@ export default function MenuPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)
             });
-            console.log('✅ Order submitted to dashboard');
-        } catch (e) {
-            console.error('Failed to submit to dashboard:', e);
-        }
 
-        // Then open WhatsApp for confirmation
-        let message = `New Order from Table ${tableNumber || 'Unknown'}:\n\n`;
+            // Success
+            alert('✅ Order Placed! Kitchen has received your order.');
+            clearCart();
+            setIsCartOpen(false);
+            setAppliedOffer(null);
+            setDiscountAmount(0);
+        } catch (e) {
+            console.error('Failed to submit order:', e);
+            alert('Something went wrong. Please call waiter.');
+        }
+    };
+
+    const handleWhatsAppOrder = async () => {
+        if (cart.length === 0) return;
+        const finalTotal = cartTotal - discountAmount;
+
+        // Open WhatsApp
+        let message = `*New Order Details*\n`;
+        if (customerName) message += `Customer: ${customerName}\n`;
+        if (customerPhone) message += `Phone: ${customerPhone}\n`;
+        message += `Table: ${tableNumber || 'Digital'}\n\n`;
+
         cart.forEach(item => message += `- ${item.quantity}x ${item.name} - ₹${item.price * item.quantity}\n`);
 
         if (appliedOffer) {
@@ -173,6 +206,28 @@ export default function MenuPage() {
 
         message += `\n*Total Pay: ₹${finalTotal}*`;
         window.open(`https://wa.me/919509913792?text=${encodeURIComponent(message)}`, '_blank');
+
+        // Note: For digital menu, we might NOT submit to API automatically if they choose WhatsApp, 
+        // or we can to track it. Let's submit invisibly as backup.
+        try {
+            const orderData = {
+                items: cart.map(item => ({
+                    id: item.menuItemId,
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                total: finalTotal,
+                type: 'DineIn',
+                table: tableNumber || undefined,
+                customer: customerName || 'WhatsApp Order',
+                mobile: customerPhone || undefined,
+                paymentStatus: 'Unpaid',
+                paymentMethod: 'Cash',
+                status: 'Pending'
+            };
+            fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+        } catch (e) { }
 
         // Clear cart after order
         clearCart();
@@ -212,8 +267,8 @@ export default function MenuPage() {
             </div>
 
             <style jsx global>{`
-                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
-                body { font-family: 'Poppins', sans-serif; }
+                @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+                body { font-family: 'Poppins', 'Noto Sans Devanagari', sans-serif; }
                 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
                 @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
                 @keyframes glow { 0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); } 50% { box-shadow: 0 0 40px rgba(249, 115, 22, 0.5); } }
@@ -250,12 +305,12 @@ export default function MenuPage() {
                             <div className="w-4 h-4 border-2 border-green-500 flex items-center justify-center rounded-[2px]">
                                 <div className="w-2 h-2 bg-green-500 rounded-full" />
                             </div>
-                            <span className="text-xs font-bold text-green-400 uppercase tracking-wider">100% Pure Veg</span>
+                            <span className="text-xs font-bold text-green-400 uppercase tracking-wider">{lang === 'hi' ? '100% शुद्ध शाकाहारी' : '100% Pure Veg'}</span>
                         </div>
                     </div>
 
                     <h1 className="text-5xl font-black mb-2 gradient-text drop-shadow-2xl">Oye Chatoro</h1>
-                    <p className="text-white/70 text-sm font-medium tracking-widest uppercase mb-4">Premium Street Food Experience</p>
+                    <p className="text-white/70 text-sm font-medium tracking-widest uppercase mb-4">{lang === 'hi' ? 'प्रीमियम स्ट्रीट फूड का अनुभव' : 'Premium Street Food Experience'}</p>
 
                     <a href="tel:9509913792" className="glass px-6 py-2 rounded-full flex items-center gap-2 group hover:bg-white/10 transition-all border border-orange-500/30">
                         <span className="text-xl group-hover:scale-110 transition-transform">📞</span>
@@ -285,7 +340,7 @@ export default function MenuPage() {
                     <div className="relative max-w-2xl mx-auto">
                         <input
                             type="text"
-                            placeholder="Search your favorite dish..."
+                            placeholder={lang === 'hi' ? 'अपनी पसंदीदा डिश खोजें...' : 'Search your favorite dish...'}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-14 pr-6 py-4 rounded-2xl glass text-white placeholder-white/40 outline-none focus:border-orange-500/50 transition-all text-base font-medium"
@@ -296,21 +351,42 @@ export default function MenuPage() {
                     </div>
                 </div>
 
-                <nav ref={navRef} className="flex overflow-x-auto px-4 pb-4 gap-3 no-scrollbar scroll-smooth">
-                    {categories.map((cat, i) => (
-                        <button
-                            key={cat.id}
-                            onClick={() => scrollToCategory(cat.id)}
-                            style={{ animationDelay: `${i * 0.05}s` }}
-                            className={`animate-slide-up whitespace-nowrap px-6 py-3 rounded-2xl text-sm font-bold transition-all flex-shrink-0 ${activeSection === cat.id
-                                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30 scale-105'
-                                : 'glass text-white/70 hover:text-white hover:bg-white/10'
-                                }`}
-                        >
-                            {cat.name}
-                        </button>
-                    ))}
-                </nav>
+                <div className="relative">
+                    <div className="absolute left-0 top-0 bottom-4 w-8 bg-gradient-to-r from-[#0a0a0a] to-transparent z-10 pointer-events-none opacity-50" />
+                    <nav ref={navRef} className="flex overflow-x-auto px-6 pb-4 gap-3 no-scrollbar scroll-smooth snap-x">
+                        <div className="flex mx-auto gap-3">
+                            {categories.map((cat, i) => {
+                                const getHindiCat = (name: string) => {
+                                    if (name.includes('Pizza')) return 'पिज्जा';
+                                    if (name.includes('Burger')) return 'बर्गर';
+                                    if (name.includes('Chaat')) return 'चाट';
+                                    if (name.includes('Beverages')) return 'कोल्ड ड्रिंक्स';
+                                    if (name.includes('Sandwich')) return 'सैंडविच';
+                                    if (name.includes('Chinese')) return 'चाइनीज़';
+                                    if (name.includes('Pasta')) return 'पास्ता';
+                                    if (name.includes('Momos')) return 'मोमोज';
+                                    return name;
+                                };
+                                return (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => scrollToCategory(cat.id)}
+                                        style={{ animationDelay: `${i * 0.05}s` }}
+                                        className={`animate-slide-up snap-center whitespace-nowrap px-6 py-3 rounded-2xl text-sm font-bold transition-all flex-shrink-0 border ${activeSection === cat.id
+                                            ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white border-orange-400 shadow-xl shadow-orange-500/30 scale-105'
+                                            : 'glass text-white/70 border-white/5 hover:text-white hover:bg-white/10'
+                                            }`}
+                                    >
+                                        {lang === 'hi' ? getHindiCat(cat.name) : cat.name}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </nav>
+                    <div className="absolute right-0 top-0 bottom-4 w-12 bg-gradient-to-l from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent z-10 pointer-events-none">
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 animate-pulse text-xs">scroll →</div>
+                    </div>
+                </div>
             </div>
 
             {/* Menu Content */}
@@ -318,8 +394,8 @@ export default function MenuPage() {
                 {Object.keys(groupedItems).length === 0 ? (
                     <div className="text-center py-24 animate-slide-up">
                         <div className="text-9xl mb-8 animate-float">🍕</div>
-                        <p className="text-2xl font-bold mb-2">No dishes found</p>
-                        <p className="text-white/50">Try searching for something else</p>
+                        <p className="text-2xl font-bold mb-2">{lang === 'hi' ? 'कोई डिश नहीं मिली' : 'No dishes found'}</p>
+                        <p className="text-white/50">{lang === 'hi' ? 'कुछ और खोजने की कोशिश करें' : 'Try searching for something else'}</p>
                     </div>
                 ) : (
                     categories.map((cat, catIndex) => {
@@ -364,7 +440,7 @@ export default function MenuPage() {
                                                                 </div>
                                                                 {item.isFeatured && (
                                                                     <span className="text-[9px] font-black bg-gradient-to-r from-orange-500 to-red-500 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                                                        ⭐ Best
+                                                                        ⭐ {lang === 'hi' ? 'श्रेष्ठ' : 'Best'}
                                                                     </span>
                                                                 )}
                                                                 {item.tags && item.tags.slice(0, 3).map(tag => (
@@ -378,9 +454,39 @@ export default function MenuPage() {
                                                                 ))}
                                                             </div>
                                                             <Link href={`/menu/${item.slug}`}>
-                                                                <h3 className="font-bold text-base mb-1 text-white leading-tight hover:text-orange-500 transition-colors cursor-pointer">{item.name}</h3>
+                                                                <h3 className="font-bold text-base mb-1 text-white leading-tight hover:text-orange-500 transition-colors cursor-pointer">
+                                                                    {lang === 'hi' ? (
+                                                                        item.translations?.hi?.name ||
+                                                                        item.name.replace(/Pizza/gi, 'पिज्जा')
+                                                                            .replace(/Burger/gi, 'बर्गर')
+                                                                            .replace(/Chaat/gi, 'चाट')
+                                                                            .replace(/Sandwich/gi, 'सैंडविच')
+                                                                            .replace(/Pasta/gi, 'पास्ता')
+                                                                            .replace(/Momos/gi, 'मोमोज')
+                                                                            .replace(/Special/gi, 'स्पेशल')
+                                                                            .replace(/Hot/gi, 'हॉट')
+                                                                            .replace(/Veg/gi, 'वेज')
+                                                                            .replace(/Paneer/gi, 'पनीर')
+                                                                            .replace(/Cheese/gi, 'चीज़')
+                                                                            .replace(/Garlic/gi, 'गार्लिक')
+                                                                            .replace(/Corn/gi, 'कॉर्न')
+                                                                            .replace(/Fried/gi, 'फ्राइड')
+                                                                            .replace(/Rice/gi, 'राइस')
+                                                                            .replace(/Noodles/gi, 'नूडल्स')
+                                                                            .replace(/Masala/gi, 'मसाला')
+                                                                    ) : item.name}
+                                                                </h3>
                                                             </Link>
-                                                            <p className="text-xs text-white/40 mb-2">{item.description}</p>
+                                                            <p className="text-xs text-white/40 mb-2">
+                                                                {lang === 'hi' ? (
+                                                                    item.translations?.hi?.description ||
+                                                                    (item.description || '').replace(/Delicious/gi, 'स्वादिष्ट')
+                                                                        .replace(/Fresh/gi, 'ताज़ा')
+                                                                        .replace(/Served with/gi, 'के साथ परोसा गया')
+                                                                        .replace(/Pizza/gi, 'पिज्जा')
+                                                                        .replace(/Burger/gi, 'बर्गर')
+                                                                ) : item.description}
+                                                            </p>
                                                         </div>
 
                                                         <div className="flex items-center justify-between">
@@ -391,7 +497,7 @@ export default function MenuPage() {
                                                                     onClick={() => handleAddToCart(item)}
                                                                     className="px-5 py-2 rounded-xl font-bold text-xs bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30 active:scale-95 transition-all uppercase tracking-wide hover:shadow-orange-500/50"
                                                                 >
-                                                                    ADD
+                                                                    {lang === 'hi' ? 'लें' : 'ADD'}
                                                                 </button>
                                                             ) : (
                                                                 <div className="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg shadow-orange-500/30 overflow-hidden">
@@ -415,6 +521,22 @@ export default function MenuPage() {
 
             {/* Floating Buttons */}
             <div className="fixed bottom-6 right-6 flex flex-col gap-4 z-50">
+                {/* Language Switcher */}
+                <div className="flex bg-black/60 backdrop-blur-md p-1 rounded-2xl border border-white/10 self-end scale-90 origin-bottom-right shadow-2xl">
+                    <button
+                        onClick={() => setLang('en')}
+                        className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${lang === 'en' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}
+                    >
+                        English
+                    </button>
+                    <button
+                        onClick={() => setLang('hi')}
+                        className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${lang === 'hi' ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'text-white/40 hover:text-white'}`}
+                    >
+                        हिन्दी
+                    </button>
+                </div>
+
                 {tableNumber && (
                     <button onClick={() => setIsServiceModalOpen(true)} className="w-14 h-14 glass-dark rounded-full shadow-2xl flex items-center justify-center active:scale-95 transition-all animate-float text-2xl">🔔</button>
                 )}
@@ -426,7 +548,7 @@ export default function MenuPage() {
                             <span className="absolute -top-2 -right-2 bg-white text-orange-600 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center">{cartCount}</span>
                         </div>
                         <div className="text-left">
-                            <div className="text-[10px] font-medium opacity-80 uppercase tracking-wider">View Cart</div>
+                            <div className="text-[10px] font-medium opacity-80 uppercase tracking-wider">{lang === 'hi' ? 'कार्ट देखें' : 'View Cart'}</div>
                             <div className="font-black text-lg">₹{cartTotal}</div>
                         </div>
                     </button>
@@ -436,29 +558,29 @@ export default function MenuPage() {
             {/* Toast */}
             <div className={`fixed bottom-24 left-1/2 -translate-x-1/2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-2xl shadow-2xl shadow-green-500/30 flex items-center gap-3 z-[60] transition-all duration-500 ${showToast ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-10 opacity-0 scale-95 pointer-events-none'}`}>
                 <span className="text-2xl">✓</span>
-                <span className="font-bold">Added to cart!</span>
+                <span className="font-bold">{lang === 'hi' ? 'कार्ट में जोड़ा गया!' : 'Added to cart!'}</span>
             </div>
 
             {/* Service Modal */}
             {isServiceModalOpen && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={(e) => { if (e.target === e.currentTarget) setIsServiceModalOpen(false) }}>
                     <div className="glass rounded-3xl p-8 w-full max-w-sm text-center shadow-2xl animate-slide-up border border-orange-500/20">
-                        <h3 className="text-2xl font-black mb-8 gradient-text">Need Help?</h3>
+                        <h3 className="text-2xl font-black mb-8 gradient-text">{lang === 'hi' ? 'क्या मदद चाहिए?' : 'Need Help?'}</h3>
                         <div className="grid grid-cols-3 gap-4 mb-8">
                             <button onClick={() => handleServiceRequest('Call')} className="flex flex-col items-center gap-3 p-4 rounded-2xl glass hover:bg-white/10 transition-all active:scale-95">
                                 <span className="text-4xl">👋</span>
-                                <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Call</span>
+                                <span className="text-xs font-bold uppercase tracking-wider text-blue-400">{lang === 'hi' ? 'वेटर' : 'Call'}</span>
                             </button>
                             <button onClick={() => handleServiceRequest('Water')} className="flex flex-col items-center gap-3 p-4 rounded-2xl glass hover:bg-white/10 transition-all active:scale-95">
                                 <span className="text-4xl">💧</span>
-                                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">Water</span>
+                                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">{lang === 'hi' ? 'पानी' : 'Water'}</span>
                             </button>
                             <button onClick={() => handleServiceRequest('Bill')} className="flex flex-col items-center gap-3 p-4 rounded-2xl glass hover:bg-white/10 transition-all active:scale-95">
                                 <span className="text-4xl">🧾</span>
-                                <span className="text-xs font-bold uppercase tracking-wider text-green-400">Bill</span>
+                                <span className="text-xs font-bold uppercase tracking-wider text-green-400">{lang === 'hi' ? 'बिल' : 'Bill'}</span>
                             </button>
                         </div>
-                        <button onClick={() => setIsServiceModalOpen(false)} className="w-full py-4 rounded-2xl font-bold glass hover:bg-white/10 transition-all text-white/70">Cancel</button>
+                        <button onClick={() => setIsServiceModalOpen(false)} className="w-full py-4 rounded-2xl font-bold glass hover:bg-white/10 transition-all text-white/70">{lang === 'hi' ? 'रद्द करें' : 'Cancel'}</button>
                     </div>
                 </div>
             )}
@@ -468,11 +590,41 @@ export default function MenuPage() {
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex justify-end" onClick={(e) => { if (e.target === e.currentTarget) setIsCartOpen(false) }}>
                     <div className="w-full max-w-md h-full glass-dark flex flex-col shadow-2xl animate-slide-up border-l border-orange-500/20">
                         <div className="p-6 border-b border-white/10 flex justify-between items-center">
-                            <h3 className="text-2xl font-black gradient-text">Your Order</h3>
+                            <h3 className="text-2xl font-black gradient-text">{lang === 'hi' ? 'आपका ऑर्डर' : 'Your Order'}</h3>
                             <button onClick={() => setIsCartOpen(false)} className="w-10 h-10 glass rounded-full flex items-center justify-center text-xl font-bold hover:bg-white/10 transition-all">×</button>
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                            {/* Customer Details (Optional) */}
+                            {cart.length > 0 && (
+                                <div className="space-y-3 mb-6 animate-slide-up">
+                                    <h4 className="text-xs font-bold text-white/40 uppercase tracking-widest ml-1">{lang === 'hi' ? 'आपका विवरण (वैकल्पिक)' : 'Your Details (Optional)'}</h4>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        <div className="relative group">
+                                            <input
+                                                type="text"
+                                                placeholder={lang === 'hi' ? 'आपका नाम (वैकल्पिक)' : 'Your Name (Optional)'}
+                                                value={customerName}
+                                                onChange={(e) => setCustomerName(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-12 py-4 outline-none focus:border-orange-500/50 transition-all font-medium text-white placeholder-white/20"
+                                            />
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl opacity-40 group-focus-within:opacity-100 transition-opacity">👤</span>
+                                        </div>
+                                        <div className="relative group">
+                                            <input
+                                                type="tel"
+                                                placeholder={lang === 'hi' ? 'मोबाइल नंबर (वैकल्पिक)' : 'Mobile Number (Optional)'}
+                                                value={customerPhone}
+                                                onChange={(e) => setCustomerPhone(e.target.value)}
+                                                className="w-full bg-white/5 border border-white/10 rounded-2xl px-12 py-4 outline-none focus:border-orange-500/50 transition-all font-medium text-white placeholder-white/20"
+                                            />
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl opacity-40 group-focus-within:opacity-100 transition-opacity">📱</span>
+                                        </div>
+                                    </div>
+                                    <div className="h-px bg-white/10 my-6" />
+                                </div>
+                            )}
+
                             {cart.map((item) => (
                                 <div key={item.name} className="flex gap-4 items-center p-4 glass rounded-2xl">
                                     <div className={`w-4 h-4 rounded flex items-center justify-center border-2 flex-shrink-0 disabled shadow-none opacity-50 bg-green-500/10`}>
@@ -480,7 +632,20 @@ export default function MenuPage() {
                                         <div className={`w-2 h-2 rounded-full bg-green-500`} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <div className="font-bold text-sm leading-tight">{item.name}</div>
+                                        <div className="font-bold text-sm leading-tight">
+                                            {lang === 'hi' ? (
+                                                item.name.replace(/Pizza/gi, 'पिज्जा')
+                                                    .replace(/Burger/gi, 'बर्गर')
+                                                    .replace(/Chaat/gi, 'चाट')
+                                                    .replace(/Sandwich/gi, 'सैंडविच')
+                                                    .replace(/Pasta/gi, 'पास्ता')
+                                                    .replace(/Momos/gi, 'मोमोज')
+                                                    .replace(/Veg/gi, 'वेज')
+                                                    .replace(/Special/gi, 'स्पेशल')
+                                                    .replace(/Paneer/gi, 'पनीर')
+                                                    .replace(/Corn/gi, 'कॉर्न')
+                                            ) : item.name}
+                                        </div>
                                         <div className="text-sm text-orange-400 font-bold">₹{item.price}</div>
                                     </div>
                                     <div className="flex items-center gap-1 glass rounded-xl p-1">
@@ -494,8 +659,8 @@ export default function MenuPage() {
                             {cart.length === 0 && (
                                 <div className="flex flex-col items-center justify-center h-64">
                                     <div className="text-8xl mb-6 animate-float">🛒</div>
-                                    <p className="text-xl font-bold mb-2">Cart is empty</p>
-                                    <button onClick={() => setIsCartOpen(false)} className="mt-4 text-orange-500 font-bold hover:underline">Browse Menu</button>
+                                    <p className="text-xl font-bold mb-2">{lang === 'hi' ? 'कार्ट खाली है' : 'Cart is empty'}</p>
+                                    <button onClick={() => setIsCartOpen(false)} className="mt-4 text-orange-500 font-bold hover:underline">{lang === 'hi' ? 'मेनू देखें' : 'Browse Menu'}</button>
                                 </div>
                             )}
                         </div>
@@ -503,7 +668,7 @@ export default function MenuPage() {
                         {cart.length > 0 && (
                             <div className="p-6 border-t border-white/10 glass-dark">
                                 <div className="flex justify-between items-center mb-6">
-                                    <span className="text-lg font-bold text-white/70">Subtotal</span>
+                                    <span className="text-lg font-bold text-white/70">{lang === 'hi' ? 'उप-योग' : 'Subtotal'}</span>
                                     <span className="text-2xl font-bold text-white">₹{cartTotal}</span>
                                 </div>
 
@@ -545,18 +710,26 @@ export default function MenuPage() {
                                 )}
 
                                 <div className="flex justify-between items-center mb-6 border-t border-white/10 pt-4">
-                                    <span className="text-lg font-bold text-white/70">Total Pay</span>
+                                    <span className="text-lg font-bold text-white/70">{lang === 'hi' ? 'कुल भुगतान' : 'Total Pay'}</span>
                                     <span className="text-4xl font-black gradient-text">₹{cartTotal - discountAmount}</span>
                                 </div>
 
-                                <button
-                                    onClick={checkout}
-                                    className="w-full py-5 bg-gradient-to-r from-orange-500 to-red-500 font-black text-xl rounded-2xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
-                                >
-                                    <span>Place Order</span>
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>
-                                </button>
-                                <p className="text-center text-xs text-white/40 mt-4">Order via WhatsApp 📱</p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        onClick={handleWhatsAppOrder}
+                                        className="py-4 rounded-xl border border-white/20 hover:bg-white/10 font-bold text-green-400 flex items-center justify-center gap-2 transition-all"
+                                    >
+                                        <span className="text-xl">📱</span> WhatsApp
+                                    </button>
+                                    <button
+                                        onClick={handleDirectOrder}
+                                        className="py-4 bg-gradient-to-r from-orange-500 to-red-500 font-black text-lg rounded-xl shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <span>{lang === 'hi' ? 'अभी ऑर्डर करें' : 'Order Now'}</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+                                    </button>
+                                </div>
+                                {/* <p className="text-center text-xs text-white/40 mt-4">Order via WhatsApp 📱</p> */ null}
                             </div>
                         )}
                     </div>

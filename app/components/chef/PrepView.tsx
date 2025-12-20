@@ -21,6 +21,7 @@ const DEFAULT_TASKS = [
 export default function PrepView() {
     const [tasks, setTasks] = useState<PrepTask[]>([]);
     const [newTask, setNewTask] = useState('');
+    const [isLoadingAi, setIsLoadingAi] = useState(false);
 
     useEffect(() => {
         const saved = localStorage.getItem('chef_prep_list');
@@ -92,7 +93,34 @@ export default function PrepView() {
                     />
                 </div>
 
-                <div className="flex justify-end">
+                <div className="flex gap-4 items-center">
+                    <button
+                        onClick={async () => {
+                            setIsLoadingAi(true);
+                            try {
+                                const res = await fetch('/api/kitchen/prep');
+                                if (res.ok) {
+                                    const suggestions = await res.json();
+                                    if (Array.isArray(suggestions)) {
+                                        const aiTasks = suggestions.map((s: any) => ({
+                                            id: `ai-${Date.now()}-${Math.random()}`,
+                                            text: `✨ AI: ${s.task} (${s.qty}) - ${s.reason}`,
+                                            completed: false
+                                        }));
+                                        saveTasks([...tasks, ...aiTasks]);
+                                    }
+                                }
+                            } catch (e) {
+                                console.error(e);
+                            } finally {
+                                setIsLoadingAi(false);
+                            }
+                        }}
+                        className="text-sm font-bold bg-purple-50 text-purple-700 hover:bg-purple-100 px-4 py-2 rounded-lg flex items-center gap-2 border border-purple-100 shadow-sm disabled:opacity-50"
+                        disabled={isLoadingAi}
+                    >
+                        {isLoadingAi ? '🔮 Forecasting...' : '🪄 AI Suggestions'}
+                    </button>
                     <button
                         onClick={resetDaily}
                         className="text-sm font-bold text-[var(--brand-primary)] hover:bg-orange-50 px-3 py-1 rounded"
@@ -108,8 +136,8 @@ export default function PrepView() {
                     <div
                         key={task.id}
                         className={`flex items-center gap-4 p-4 rounded-xl border transition-all ${task.completed
-                                ? 'bg-green-50 border-green-200 opacity-75'
-                                : 'bg-white border-gray-200 shadow-sm hover:shadow-md'
+                            ? 'bg-green-50 border-green-200 opacity-75'
+                            : 'bg-white border-gray-200 shadow-sm hover:shadow-md'
                             }`}
                     >
                         <input

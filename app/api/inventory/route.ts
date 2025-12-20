@@ -13,7 +13,14 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        const storeId = (session.user as any).storeId;
+        const where: any = {};
+        if (storeId) {
+            where.storeId = storeId;
+        }
+
         const items = await prisma.inventoryItem.findMany({
+            where,
             orderBy: { name: 'asc' }
         });
 
@@ -46,11 +53,13 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
+        const storeId = (session.user as any).storeId;
 
         // Validate?
 
         const newItem = await prisma.inventoryItem.create({
             data: {
+                storeId: storeId,
                 name: body.name,
                 unit: body.unit,
                 currentStock: parseFloat(body.quantity),

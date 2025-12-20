@@ -6,15 +6,27 @@ export const authConfig = {
         signIn: '/login',
     },
     callbacks: {
-        async jwt({ token, user }) {
+        // @ts-ignore
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.role = (user as any).role;
+                token.storeId = (user as any).storeId;
+                token.storeName = (user as any).storeName;
             }
+
+            // Store Switching (Admin Only)
+            if (trigger === 'update' && session?.storeId && token.role === 'Admin') {
+                token.storeId = session.storeId;
+                token.storeName = session.storeName;
+            }
+
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
                 (session.user as any).role = token.role;
+                (session.user as any).storeId = token.storeId;
+                (session.user as any).storeName = token.storeName;
             }
             return session;
         },

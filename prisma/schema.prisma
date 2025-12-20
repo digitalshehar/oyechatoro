@@ -1,38 +1,344 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
-// ==================== ORDERS ====================
+model Store {
+  id        String          @id @default(cuid())
+  name      String
+  code      String          @unique
+  address   String?
+  phone     String?
+  active    Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  expenses  Expense[]
+  inventory InventoryItem[]
+  orders    Order[]
+  staff     Staff[]
+}
 
 model Order {
-  id            Int         @id @default(autoincrement())
-  customer      String
-  items         Json        // Array of items as JSON
-  total         Float
-  status        OrderStatus @default(Pending)
-  type          OrderType   @default(DineIn)
-  table         String?
-  userId        String?
-  mobile        String?
-  paymentStatus PaymentStatus @default(Unpaid)
-  paymentMethod PaymentMethod?
-  discount      Json?       // { type, value, amount }
-  tip           Float?
-  waiterName    String?
-  waiterCalled  Boolean     @default(false)
-  dietary       String[]    // ['veg', 'spicy', etc]
-  trainDetails  Json?       // { pnr, trainNo, coachSeat }
+  id               Int            @id @default(autoincrement())
+  customer         String
+  items            Json
+  total            Float
+  status           OrderStatus    @default(Pending)
+  type             OrderType      @default(DineIn)
+  table            String?
+  userId           String?
+  mobile           String?
+  paymentStatus    PaymentStatus  @default(Unpaid)
+  paymentMethod    PaymentMethod?
+  discount         Json?
+  tip              Float?
+  waiterName       String?
+  waiterCalled     Boolean        @default(false)
+  dietary          String[]
+  trainDetails     Json?
   cookingStartedAt DateTime?
-  notes         String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  notes            String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  storeId          String?
+  store            Store?         @relation(fields: [storeId], references: [id])
+  customerDetails  Customer?      @relation("CustomerOrders", fields: [userId], references: [id])
+}
+
+model Customer {
+  id            String               @id @default(cuid())
+  name          String
+  phone         String               @unique
+  email         String?
+  password      String?
+  totalOrders   Int                  @default(0)
+  totalSpent    Float                @default(0)
+  loyaltyPoints Int                  @default(0)
+  details       Json?
+  lastVisit     DateTime             @default(now())
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  cart          Cart?
+  transactions  LoyaltyTransaction[]
+  orders        Order[]              @relation("CustomerOrders")
+}
+
+model LoyaltyTransaction {
+  id          String   @id @default(cuid())
+  customerId  String
+  type        String
+  points      Int
+  description String?
+  createdAt   DateTime @default(now())
+  customer    Customer @relation(fields: [customerId], references: [id])
+}
+
+model MenuCategory {
+  id    String     @id @default(cuid())
+  name  String
+  order Int        @default(0)
+  items        MenuItem[]
+  translations Json?      // For multi-lingual support
+}
+
+model MenuItem {
+  id            String       @id @default(cuid())
+  name          String
+  slug          String       @unique
+  price         Float
+  description   String?
+  veg           Boolean      @default(true)
+  status        ItemStatus   @default(Active)
+  image         String?
+  isDigitalMenu Boolean      @default(true)
+  isTrainMenu   Boolean      @default(false)
+  isFeatured    Boolean      @default(false)
+  costPrice     Float?
+  recipe        Json?
+  modifiers     Json?
+  categoryId    String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  badge         String?
+  order         Int          @default(0)
+  tags          String[]     @default([])
+  cartItems     CartItem[]
+  category      MenuCategory @relation(fields: [categoryId], references: [id])
+  translations  Json?        // For multi-lingual support
+}
+
+model BlogPost {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  excerpt        String?
+  content        String
+  image          String?
+  author         String        @default("Admin")
+  seoTitle       String?
+  seoDescription String?
+  readingTime    String?
+  status         PostStatus    @default(Draft)
+  isRecipe       Boolean       @default(false)
+  featured       Boolean       @default(false)
+  views          Int           @default(0)
+  likes          Int           @default(0)
+  canonicalUrl   String?
+  recipeDetails  Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  categoryId     String?
+  comments       BlogComment[]
+  category       BlogCategory? @relation(fields: [categoryId], references: [id])
+  tags           BlogTag[]     @relation("BlogPostToBlogTag")
+}
+
+model BlogComment {
+  id         String   @id @default(cuid())
+  postId     String
+  user       String
+  email      String?
+  text       String
+  rating     Int      @default(5)
+  isApproved Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  post       BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+}
+
+model BlogCategory {
+  id    String     @id @default(cuid())
+  name  String     @unique
+  slug  String     @unique
+  posts BlogPost[]
+}
+
+model BlogTag {
+  id    String     @id @default(cuid())
+  name  String     @unique
+  slug  String     @unique
+  posts BlogPost[] @relation("BlogPostToBlogTag")
+}
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value Json
+}
+
+model Staff {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?  @unique
+  password  String?
+  role      UserRole @default(Staff)
+  phone     String?
+  pin       String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  storeId   String?
+  store     Store?   @relation(fields: [storeId], references: [id])
+}
+
+model InventoryItem {
+  id            Int        @id @default(autoincrement())
+  name          String
+  unit          String
+  currentStock  Float      @default(0)
+  lowStockAlert Float      @default(10)
+  costPerUnit   Float      @default(0)
+  category      String     @default("General")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  storeId       String?
+  store         Store?     @relation(fields: [storeId], references: [id])
+  logs          StockLog[]
+}
+
+model StockLog {
+  id              String        @id @default(cuid())
+  inventoryItemId Int
+  change          Float
+  reason          String?
+  type            StockLogType
+  createdAt       DateTime      @default(now())
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now())
+  category    String
+  description String?
+  amount      Float
+  createdAt   DateTime @default(now())
+  storeId     String?
+  store       Store?   @relation(fields: [storeId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String?
+  details   Json?
+  userId    String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model Offer {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  discount    String
+  type        String
+  expiry      DateTime
+  status      String   @default("Active")
+  usage       Int      @default(0)
+  description String?
+  bgColor     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Supplier {
+  id            String          @id @default(cuid())
+  name          String
+  contactPerson String?
+  phone         String?
+  email         String?
+  address       String?
+  gstNumber     String?
+  paymentTerms  String?
+  active        Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  orders        PurchaseOrder[]
+}
+
+model PurchaseOrder {
+  id           String    @id @default(cuid())
+  supplierId   String
+  items        Json
+  totalAmount  Float
+  status       POStatus  @default(Pending)
+  orderDate    DateTime  @default(now())
+  deliveryDate DateTime?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  supplier     Supplier  @relation(fields: [supplierId], references: [id])
+}
+
+model ServiceRequest {
+  id        String   @id @default(cuid())
+  type      String   @default("Waiter")
+  table     String
+  status    String   @default("Pending")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  name      String
+  avatar    String?
+  rating    Int      @default(5)
+  comment   String
+  date      DateTime @default(now())
+  status    String   @default("Approved")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  id           String     @id @default(cuid())
+  userId       String?    @unique
+  sessionToken String?    @unique
+  status       String     @default("Active")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  customer     Customer?  @relation(fields: [userId], references: [id])
+  items        CartItem[]
+}
+
+model CartItem {
+  id         String   @id @default(cuid())
+  cartId     String
+  menuItemId String
+  name       String
+  price      Float
+  quantity   Int      @default(1)
+  options    Json?
+  image      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  cart       Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+}
+
+model FranchiseInquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  location  String
+  budget    String
+  message   String?
+  status    String   @default("New")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PageContent {
+  slug      String   @id
+  content   Json
+  updatedAt DateTime @updatedAt
 }
 
 enum OrderStatus {
@@ -61,159 +367,14 @@ enum PaymentMethod {
   Online
 }
 
-// ==================== CUSTOMERS ====================
-
-model Customer {
-  id            String   @id @default(cuid())
-  name          String
-  phone         String   @unique
-  email         String?
-  password      String?
-  totalOrders   Int      @default(0)
-  totalSpent    Float    @default(0)
-  loyaltyPoints Int      @default(0)
-  details       Json?    // { addresses, preferences, dates }
-  transactions  LoyaltyTransaction[]
-  cart          Cart?
-  lastVisit     DateTime @default(now())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
-
-model LoyaltyTransaction {
-  id          String   @id @default(cuid())
-  customer    Customer @relation(fields: [customerId], references: [id])
-  customerId  String
-  type        String   // "EARN" or "REDEEM"
-  points      Int
-  description String?  // "Order #123"
-  createdAt   DateTime @default(now())
-}
-
-// ==================== MENU ====================
-
-model MenuCategory {
-  id    String     @id @default(cuid())
-  name  String
-  items MenuItem[]
-  order Int        @default(0)
-}
-
-model MenuItem {
-  id            String       @id @default(cuid())
-  name          String
-  slug          String       @unique
-  badge         String?      // e.g. "Best Seller", "Recommended"
-  price         Float
-  description   String?
-  veg           Boolean      @default(true)
-  status        ItemStatus   @default(Active)
-  image         String?
-  isDigitalMenu Boolean      @default(true)
-  isTrainMenu   Boolean      @default(false)
-  isFeatured    Boolean      @default(false)
-  costPrice     Float?
-  recipe        Json?        // [{ inventoryItemId, quantity }]
-  modifiers     Json?        // [{ name, price, type: "one" | "many", options: [{ name, price }] }]
-  category      MenuCategory @relation(fields: [categoryId], references: [id])
-  categoryId    String
-  cartItems     CartItem[]
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  order         Int          @default(0)
-  tags          String[]     @default([])
-}
-
 enum ItemStatus {
   Active
   OutOfStock
 }
 
-// ==================== BLOG ====================
-
-model BlogPost {
-  id             String        @id @default(cuid())
-  title          String
-  slug           String        @unique
-  excerpt        String?
-  content        String        @db.Text
-  image          String?
-  author         String        @default("Admin")
-  
-  // Relations
-  category       BlogCategory? @relation(fields: [categoryId], references: [id])
-  categoryId     String?
-  
-  tags           BlogTag[]
-
-  seoTitle       String?
-  seoDescription String?
-  readingTime    String?
-  status         PostStatus    @default(Draft)
-  isRecipe       Boolean       @default(false)
-  featured       Boolean       @default(false)
-  views          Int           @default(0)
-  likes          Int           @default(0)
-  canonicalUrl   String?
-  recipeDetails  Json?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  comments       BlogComment[]
-}
-
-model BlogComment {
-  id        String   @id @default(cuid())
-  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId    String
-  user      String
-  email     String?
-  text      String
-  rating    Int      @default(5)
-  isApproved Boolean @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model BlogCategory {
-  id    String     @id @default(cuid())
-  name  String     @unique
-  slug  String     @unique
-  posts BlogPost[]
-}
-
-model BlogTag {
-  id    String     @id @default(cuid())
-  name  String     @unique
-  slug  String     @unique
-  posts BlogPost[]
-}
-
 enum PostStatus {
   Draft
   Published
-}
-
-// ==================== SETTINGS ====================
-
-model Setting {
-  id    String @id @default(cuid())
-  key   String @unique
-  value Json
-}
-
-// ==================== STAFF ====================
-
-model Staff {
-  id        String   @id @default(cuid())
-  name      String
-  email     String?  @unique
-  password  String?  // Hashed password
-  role      UserRole @default(Staff)
-  phone     String?
-  pin       String?  // For quick POS login
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 enum UserRole {
@@ -224,31 +385,6 @@ enum UserRole {
   Customer
 }
 
-// ==================== INVENTORY ====================
-
-model InventoryItem {
-  id          Int      @id @default(autoincrement())
-  name        String
-  unit        String
-  currentStock Float   @default(0)
-  lowStockAlert Float  @default(10)
-  costPerUnit Float    @default(0)
-  category    String   @default("General")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  logs        StockLog[]
-}
-
-model StockLog {
-  id              String        @id @default(cuid())
-  inventoryItemId Int
-  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
-  change          Float
-  reason          String?
-  type            StockLogType
-  createdAt       DateTime      @default(now())
-}
-
 enum StockLogType {
   CONSUMPTION
   RESTOCK
@@ -256,132 +392,9 @@ enum StockLogType {
   ADJUSTMENT
 }
 
-// ==================== EXPENSES ====================
-
-model Expense {
-  id          String   @id @default(cuid())
-  date        DateTime @default(now())
-  category    String
-  description String?
-  amount      Float
-  createdAt   DateTime @default(now())
-}
- 
-// ==================== AUDIT LOGGING ==================== 
- 
-model AuditLog { 
-  id        String   @id @default(cuid()) 
-  action    String 
-  entity    String 
-  entityId  String? 
-  details   Json? 
-  userId    String? 
-  ipAddress String? 
-  createdAt DateTime @default(now()) 
-}
-
-// ==================== OFFERS ====================
-
-model Offer {
-  id          String   @id @default(cuid())
-  code        String   @unique
-  discount    String
-  type        String
-  expiry      DateTime
-  status      String   @default("Active")
-  usage       Int      @default(0)
-  description String?
-  bgColor     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-// ==================== SUPPLIERS ====================
-
-model Supplier {
-  id             String          @id @default(cuid())
-  name           String
-  contactPerson  String?
-  phone          String?
-  email          String?
-  address        String?
-  gstNumber      String?
-  paymentTerms   String?         // e.g., "Net 30", "COD"
-  active         Boolean         @default(true)
-  orders         PurchaseOrder[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-}
-
-model PurchaseOrder {
-  id           String       @id @default(cuid())
-  supplier     Supplier     @relation(fields: [supplierId], references: [id])
-  supplierId   String
-  items        Json         // [{ name, quantity, unit, unitPrice }]
-  totalAmount  Float
-  status       POStatus     @default(Pending)
-  orderDate    DateTime     @default(now())
-  deliveryDate DateTime?
-  notes        String?
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-}
-
 enum POStatus {
   Pending
   Ordered
   Received
   Cancelled
-}
-
-model ServiceRequest {
-  id        String   @id @default(cuid())
-  type      String   @default("Waiter") // Waiter, Bill, Water, Cleanup
-  table     String
-  status    String   @default("Pending") // Pending, Completed
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-
-// ==================== REVIEWS ====================
-
-model Review {
-  id        String   @id @default(cuid())
-  name      String
-  avatar    String?
-  rating    Int      @default(5)
-  comment   String   @db.Text
-  date      DateTime @default(now())
-  status    String   @default("Approved") // Pending, Approved, Rejected
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// ==================== CART ====================
-
-model Cart {
-  id           String     @id @default(cuid())
-  userId       String?    @unique
-  customer     Customer?  @relation(fields: [userId], references: [id])
-  sessionToken String?    @unique
-  items        CartItem[]
-  status       String     @default("Active") // Active, Converted, Abandoned
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-}
-
-model CartItem {
-  id         String   @id @default(cuid())
-  cart       Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  cartId     String
-  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
-  menuItemId String
-  name       String
-  price      Float
-  quantity   Int      @default(1)
-  options    Json?
-  image      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 }

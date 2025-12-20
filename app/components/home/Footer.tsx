@@ -2,6 +2,7 @@
 
 import React, { memo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface FooterProps {
     year: number;
@@ -15,7 +16,7 @@ const Footer = memo(function Footer({ year }: FooterProps) {
                     <div className="col-span-1 md:col-span-2">
                         <div className="flex items-center gap-2 mb-6">
                             <div className="relative w-10 h-10">
-                                <Image src="/logowhite.PNG" alt="Logo" fill className="object-contain" />
+                                <Image src="/logowhite.PNG" alt="Oye Chatoro - Top Rated Restaurant in Abu Road" fill className="object-contain" />
                             </div>
                             <span className="text-2xl font-black text-gray-900">Oye Chatoro</span>
                         </div>
@@ -23,24 +24,36 @@ const Footer = memo(function Footer({ year }: FooterProps) {
                             Authentic Indian Vegetarian Street Food in Abu Road. Fresh, Hygienic, and Delicious. Serving happiness since 2024.
                         </p>
                     </div>
-                    <div>
+                    <div className="col-span-1">
                         <h4 className="font-bold text-gray-900 mb-6">Quick Links</h4>
                         <ul className="space-y-4">
                             {['Home', 'Menu', 'Reviews', 'Contact'].map(item => (
-                                <li key={item}><a href={`#${item.toLowerCase()}`} className="text-gray-500 hover:text-[var(--brand-primary)] transition-colors">{item}</a></li>
+                                <li key={item}><Link href={`/#${item.toLowerCase()}`} className="text-gray-500 hover:text-[var(--brand-primary)] transition-colors">{item}</Link></li>
                             ))}
                         </ul>
                     </div>
-                    <div>
+                    <div className="col-span-1">
                         <h4 className="font-bold text-gray-900 mb-6">Connect</h4>
                         <ul className="space-y-4">
                             <li><a href="https://www.instagram.com/oyechatoro_/" target="_blank" className="text-gray-500 hover:text-pink-600 transition-colors flex items-center gap-2">📸 Instagram</a></li>
-
                             <li><a href="https://share.google/i1ls8jxzjEOxQ5gd8" target="_blank" className="text-gray-500 hover:text-green-600 transition-colors flex items-center gap-2">🗺️ Google Maps</a></li>
+                        </ul>
+                    </div>
+                    <div className="col-span-1">
+                        <h4 className="font-bold text-gray-900 mb-6 font-poppins">Local Favorites</h4>
+                        <ul className="space-y-4 text-sm">
+                            <li><Link href="/menu" className="text-gray-500 hover:text-[var(--brand-primary)]">Best Restaurant & Fast Food in Abu Road</Link></li>
+                            <li><Link href="/menu" className="text-gray-500 hover:text-[var(--brand-primary)]">Best Restaurants in Abu Road</Link></li>
+                            <li><Link href="/menu" className="text-gray-500 hover:text-[var(--brand-primary)]">Pure Veg Food Abu Road</Link></li>
+                            <li><Link href="/menu" className="text-gray-500 hover:text-[var(--brand-primary)]">Fast Food Abu Road</Link></li>
                         </ul>
                     </div>
                 </div>
                 <div className="border-t border-gray-100 pt-8 text-center text-gray-400 text-sm">
+                    <p className="mb-4">
+                        📍 Abu Central Mall, G-5, Riico Check Post Road, Abu Road, Rajasthan 307026<br />
+                        📞 <a href="tel:+919509913792" className="hover:text-[var(--brand-primary)]">+91-9509913792</a>
+                    </p>
                     <p>&copy; <span id="year">{year}</span> Oye Chatoro. All rights reserved. • Website by Akshay Tiwari</p>
                     <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 opacity-90 hover:opacity-100 transition-opacity">
                         <div className="relative w-24 h-12 md:w-28 md:h-14">

@@ -47,6 +47,11 @@ export async function DELETE(
 
         const { id } = await params;
 
+        // Delete related cart items first to avoid FK constraint error
+        await prisma.cartItem.deleteMany({
+            where: { menuItemId: id },
+        });
+
         const item = await prisma.menuItem.delete({
             where: { id },
         });

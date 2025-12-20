@@ -3,6 +3,27 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getSocket } from './socket';
 
+const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 3, backoff = 1000) => {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const res = await fetch(url, options);
+            if (res.ok) return res;
+            if (res.status === 429 || res.status >= 500) {
+                // Retryable error
+                console.warn(`Fetch failed (${res.status}). Retrying ${i + 1}/${retries}...`);
+                await new Promise(r => setTimeout(r, backoff * (i + 1)));
+                continue;
+            }
+            return res; // Return non-retryable error
+        } catch (err) {
+            if (i === retries - 1) throw err;
+            console.warn(`Fetch error. Retrying ${i + 1}/${retries}...`, err);
+            await new Promise(r => setTimeout(r, backoff * (i + 1)));
+        }
+    }
+    throw new Error('Max retries reached');
+};
+
 // ==================== TYPES ====================
 
 export interface Order {
@@ -63,6 +84,7 @@ export interface MenuItem {
     category?: MenuCategory;
     order?: number;
     tags?: string[];
+    translations?: any;
 }
 
 export interface MenuCategory {
@@ -70,6 +92,7 @@ export interface MenuCategory {
     name: string;
     order: number;
     items?: MenuItem[];
+    translations?: any;
 }
 
 export interface BlogCategory {
@@ -120,6 +143,15 @@ export interface BlogPost {
     canonicalUrl?: string;
 }
 
+export interface Review {
+    id: string;
+    name: string;
+    avatar: string | null;
+    rating: number;
+    comment: string;
+    date: string | Date;
+}
+
 export interface InventoryItem {
     id: number;
     name: string;
@@ -142,6 +174,92 @@ export interface StockLog {
     type: 'CONSUMPTION' | 'RESTOCK' | 'WASTAGE' | 'ADJUSTMENT';
     reason?: string;
     createdAt: string;
+}
+
+export interface Store {
+    id: string;
+    name: string;
+    code: string;
+    address: string;
+    phone: string;
+    active: boolean;
+    createdAt: string;
+}
+
+// ==================== INQUIRY HOOKS ====================
+
+export function useDbInquiries() {
+    const [inquiries, setInquiries] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchInquiries = useCallback(async () => {
+        try {
+            setLoading(true);
+            const res = await fetch(`${API_BASE}/franchise`);
+            if (res.ok) {
+                const data = await res.json();
+                setInquiries(data);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchInquiries();
+    }, [fetchInquiries]);
+
+    return { inquiries, loading, refetch: fetchInquiries };
+}
+
+// ==================== STORES API HOOKS ====================
+
+export function useDbStores() {
+    const [stores, setStores] = useState<Store[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchStores = useCallback(async () => {
+        try {
+            setLoading(true);
+            const res = await fetch(`${API_BASE}/stores`, { cache: 'no-store' });
+            if (!res.ok) throw new Error('Failed to fetch stores');
+            const data = await res.json();
+            setStores(data);
+            setError(null);
+        } catch (err: any) {
+            console.error(err);
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchStores();
+    }, [fetchStores]);
+
+    const addStore = async (storeData: any) => {
+        try {
+            const res = await fetch(`${API_BASE}/stores`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(storeData)
+            });
+            if (res.ok) {
+                fetchStores();
+                return { success: true };
+            }
+            const data = await res.json();
+            return { success: false, error: data.error };
+        } catch (err) {
+            return { success: false, error: 'Network error' };
+        }
+    };
+
+    return { stores, loading, error, addStore, refetch: fetchStores };
 }
 
 // ==================== ORDERS API HOOKS ====================
@@ -184,8 +302,13 @@ export function useDbOrders() {
             setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
         };
 
+        const handleOrderUpdate = (updatedOrder: Order) => {
+            setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
+        };
+
         socket.on('order-received', handleNewOrder);
         socket.on('status-updated', handleStatusUpdate);
+        socket.on('order-updated', handleOrderUpdate);
 
         // Keep polling as backup/sync, but less frequent (30s)
         const interval = setInterval(fetchOrders, 30000);
@@ -194,6 +317,7 @@ export function useDbOrders() {
             clearInterval(interval);
             socket.off('order-received', handleNewOrder);
             socket.off('status-updated', handleStatusUpdate);
+            socket.off('order-updated', handleOrderUpdate);
         };
     }, [fetchOrders]);
 
@@ -233,6 +357,9 @@ export function useDbOrders() {
             socket.emit('update-status', { orderId: id, status: updates.status });
         }
 
+        const socket = getSocket();
+        socket.emit('update-order', updatedOrder);
+
         return updatedOrder;
     };
 
@@ -251,10 +378,14 @@ export function useDbCustomers() {
             setLoading(true);
             const url = search ? `${API_BASE}/customers?search=${search}` : `${API_BASE}/customers`;
             const res = await fetch(url, { cache: 'no-store' });
-            if (!res.ok) throw new Error('Failed to fetch customers');
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || errData.message || 'Failed to fetch customers');
+            }
             const data = await res.json();
             setCustomers(data);
-        } catch (err) {
+        } catch (err: any) {
+            console.error("Fetch Customers Error details:", err);
             console.error(err);
         } finally {
             setLoading(false);
@@ -291,10 +422,15 @@ export function useDbMenu() {
         try {
             setLoading(true);
             const [itemsRes, catsRes] = await Promise.all([
-                fetch(`${API_BASE}/menu`, { cache: 'no-store' }),
-                fetch(`${API_BASE}/menu/categories`, { cache: 'no-store' }),
+                fetchWithRetry(`${API_BASE}/menu`, { cache: 'no-store' }),
+                fetchWithRetry(`${API_BASE}/menu/categories`, { cache: 'no-store' }),
             ]);
+
+            if (!itemsRes.ok) console.error('Menu items fetch failed:', await itemsRes.text());
+            if (!catsRes.ok) console.error('Menu categories fetch failed:', await catsRes.text());
+
             if (!itemsRes.ok || !catsRes.ok) throw new Error('Failed to fetch menu');
+
             const [itemsData, catsData] = await Promise.all([
                 itemsRes.json(),
                 catsRes.json(),
@@ -302,7 +438,7 @@ export function useDbMenu() {
             setItems(Array.isArray(itemsData) ? itemsData : []);
             setCategories(Array.isArray(catsData) ? catsData : []);
         } catch (err) {
-            console.error(err);
+            console.error('useDbMenu error:', err);
         } finally {
             setLoading(false);
         }
@@ -334,6 +470,7 @@ export function useDbMenu() {
         }
 
         if (!res.ok) throw new Error('Failed to save item');
+        fetch(`${API_BASE}/seo/ping`, { method: 'POST', body: JSON.stringify({ url: window.location.origin }) }).catch(console.error);
         fetchMenu();
     };
 
@@ -389,12 +526,12 @@ export function useDbBlog() {
         try {
             setLoading(true);
             const url = status ? `${API_BASE}/blog?status=${status}` : `${API_BASE}/blog`;
-            const res = await fetch(url, { cache: 'no-store' });
-            if (!res.ok) throw new Error('Failed to fetch posts');
+            const res = await fetchWithRetry(url, { cache: 'no-store' });
+            if (!res.ok) throw new Error(`Failed to fetch posts: ${res.status}`);
             const data = await res.json();
             setPosts(data);
         } catch (err) {
-            console.error(err);
+            console.error('useDbBlog error:', err);
         } finally {
             setLoading(false);
         }
@@ -1235,4 +1372,65 @@ export function useDbCart() {
     };
 
     return { cart, loading, addToCart, updateQuantity, removeFromCart, clearCart, refetch: fetchCart };
+}
+
+// ==================== REVIEWS API HOOKS ====================
+
+export function useDbReviews(fallbackReviews: Review[] = []) {
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    const fetchReviews = useCallback(async () => {
+        try {
+            setLoading(true);
+            const res = await fetchWithRetry(`${API_BASE}/reviews`, { cache: 'no-store' });
+            if (res.ok) {
+                const data = await res.json();
+                setReviews(Array.isArray(data) ? data : fallbackReviews);
+            } else {
+                setReviews(fallbackReviews);
+            }
+        } catch (error) {
+            console.error('useDbReviews error:', error);
+            setReviews(fallbackReviews);
+        } finally {
+            setLoading(false);
+        }
+    }, [fallbackReviews]);
+
+    useEffect(() => {
+        fetchReviews();
+    }, [fetchReviews]);
+
+    return { reviews, loading, refetch: fetchReviews };
+}
+
+// ==================== CMS API HOOKS ====================
+
+export function useDbCms(slug: string) {
+    const [content, setContent] = useState<any>({});
+    const [loading, setLoading] = useState(true);
+
+    const fetchContent = useCallback(async () => {
+        try {
+            setLoading(true);
+            const res = await fetchWithRetry(`${API_BASE}/cms?slug=${slug}`, { cache: 'no-store' });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && Object.keys(data).length > 0) {
+                    setContent(data);
+                }
+            }
+        } catch (error) {
+            console.error('useDbCms error:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [slug]);
+
+    useEffect(() => {
+        fetchContent();
+    }, [fetchContent]);
+
+    return { content, loading, refetch: fetchContent };
 }

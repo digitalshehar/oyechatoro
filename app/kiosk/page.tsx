@@ -59,8 +59,8 @@ export default function KioskPage() {
     }, []);
 
     const filteredItems = useMemo(() => {
-        if (activeCategory === 'all') return items;
-        return items.filter(item => item.categoryId === activeCategory);
+        const base = activeCategory === 'all' ? items : items.filter(item => item.categoryId === activeCategory);
+        return [...base].sort((a, b) => a.price - b.price);
     }, [items, activeCategory]);
 
     const cartTotal = useMemo(() =>

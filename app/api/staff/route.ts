@@ -12,7 +12,21 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Data Isolation: Admin sees all? Or Head Office Admin sees all?
+        // Decisions: 
+        // 1. Global Admin (Head Office) sees ALL staff? Or just Head Office staff?
+        //    Ideally Global Admin sees all. But let's start with Isolation: You see users in your store.
+        //    If Head Office wants to see all, they can switch context (future).
+        // 2. Head Office is just a store.
+
+        const storeId = (session.user as any).storeId;
+        const where: any = {};
+        if (storeId) {
+            where.storeId = storeId;
+        }
+
         const staff = await prisma.staff.findMany({
+            where,
             orderBy: { name: 'asc' },
             select: {
                 id: true,
@@ -42,6 +56,7 @@ export async function POST(request: NextRequest) {
 
         const body = await request.json();
         const { name, email, phone, password, role } = body;
+        const storeId = (session.user as any).storeId;
 
         // Basic validation
         if (!name || !email || !password) {
@@ -58,6 +73,7 @@ export async function POST(request: NextRequest) {
 
         const newStaff = await prisma.staff.create({
             data: {
+                storeId, // Assign to creator's store
                 name,
                 email,
                 phone,

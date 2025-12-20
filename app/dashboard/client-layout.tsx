@@ -4,10 +4,19 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useDbServiceRequests as useServiceRequests } from '../lib/db-hooks';
-import { signOut } from 'next-auth/react';
+import { signOut, SessionProvider } from 'next-auth/react';
 import type { Session } from 'next-auth';
 
 export default function ClientLayout({ children, session }: { children: React.ReactNode; session: Session | null }) {
+    // Wrap everything in SessionProvider so child pages (like StoresPage) can use useSession()
+    return (
+        <SessionProvider session={session}>
+            <ClientLayoutContent session={session}>{children}</ClientLayoutContent>
+        </SessionProvider>
+    );
+}
+
+function ClientLayoutContent({ children, session }: { children: React.ReactNode; session: Session | null }) {
     const router = useRouter();
     const pathname = usePathname();
     const [soundEnabled, setSoundEnabled] = useState(true);
@@ -122,6 +131,11 @@ export default function ClientLayout({ children, session }: { children: React.Re
                         <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider mt-1 ml-9">
                             {userRole === 'Staff' ? 'POS Panel' : 'Admin Panel'}
                         </p>
+                        {userRole !== 'Staff' && (
+                            <div className="ml-9 mt-2 px-2 py-1 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase rounded-md inline-flex items-center gap-1 border border-blue-100">
+                                🏢 {(session?.user as any)?.storeName || 'Head Office'}
+                            </div>
+                        )}
                     </div>
                     {/* Close Button for Mobile */}
                     <button
@@ -208,6 +222,9 @@ export default function ClientLayout({ children, session }: { children: React.Re
                             </Link>
 
                             <div className="text-xs font-bold text-[var(--text-light)] uppercase tracking-wider mb-2 px-4 mt-6">Marketing</div>
+                            <Link href="/dashboard/inquiries" className={linkClass('/dashboard/inquiries')}>
+                                <span>📫</span> Applications
+                            </Link>
                             <Link href="/dashboard/offers" className={linkClass('/dashboard/offers')}>
                                 <span>🎟️</span> Offers & Coupons
                             </Link>
@@ -217,6 +234,12 @@ export default function ClientLayout({ children, session }: { children: React.Re
                             <Link href="/dashboard/blog" className={linkClass('/dashboard/blog')}>
                                 <span>📝</span> Blog Manager
                             </Link>
+                            <Link href="/dashboard/cms" className={linkClass('/dashboard/cms')}>
+                                <span>✏️</span> Website Editor
+                            </Link>
+                            <Link href="/dashboard/seo" className={linkClass('/dashboard/seo')}>
+                                <span>🚀</span> Search Engine (SEO)
+                            </Link>
 
                             <div className="text-xs font-bold text-[var(--text-light)] uppercase tracking-wider mb-2 px-4 mt-6">Supply Chain</div>
                             <Link href="/dashboard/suppliers" className={linkClass('/dashboard/suppliers')}>
@@ -224,6 +247,12 @@ export default function ClientLayout({ children, session }: { children: React.Re
                             </Link>
 
                             <div className="text-xs font-bold text-[var(--text-light)] uppercase tracking-wider mb-2 px-4 mt-6">Configuration</div>
+                            {/* <Link href="/dashboard/stores" className={linkClass('/dashboard/stores')}>
+                                <span>🏪</span> Franchises
+                            </Link> */}
+                            <Link href="/dashboard/users" className={linkClass('/dashboard/users')}>
+                                <span>👥</span> Team
+                            </Link>
                             <Link href="/dashboard/staff" className={linkClass('/dashboard/staff')}>
                                 <span>🛡️</span> Staff Access
                             </Link>
@@ -268,22 +297,47 @@ export default function ClientLayout({ children, session }: { children: React.Re
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto p-4 z-10 flex flex-col h-screen">
+            <main className={`flex-1 overflow-y-auto z-10 flex flex-col h-screen md:pb-0 ${pathname === '/dashboard/pos' ? 'pb-0' : 'pb-20'}`}>
                 {/* Mobile Header */}
-                <div className="md:hidden flex items-center justify-between mb-4 bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <button
-                        onClick={() => setIsMobileMenuOpen(true)}
-                        className="p-2 -ml-2 hover:bg-gray-100 rounded-lg text-gray-700"
-                    >
-                        <span className="text-2xl">☰</span>
-                    </button>
-                    <span className="font-bold text-gray-800">Oye Chatoro</span>
-                    <div className="w-8"></div> {/* Spacer for centering */}
+                <div className="md:hidden flex items-center justify-between p-4 bg-white/80 backdrop-blur-md sticky top-0 z-20 border-b border-gray-100">
+                    <div className="flex items-center gap-2">
+                        <span className="text-2xl">🥗</span>
+                        <span className="font-bold text-gray-800">Oye Chatoro</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button onClick={toggleTheme} className="p-2 bg-gray-100 rounded-lg text-lg">{isDarkMode ? '☀️' : '🌙'}</button>
+                    </div>
                 </div>
 
-                <div className="min-h-full rounded-2xl flex-1">
+                <div className="min-h-full rounded-2xl flex-1 p-4">
                     {children}
                 </div>
+
+                {/* Bottom Nav for Mobile */}
+                {pathname !== '/dashboard/pos' && (
+                    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-100 px-6 py-3 flex justify-between items-center z-50 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
+                        <Link href="/dashboard/overview" className={`flex flex-col items-center gap-1 transition-all ${isActive('/dashboard/overview') ? 'text-orange-500 scale-110' : 'text-gray-400'}`}>
+                            <span className="text-xl">📊</span>
+                            <span className="text-[10px] font-bold">Home</span>
+                        </Link>
+                        <Link href="/dashboard/pos" className={`flex flex-col items-center gap-1 transition-all ${isActive('/dashboard/pos') ? 'text-orange-500 scale-110' : 'text-gray-400'}`}>
+                            <span className="text-xl">🛒</span>
+                            <span className="text-[10px] font-bold">POS</span>
+                        </Link>
+                        <Link href="/dashboard/orders" className={`flex flex-col items-center gap-1 transition-all ${isActive('/dashboard/orders') ? 'text-orange-500 scale-110' : 'text-gray-400'}`}>
+                            <span className="text-xl">📝</span>
+                            <span className="text-[10px] font-bold">Orders</span>
+                        </Link>
+                        <Link href="/dashboard/customers" className={`flex flex-col items-center gap-1 transition-all ${isActive('/dashboard/customers') ? 'text-orange-500 scale-110' : 'text-gray-400'}`}>
+                            <span className="text-xl">👥</span>
+                            <span className="text-[10px] font-bold">CRM</span>
+                        </Link>
+                        <button onClick={() => setIsMobileMenuOpen(true)} className="flex flex-col items-center gap-1 text-gray-400">
+                            <span className="text-xl">☰</span>
+                            <span className="text-[10px] font-bold">Menu</span>
+                        </button>
+                    </nav>
+                )}
             </main>
         </div>
     );

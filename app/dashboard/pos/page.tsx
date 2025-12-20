@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import Image from 'next/image';
+import Link from 'next/link';
 import { useDbMenu, useDbOrders, useDbCustomers, MenuItem, Order, Customer } from '../../lib/db-hooks';
 import { useDbSettings as useSettings } from '../../lib/db-hooks';
 import ModifierModal from '../../components/pos/ModifierModal';
@@ -12,6 +12,7 @@ import CustomerSearchModal from '../../components/pos/CustomerSearchModal';
 
 interface CartItem {
     id: string;
+    menuItemId: string; // Original database ID
     name: string;
     price: number;
     quantity: number;
@@ -47,7 +48,7 @@ type TableStatus = 'free' | 'occupied' | 'billing';
 
 export default function POSPage() {
     const { categories, items } = useDbMenu();
-    const { orders: dbOrders, createOrder: createDbOrder } = useDbOrders();
+    const { orders: dbOrders, createOrder: createDbOrder, updateOrder } = useDbOrders();
     const { customers, fetchCustomers, upsertCustomer: upsertDbCustomer } = useDbCustomers();
     const { settings } = useSettings();
     const [cart, setCart] = useState<CartItem[]>([]);
@@ -59,7 +60,7 @@ export default function POSPage() {
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
     const [showCheckout, setShowCheckout] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'UPI' | 'Card'>('Cash');
+    const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Online'>('Cash');
     const [showSuccess, setShowSuccess] = useState(false);
 
     // Existing Features State
@@ -97,6 +98,11 @@ export default function POSPage() {
     // Modifiers State
     const [showModifierModal, setShowModifierModal] = useState(false);
     const [selectedItemForMods, setSelectedItemForMods] = useState<MenuItem | null>(null);
+
+    // Add to Order Feature State
+    const [activeOrderId, setActiveOrderId] = useState<number | null>(null);
+    const [existingItems, setExistingItems] = useState<any[]>([]);
+    const [existingTotal, setExistingTotal] = useState(0);
 
     const searchRef = useRef<HTMLInputElement>(null);
 
@@ -199,7 +205,7 @@ export default function POSPage() {
             totalOrders: todayOrders.length,
             totalSales: todayOrders.reduce((sum, o) => sum + Number(o.total), 0),
             cashSales: todayOrders.filter(o => o.paymentMethod === 'Cash').reduce((sum, o) => sum + Number(o.total), 0),
-            onlineSales: todayOrders.filter(o => o.paymentMethod === 'UPI' || o.paymentMethod === 'Card' || o.paymentMethod === 'Online').reduce((sum, o) => sum + Number(o.total), 0),
+            onlineSales: todayOrders.filter(o => o.paymentMethod === 'Online' || o.paymentMethod === 'UPI' || o.paymentMethod === 'Card').reduce((sum, o) => sum + Number(o.total), 0),
         };
 
         setTodaySales({
@@ -239,9 +245,27 @@ export default function POSPage() {
         const { status, order } = getTableStatus(tableNum);
         setTableNumber(tableNum);
         setOrderType('Dine In');
-        if (status === 'free') {
-            setCart([]); // Start fresh order
+
+        if (status === 'occupied' && order) {
+            // Load Active Order for "Add to Order"
+            setActiveOrderId(order.id);
+            setExistingItems(order.items);
+            setExistingTotal(order.total);
+            setCustomerName(order.customer);
+            setCustomerPhone(order.mobile || '');
+            if (order.mobile) fetchCustomers(order.mobile); // Try to load customer details
+            setCart([]); // Start with empty NEW cart
+        } else {
+            // New Order
+            setActiveOrderId(null);
+            setExistingItems([]);
+            setExistingTotal(0);
+            setCart([]);
+            setCustomerName('');
+            setCustomerPhone('');
+            setSelectedCustomer(null);
         }
+
         setViewMode('pos');
         setActiveTab('menu');
     };
@@ -262,7 +286,7 @@ export default function POSPage() {
                 (item.description || '').toLowerCase().includes(lowerQuery)
             );
         }
-        return result;
+        return result.sort((a, b) => a.price - b.price);
     }, [activeItems, activeCategory, searchQuery]);
 
     const addToCart = useCallback((item: MenuItem) => {
@@ -297,6 +321,7 @@ export default function POSPage() {
 
             return [...prev, {
                 id: cartItemId,
+                menuItemId: item.id,
                 name: item.name,
                 price: finalPrice,
                 quantity: 1,
@@ -332,6 +357,14 @@ export default function POSPage() {
             return;
         }
         setCart([]);
+        // Don't reset Active Order here, only cart. 
+        // If user wants to exit active order mode, they go back to floor or click "New Order" (helper needed)
+        // But for consistency, let's reset if they are clearing everything or if checking out.
+        // Actually, "Clear Cart" usually means "Clear Current Selection". 
+        // To Exit "Add Mode", we should have a "Cancel / Back" button.
+        // For now, let's keep activeOrder state until they leave the POS view or checkout.
+
+        setDiscountValue(0);
         setDiscountValue(0);
         setSelectedCustomer(null);
         setCharges({ packing: 0, delivery: 0 });
@@ -371,7 +404,7 @@ export default function POSPage() {
         : discountValue;
     const parcelAmount = charges.packing + charges.delivery;
     const taxableAmount = subtotal - discountAmount + parcelAmount;
-    const taxAmount = Math.round(taxableAmount * 0.05);
+    const taxAmount = 0; // Removed 5% GST as requested
     const cartTotal = taxableAmount + taxAmount + tipAmount;
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const changeAmount = amountTendered > cartTotal ? amountTendered - cartTotal : 0;
@@ -417,7 +450,7 @@ export default function POSPage() {
     };
 
     // Print Receipt
-    const printReceipt = () => {
+    const printReceipt = (status: 'Paid' | 'Unpaid' = 'Paid', method: 'Cash' | 'Online' = paymentMethod) => {
         const receiptWindow = window.open('', '_blank', 'width=300,height=600');
         if (!receiptWindow) return;
 
@@ -463,15 +496,20 @@ export default function POSPage() {
                 <div class="row"><span>Subtotal:</span><span>₹${subtotal}</span></div>
                 ${discountAmount > 0 ? `<div class="row"><span>Discount:</span><span>-₹${discountAmount}</span></div>` : ''}
                 ${parcelAmount > 0 ? `<div class="row"><span>Parcel Charge:</span><span>₹${parcelAmount}</span></div>` : ''}
-                <div class="row"><span>GST (5%):</span><span>₹${taxAmount}</span></div>
-                ${tipAmount > 0 ? `<div class="row"><span>Tip:</span><span>₹${tipAmount}</span></div>` : ''}
+                ${parcelAmount > 0 ? `<div class="row"><span>Parcel Charge:</span><span>₹${parcelAmount}</span></div>` : ''}
                 <div class="line"></div>
                 <div class="row bold"><span>TOTAL:</span><span>₹${cartTotal}</span></div>
-                ${paymentMethod === 'Cash' && amountTendered > 0 ? `
-                    <div class="row"><span>Tendered:</span><span>₹${amountTendered}</span></div>
-                    <div class="row bold"><span>Change:</span><span>₹${changeAmount}</span></div>
-                ` : ''}
-                <div class="row"><span>Payment:</span><span>${paymentMethod}</span></div>
+                ${status === 'Unpaid' ? `
+                    <div class="line"></div>
+                    <div class="center bold" style="background: #000; color: #fff; padding: 5px;">PAY LATER / DUE</div>
+                    <div class="row"><span>Payment:</span><span>NOT PAID</span></div>
+                ` : `
+                    ${method === 'Cash' && amountTendered > 0 ? `
+                        <div class="row"><span>Tendered:</span><span>₹${amountTendered}</span></div>
+                        <div class="row bold"><span>Change:</span><span>₹${changeAmount}</span></div>
+                    ` : ''}
+                    <div class="row"><span>Payment:</span><span>${method}</span></div>
+                `}
                 ${orderNotes ? `<div class="line"></div><p><b>Notes:</b> ${orderNotes}</p>` : ''}
                 <div class="line"></div>
                 <div class="center">
@@ -510,6 +548,7 @@ export default function POSPage() {
                 <div class="center">
                     <h1>🍳 KITCHEN ORDER</h1>
                     <p class="bold">${new Date().toLocaleTimeString()}</p>
+                    ${activeOrderId ? '<p>(ADD TO ORDER)</p>' : ''}
                 </div>
                 <div class="line"></div>
                 <div class="bold">${orderType} ${tableNumber ? '• Table ' + tableNumber : ''}</div>
@@ -583,6 +622,7 @@ export default function POSPage() {
 
         const orderData = {
             items: cart.map(item => ({
+                id: item.menuItemId,
                 name: item.name,
                 quantity: item.quantity,
                 price: item.price,
@@ -616,8 +656,58 @@ export default function POSPage() {
         };
 
 
+        if (activeOrderId) {
+            // UPDATE EXISTING ORDER
+            const newItems = cart.map(item => ({
+                id: item.menuItemId,
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+                note: item.note,
+                modifiers: item.modifiers
+            }));
+
+            // Merge items?? Ideally we append, but backend just replaces "items" if we send it in body??
+            // Wait, my backend implementation of "items" replace entire list or merge?
+            // "items: body.items" REPLACES the field in Prisma update if JSON.
+            // So we MUST send [ ...existing, ...new ].
+
+            // NOTE: existingItems is just the JSON.
+            const updatedItems = [...existingItems, ...newItems];
+
+            await updateOrder(activeOrderId, {
+                items: updatedItems,
+                total: existingTotal + cartTotal,
+                status: 'Cooking', // Reset status to Cooking if adding new items? Or keep 'Cooking'?
+                // If it was 'Ready', we should probably set back to 'Cooking' or 'Pending' so kitchen sees it?
+                // Visual Indicator: "Cooking" is best.
+                // Also append notes if needed
+            });
+
+            // We should print KOT for NEW items only - done by printKOT manually called before checkout usually?
+            // User flow: Print KOT -> Checkout/Update.
+            // If they didn't print KOT, we can do it here optionally.
+
+            setShowSuccess(true);
+            setTimeout(() => {
+                setShowSuccess(false);
+                setShowCheckout(false);
+                clearCart();
+                setTableNumber('');
+                setCustomerName('');
+                setCustomerPhone('');
+                setSelectedCustomer(null);
+                setActiveOrderId(null);
+                setExistingItems([]);
+                setViewMode('floor'); // Go back to floor
+            }, 1000);
+
+            return;
+        }
+
+        // CREATE NEW ORDER
         createDbOrder(orderData).catch(console.error); // Async create
-        printReceipt();
+        printReceipt('Paid', paymentMethod);
 
         setShowSuccess(true);
         setTimeout(() => {
@@ -643,6 +733,7 @@ export default function POSPage() {
 
         const orderData = {
             items: cart.map(item => ({
+                id: item.menuItemId,
                 name: item.name,
                 quantity: item.quantity,
                 price: item.price,
@@ -674,7 +765,7 @@ export default function POSPage() {
         };
 
         createDbOrder(orderData).catch(console.error);
-        printReceipt(); // Optional: might want to print bill without 'Paid' stamp
+        printReceipt('Unpaid', 'Cash'); // Optional: might want to print bill without 'Paid' stamp
 
         setShowSuccess(true);
         setTimeout(() => {
@@ -713,16 +804,21 @@ export default function POSPage() {
     };
 
     return (
-        <div className="h-screen flex flex-col bg-gray-100 overflow-hidden">
+        <div className="flex-1 flex flex-col bg-gray-100 overflow-hidden">
             {/* Floor View - Table Layout */}
             {viewMode === 'floor' && (
                 <div className="flex-1 flex flex-col overflow-hidden">
                     {/* Floor Header */}
                     <div className="bg-gradient-to-r from-orange-500 to-red-500 p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h1 className="text-2xl font-bold text-white">🪑 Table Floor</h1>
-                                <p className="text-white/80 text-sm">Select a table to take order</p>
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <Link href="/dashboard/overview" className="p-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all font-bold text-xs flex items-center gap-1">
+                                    ← EXIT
+                                </Link>
+                                <div>
+                                    <h1 className="text-xl md:text-2xl font-bold text-white">🪑 Table Floor</h1>
+                                    <p className="text-white/80 text-[10px] md:text-sm">Select a table to take order</p>
+                                </div>
                             </div>
                             <div className="flex gap-2">
                                 <button
@@ -828,37 +924,38 @@ export default function POSPage() {
                     {/* Left Side - Menu */}
                     <div className={`flex-1 flex flex-col overflow-hidden ${activeTab === 'cart' ? 'hidden md:flex' : 'flex'}`}>
                         {/* Header */}
-                        <div className="bg-white border-b p-3 flex items-center gap-3">
-                            <button
-                                onClick={() => setViewMode('floor')}
-                                className="px-3 py-2 rounded-lg bg-gray-800 text-white font-semibold text-xs flex items-center gap-1"
-                            >
-                                ← Floor
-                            </button>
-                            {tableNumber && (
-                                <div className="px-3 py-2 bg-orange-100 text-orange-600 rounded-lg font-bold text-xs">
-                                    🪑 {tableNumber}
+                        <div className="bg-white border-b p-2 md:p-3 flex flex-col md:flex-row gap-2">
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setViewMode('floor')}
+                                    className="px-4 py-2.5 rounded-xl bg-gray-800 text-white font-bold text-xs flex items-center gap-1 shrink-0 shadow-lg shadow-gray-200"
+                                >
+                                    ← Floor
+                                </button>
+                                {tableNumber && (
+                                    <div className="px-3 py-2.5 bg-orange-100 text-orange-600 rounded-xl font-bold text-xs shrink-0 border border-orange-200">
+                                        🪑 {tableNumber}
+                                    </div>
+                                )}
+                                <div className="flex-1 relative">
+                                    <input
+                                        ref={searchRef}
+                                        type="text"
+                                        placeholder="🔍 Search items..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pl-4 pr-10 py-2.5 rounded-xl border border-gray-100 focus:border-orange-500 focus:ring-4 focus:ring-orange-50 outline-none transition-all text-sm bg-gray-50/50"
+                                    />
                                 </div>
-                            )}
-                            <div className="flex-1 relative">
-                                <input
-                                    ref={searchRef}
-                                    type="text"
-                                    placeholder="🔍 Search items... (F1)"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-4 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-100 outline-none transition-all text-sm"
-                                />
                             </div>
-                            <div className="flex gap-1">
+                            <div className="flex gap-1 overflow-x-auto pb-1 md:pb-0 scrollbar-hide">
                                 {['Dine In', 'Takeaway', 'Delivery'].map(type => (
                                     <button
                                         key={type}
                                         onClick={() => setOrderType(type as any)}
-                                        className={`px-3 py-2 rounded-lg font-semibold text-xs transition-all ${orderType === type ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                            }`}
+                                        className={`px-4 py-2 rounded-xl font-bold text-[10px] md:text-xs transition-all whitespace-nowrap flex items-center gap-1.5 border ${orderType === type ? 'bg-orange-500 text-white border-orange-600 shadow-md shadow-orange-100' : 'bg-white text-gray-500 border-gray-100 hover:border-gray-200'}`}
                                     >
-                                        {type === 'Dine In' && '🪑'} {type === 'Takeaway' && '📦'} {type === 'Delivery' && '🚗'} {type}
+                                        <span>{type === 'Dine In' ? '🪑' : type === 'Takeaway' ? '📦' : '🚗'}</span> {type}
                                     </button>
                                 ))}
                             </div>
@@ -919,40 +1016,69 @@ export default function POSPage() {
                     {/* Right Side - Cart */}
                     <div className={`w-full md:w-[400px] bg-white border-l flex flex-col ${activeTab === 'menu' ? 'hidden md:flex' : 'flex'}`}>
                         {/* Use CartView Component if extracted, or keep inline. For now, maintaining inline structure from original but mostly complete */}
-                        <div className="bg-gray-800 text-white p-4 flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                                <span className="text-xl">🛒</span>
-                                <div>
-                                    <h2 className="font-bold">Current Order</h2>
-                                    <p className="text-xs text-gray-400">{cart.length} items • {tableNumber || orderType}</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-2 min-w-[30%]">
-                                <input
-                                    type="tel"
-                                    placeholder="📱 Mobile No."
-                                    value={customerPhone}
-                                    onChange={(e) => {
-                                        const val = e.target.value;
-                                        setCustomerPhone(val);
-                                        if (val.length === 10) searchCustomer(val);
-                                    }}
-                                    className="w-full bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-sm text-white placeholder-gray-400 outline-none focus:border-orange-500 transition-colors"
-                                />
-                                {customers.length > 0 && !selectedCustomer && (
-                                    <button onClick={() => setShowCustomerSearch(true)} className="p-2 bg-white/10 rounded-lg hover:bg-white/20">👤</button>
-                                )}
-                                {selectedCustomer && (
-                                    <div className="flex items-center gap-2 bg-orange-600 px-2 py-1 rounded-lg text-xs cursor-pointer" onClick={() => setShowCustomerSearch(true)}>
-                                        👤 {selectedCustomer.name.split(' ')[0]}
+                        <div className="bg-gray-900 text-white p-3 md:p-4 border-b border-white/5 shadow-xl">
+                            <div className="flex justify-between items-center mb-3">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-sm shadow-lg shadow-orange-900/20">🛒</div>
+                                    <div>
+                                        <h2 className="font-bold text-sm">Review Order</h2>
+                                        <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest">{tableNumber || orderType}</p>
                                     </div>
-                                )}
-                                <button onClick={() => setViewMode('floor')} className="md:hidden p-2 bg-white/10 rounded-lg">✕</button>
+                                </div>
+                                <button onClick={() => setActiveTab('menu')} className="md:hidden p-2 bg-white/5 rounded-xl text-xs font-bold border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-1">← BACK</button>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <div className="flex-1 relative">
+                                    <input
+                                        type="tel"
+                                        placeholder="📱 Mobile No"
+                                        value={customerPhone}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            setCustomerPhone(val);
+                                            if (val.length === 10) searchCustomer(val);
+                                        }}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 outline-none focus:border-orange-500 focus:bg-white/10 transition-all font-bold"
+                                    />
+                                </div>
+                                <div className="flex-1 relative">
+                                    <input
+                                        type="text"
+                                        placeholder="👤 Name"
+                                        value={customerName}
+                                        onChange={(e) => setCustomerName(e.target.value)}
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 outline-none focus:border-orange-500 focus:bg-white/10 transition-all font-bold"
+                                    />
+                                    {selectedCustomer && (
+                                        <div className="absolute top-1/2 -translate-y-1/2 right-2 flex items-center gap-1 bg-orange-600 px-1.5 py-0.5 rounded text-[8px] font-black uppercase shadow-lg shadow-orange-900/40">VIP</div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
                         {/* Cart Items List */}
                         <div className="flex-1 overflow-y-auto p-2 space-y-2">
+                            {/* DISPLAY EXISTING ITEMS (ReadOnly) */}
+                            {activeOrderId && existingItems.length > 0 && (
+                                <div className="mb-4 bg-orange-50 p-3 rounded-xl border border-orange-100">
+                                    <div className="text-xs font-bold text-orange-600 mb-2 uppercase tracking-wide">Existing Items</div>
+                                    {existingItems.map((item: any, idx: number) => (
+                                        <div key={`existing-${idx}`} className="flex justify-between items-center py-1 opacity-70">
+                                            <div className="flex-1">
+                                                <div className="text-sm font-medium text-gray-800">{item.quantity}x {item.name}</div>
+                                                {item.note && <div className="text-xs text-gray-500 italic">{item.note}</div>}
+                                            </div>
+                                            <div className="font-bold text-gray-600">₹{item.price * item.quantity}</div>
+                                        </div>
+                                    ))}
+                                    <div className="mt-2 pt-2 border-t border-orange-200 flex justify-between text-sm font-bold text-orange-800">
+                                        <span>Previous Total</span>
+                                        <span>₹{existingTotal}</span>
+                                    </div>
+                                </div>
+                            )}
+
                             {cart.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-gray-400 opacity-50">
                                     <span className="text-4xl mb-2">🛒</span>
@@ -1049,28 +1175,9 @@ export default function POSPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-between text-gray-500"><span>GST (5%)</span><span>₹{taxAmount}</span></div>
+                                {/* GST Removed logic */}
 
-                                {/* Tip Control */}
-                                <div className="flex justify-between items-center text-pink-600">
-                                    <span>Tip</span>
-                                    {tipAmount > 0 ? (
-                                        <div className="flex items-center gap-1">
-                                            <span>+₹{tipAmount}</span>
-                                            <button onClick={() => setTipAmount(0)} className="text-xs bg-red-100 text-red-500 rounded px-1">✕</button>
-                                        </div>
-                                    ) : (
-                                        <div className="flex gap-1">
-                                            {[10, 20, 50].map(amt => (
-                                                <button key={amt} onClick={() => setTipAmount(amt)} className="text-[10px] bg-pink-50 px-1 rounded hover:bg-pink-100">+₹{amt}</button>
-                                            ))}
-                                            <button onClick={() => {
-                                                const val = prompt('Enter Tip Amount');
-                                                if (val) setTipAmount(Number(val));
-                                            }} className="text-[10px] bg-gray-100 px-1 rounded">Custom</button>
-                                        </div>
-                                    )}
-                                </div>
+                                {/* Tip Control Removed */}
                                 <div className="flex justify-between font-bold text-lg pt-2 border-t text-gray-900"><span>Total</span><span>₹{cartTotal}</span></div>
                             </div>
 
@@ -1089,36 +1196,66 @@ export default function POSPage() {
                             </div>
 
                             <div className="flex gap-2">
-                                <button
-                                    onClick={() => handlePayLater()}
-                                    disabled={cart.length === 0}
-                                    className="flex-1 py-4 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 rounded-xl font-bold shadow-lg shadow-yellow-200 transition-all disabled:opacity-50 disabled:shadow-none"
-                                >
-                                    Pay Later
-                                </button>
-                                <button
-                                    onClick={() => setShowCheckout(true)}
-                                    disabled={cart.length === 0}
-                                    className="flex-[2] py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold shadow-lg shadow-orange-200 transition-all disabled:opacity-50 disabled:shadow-none"
-                                >
-                                    Charge ₹{cartTotal}
-                                </button>
+                                {activeOrderId ? (
+                                    <>
+                                        <button
+                                            onClick={() => {
+                                                setActiveOrderId(null);
+                                                setExistingItems([]);
+                                                setCart([]);
+                                                setViewMode('floor');
+                                            }}
+                                            className="flex-1 py-4 bg-gray-500 hover:bg-gray-600 text-white rounded-xl font-bold shadow-lg shadow-gray-200 transition-all"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={() => handleCheckout()}
+                                            disabled={cart.length === 0}
+                                            className="flex-[2] py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 transition-all hover:scale-[1.02] disabled:opacity-50"
+                                        >
+                                            Update Order (₹{cartTotal + existingTotal})
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            onClick={() => handlePayLater()}
+                                            disabled={cart.length === 0}
+                                            className="flex-1 py-4 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 rounded-xl font-bold shadow-lg shadow-yellow-200 transition-all disabled:opacity-50 disabled:shadow-none"
+                                        >
+                                            Pay Later
+                                        </button>
+                                        <button
+                                            onClick={() => setShowCheckout(true)}
+                                            disabled={cart.length === 0}
+                                            className="flex-[2] py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl font-bold shadow-lg shadow-orange-200 transition-all disabled:opacity-50 disabled:shadow-none"
+                                        >
+                                            Charge ₹{cartTotal}
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
             )}
 
+
             {/* Mobile Tab Bar */}
-            <div className="md:hidden bg-white border-t flex justify-around p-2">
-                <button onClick={() => setActiveTab('menu')} className={`flex flex-col items-center p-2 rounded-lg ${activeTab === 'menu' ? 'text-orange-500 bg-orange-50' : 'text-gray-400'}`}>
+            <div className="md:hidden bg-white border-t flex justify-around p-2 sticky bottom-0 z-30 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+                <button onClick={() => setActiveTab('menu')} className={`flex flex-col items-center p-2 rounded-lg transition-all ${activeTab === 'menu' ? 'text-orange-500 bg-orange-50' : 'text-gray-400'}`}>
                     <span className="text-xl">🍔</span>
                     <span className="text-[10px] font-bold">Menu</span>
                 </button>
-                <button onClick={() => setActiveTab('cart')} className={`flex flex-col items-center p-2 rounded-lg relative ${activeTab === 'cart' ? 'text-orange-500 bg-orange-50' : 'text-gray-400'}`}>
+                <button onClick={() => setActiveTab('cart')} className={`flex flex-col items-center p-2 rounded-lg relative transition-all ${activeTab === 'cart' ? 'text-orange-500 bg-orange-50' : 'text-gray-400'}`}>
                     <span className="text-xl">🛒</span>
                     <span className="text-[10px] font-bold">Cart</span>
-                    {cart.length > 0 && <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>}
+                    {cart.length > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-bounce shadow-sm">
+                            {cart.length}
+                        </span>
+                    )}
                 </button>
             </div>
 
@@ -1168,6 +1305,21 @@ export default function POSPage() {
                 onPrintReceipt={(order) => {
                     alert(`Printing receipt for Order #${order.id}`);
                 }}
+                onSettlePayment={async (orderId, method) => {
+                    try {
+                        await updateOrder(orderId, {
+                            paymentStatus: 'Paid',
+                            paymentMethod: method,
+                            status: 'Completed' // Optionally mark as completed if just waiting for payment? Or keep as is. Let's just update payment.
+                            // Actually user said "update ka option hona chahiye".
+                        });
+                        alert(`Order #${orderId} marked as Paid via ${method}`);
+                        refreshData(); // Refresh local list
+                    } catch (e) {
+                        alert('Failed to update order');
+                        console.error(e);
+                    }
+                }}
             />
 
             <OnlineOrderModal
@@ -1198,6 +1350,6 @@ export default function POSPage() {
                     setShowCustomerSearch(false);
                 }}
             />
-        </div>
+        </div >
     );
 }

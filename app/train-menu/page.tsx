@@ -25,7 +25,9 @@ export default function TrainMenuPage() {
 
     // Filter only Train Menu items
     const trainItems = useMemo(() => {
-        return items.filter(item => item.isTrainMenu === true && item.status === 'Active');
+        return items
+            .filter(item => item.isTrainMenu === true && item.status === 'Active')
+            .sort((a, b) => a.price - b.price);
     }, [items]);
 
     const categories = useMemo(() => {

@@ -1,433 +1,155 @@
-[00:01:08.344] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:01:09.211] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:06:51.198] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:08:55.686] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:09:37.640] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:09:40.563] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:14:15.285] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:14:26.092] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:14:26.346] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+[00:01:31.069] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:51.934] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:52.280] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
 Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:15:07.313] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:25:01.082] Browser ERROR   uncaughtError: ReferenceError: fileInputRef is not defined
-[00:25:48.618] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:25:49.917] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:49.917] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:49.918] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:49.918] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:50.143] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:50.143] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:50.143] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:50.143] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:50.746] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:50.746] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:51.019] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:51.019] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:51.267] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:51.267] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:51.368] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:51.368] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:52.211] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:52.211] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:52.534] Browser ERROR   ./app/dashboard/menu/page.tsx:167:12
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |            ^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `selectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:25:52.534] Browser ERROR   ./app/dashboard/menu/page.tsx:167:35
-Ecmascript file had an error
-  165 |     };
-  166 |
-> 167 |     const [selectedItemForRecipe, setSelectedItemForRecipe] = useState<any>(null);
-      |                                   ^^^^^^^^^^^^^^^^^^^^^^^^
-  168 |     const [isUploading, setIsUploading] = useState(false);
-  169 |     const fileInputRef = useRef<HTMLInputElement>(null);
-  170 |
-
-the name `setSelectedItemForRecipe` is defined multiple times
-
-Import traces:
-  Client Component Browser:
-    ./app/dashboard/menu/page.tsx [Client Component Browser]
-    ./app/dashboard/menu/page.tsx [Server Component]
-
-  Client Component SSR:
-    ./app/dashboard/menu/page.tsx [Client Component SSR]
-    ./app/dashboard/menu/page.tsx [Server Component]
-[00:26:53.515] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:27:18.211] Browser WARN    Image with src "http://localhost:3000/uploads/menu/menu-1765671929557-414090338.png" has "fill" and parent element with invalid "position". Provided "static" should be one of absolute,fixed,relative.
-[00:27:42.741] Browser WARN    Image with src "http://localhost:3000/uploads/menu/menu-1765671954167-894155947.jpg" has "fill" and parent element with invalid "position". Provided "static" should be one of absolute,fixed,relative.
-[00:29:23.128] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:29:27.987] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:29:28.466] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+[00:03:36.270] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:04:10.043] Browser WARN    Image with src "http://localhost:3000/images/menu/burger.png" has "fill" and parent element with invalid "position". Provided "static" should be one of absolute,fixed,relative.
+[00:05:07.237] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:05:07.237] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:05:07.237] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:05:07.237] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:05:07.237] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:05:07.238] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:05:07.238] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:05:07.238] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+[00:09:02.452] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:10:49.646] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:13:26.229] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:24:02.982] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:30:02.560] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:32:53.293] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:35:40.948] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:38:41.717] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:38:52.504] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:42:37.469] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:44:32.932] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:45:32.014] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:48:03.483] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:52:23.542] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:00:58.993] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:03:56.416] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:10:27.391] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:13:26.838] Browser ERROR   uncaughtError: ReferenceError: Link is not defined
+[01:41:08.147] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:42:35.113] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:44:29.402] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:44:37.874] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:44:55.839] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:47:13.300] Browser ERROR   {"kind":"error","name":"ClientFetchError","type":"AuthError"}
+[01:47:13.300] Browser ERROR   {"kind":"error","name":"ClientFetchError","type":"AuthError"}
+[01:47:13.821] Browser ERROR   {"kind":"error","name":"ClientFetchError","type":"AuthError"}
+[01:47:13.849] Browser ERROR   {"kind":"error","name":"ClientFetchError","type":"AuthError"}
+[01:48:23.651] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:48:31.460] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:49:53.456] Browser ERROR   {"kind":"error","name":"ClientFetchError","type":"AuthError"}
+[01:49:53.457] Browser ERROR   {"kind":"error","name":"ClientFetchError","type":"AuthError"}
+[01:54:01.322] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:57:07.872] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:07:10.643] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:07:13.157] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
 Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:30:17.637] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:30:17.860] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+[02:08:01.377] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:08:07.358] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:09:16.880] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:09:17.392] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
 Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:35:47.138] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:35:47.415] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+[02:09:22.444] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:09:28.437] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:12:01.358] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:12:04.965] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:12:54.395] Browser ERROR   uncaughtError: ReferenceError: onTestSound is not defined
+[02:14:26.500] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:15:34.708] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:16:16.163] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:16:23.230] Browser WARN    Image with src "/images/menu/burger.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
 Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:37:29.968] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:42:38.607] Browser WARN    Image with src "http://localhost:3000/uploads/menu/menu-1765672850020-528445087.jpg" has "fill" and parent element with invalid "position". Provided "static" should be one of absolute,fixed,relative.
-[00:43:09.953] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:43:10.201] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+[02:16:23.250] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:18:07.858] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:18:12.925] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:18:17.050] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:20:59.721] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:21:36.380] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:21:36.713] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
 Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
-[00:55:05.133] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:55:25.217] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:21:45.849] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:28:34.830] Browser ERROR   ./app/page.tsx:705:32
+Parsing ecmascript source code failed
+  703 |                                 </div>
+  704 |                             </section>
+> 705 |                         </main>
+      |                                ^
+> 706 |
+      | ^
+> 707 |                         <Footer year={year} />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+  708 |
+  709 |                         {/* Cart UI */}
+  710 |                         <div className="cart-floating-btn shadow-2xl shadow-orange-500/50 hover:scale-110 transition-transform active:scale-95" onClick={() => setIsCartOpen(true)}>
+
+Expected '</', got 'jsx text (
+
+                        )'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[02:28:34.830] Browser ERROR   ./app/page.tsx:705:32
+Parsing ecmascript source code failed
+  703 |                                 </div>
+  704 |                             </section>
+> 705 |                         </main>
+      |                                ^
+> 706 |
+      | ^
+> 707 |                         <Footer year={year} />
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+  708 |
+  709 |                         {/* Cart UI */}
+  710 |                         <div className="cart-floating-btn shadow-2xl shadow-orange-500/50 hover:scale-110 transition-transform active:scale-95" onClick={() => setIsCartOpen(true)}>
+
+Expected '</', got 'jsx text (
+
+                        )'
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+[02:30:27.880] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:31:56.674] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:31:56.993] Browser WARN    Image with src "/logowhite.PNG" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[02:38:14.526] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

@@ -157,16 +157,16 @@ export default function SuppliersPage() {
                     </h1>
                     <p className="text-[var(--text-muted)]">Manage vendors and purchase orders</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     <button
                         onClick={() => setShowAddModal(true)}
-                        className="px-4 py-2 bg-[var(--brand-primary)] text-white rounded-xl font-semibold hover:bg-[var(--brand-secondary)] transition-all"
+                        className="flex-1 md:flex-none px-4 py-2 bg-[var(--brand-primary)] text-white rounded-xl font-semibold hover:bg-[var(--brand-secondary)] transition-all text-sm"
                     >
-                        + Add Supplier
+                        + Supplier
                     </button>
                     <button
                         onClick={() => setShowPOModal(true)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all"
+                        className="flex-1 md:flex-none px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all text-sm"
                     >
                         + New PO
                     </button>
@@ -180,8 +180,8 @@ export default function SuppliersPage() {
                         key={tab}
                         onClick={() => setActiveTab(tab as any)}
                         className={`px-4 py-2 rounded-lg font-semibold transition-all ${activeTab === tab
-                                ? 'bg-[var(--brand-primary)] text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            ? 'bg-[var(--brand-primary)] text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         {tab === 'suppliers' ? `📋 Suppliers (${suppliers.length})` : `📦 Orders (${orders.length})`}
@@ -231,50 +231,83 @@ export default function SuppliersPage() {
             {/* Orders Tab */}
             {activeTab === 'orders' && (
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <table className="w-full">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">PO #</th>
-                                <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">Supplier</th>
-                                <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Items</th>
-                                <th className="text-right p-4 text-xs font-bold text-gray-500 uppercase">Amount</th>
-                                <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Status</th>
-                                <th className="text-right p-4 text-xs font-bold text-gray-500 uppercase">Date</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y">
-                            {orders.map(order => (
-                                <tr key={order.id} className="hover:bg-gray-50">
-                                    <td className="p-4 font-mono text-sm">{order.id.slice(0, 8)}...</td>
-                                    <td className="p-4 font-semibold">{order.supplier.name}</td>
-                                    <td className="p-4 text-center">{order.items.length} items</td>
-                                    <td className="p-4 text-right font-bold">₹{order.totalAmount}</td>
-                                    <td className="p-4 text-center">
-                                        <select
-                                            value={order.status}
-                                            onChange={(e) => updatePOStatus(order.id, e.target.value)}
-                                            className={`px-2 py-1 rounded-lg text-xs font-bold ${statusColors[order.status]}`}
-                                        >
-                                            <option value="Pending">Pending</option>
-                                            <option value="Ordered">Ordered</option>
-                                            <option value="Received">Received</option>
-                                            <option value="Cancelled">Cancelled</option>
-                                        </select>
-                                    </td>
-                                    <td className="p-4 text-right text-sm text-gray-500">
-                                        {new Date(order.orderDate).toLocaleDateString()}
-                                    </td>
-                                </tr>
-                            ))}
-                            {orders.length === 0 && (
+                    {/* Desktop View */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full">
+                            <thead className="bg-gray-50">
                                 <tr>
-                                    <td colSpan={6} className="p-12 text-center text-gray-400">
-                                        No purchase orders yet.
-                                    </td>
+                                    <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">PO #</th>
+                                    <th className="text-left p-4 text-xs font-bold text-gray-500 uppercase">Supplier</th>
+                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Items</th>
+                                    <th className="text-right p-4 text-xs font-bold text-gray-500 uppercase">Amount</th>
+                                    <th className="text-center p-4 text-xs font-bold text-gray-500 uppercase">Status</th>
+                                    <th className="text-right p-4 text-xs font-bold text-gray-500 uppercase">Date</th>
                                 </tr>
-                            )}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody className="divide-y">
+                                {orders.map(order => (
+                                    <tr key={order.id} className="hover:bg-gray-50">
+                                        <td className="p-4 font-mono text-sm">{order.id.slice(0, 8)}...</td>
+                                        <td className="p-4 font-semibold">{order.supplier.name}</td>
+                                        <td className="p-4 text-center">{order.items.length} items</td>
+                                        <td className="p-4 text-right font-bold">₹{order.totalAmount}</td>
+                                        <td className="p-4 text-center">
+                                            <select
+                                                value={order.status}
+                                                onChange={(e) => updatePOStatus(order.id, e.target.value)}
+                                                className={`px-2 py-1 rounded-lg text-xs font-bold ${statusColors[order.status]}`}
+                                            >
+                                                <option value="Pending">Pending</option>
+                                                <option value="Ordered">Ordered</option>
+                                                <option value="Received">Received</option>
+                                                <option value="Cancelled">Cancelled</option>
+                                            </select>
+                                        </td>
+                                        <td className="p-4 text-right text-sm text-gray-500">
+                                            {new Date(order.orderDate).toLocaleDateString()}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Mobile View */}
+                    <div className="md:hidden divide-y divide-gray-100">
+                        {orders.map(order => (
+                            <div key={order.id} className="p-4 space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <div className="text-xs font-mono text-gray-400">#{order.id.slice(0, 8)}</div>
+                                        <div className="font-bold text-gray-800">{order.supplier.name}</div>
+                                    </div>
+                                    <select
+                                        value={order.status}
+                                        onChange={(e) => updatePOStatus(order.id, e.target.value)}
+                                        className={`px-2 py-1 rounded-lg text-[10px] font-bold ${statusColors[order.status]}`}
+                                    >
+                                        <option value="Pending">Pending</option>
+                                        <option value="Ordered">Ordered</option>
+                                        <option value="Received">Received</option>
+                                        <option value="Cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                                <div className="flex justify-between items-center text-sm">
+                                    <div className="text-gray-500">{order.items.length} items</div>
+                                    <div className="font-bold text-[var(--brand-primary)]">₹{order.totalAmount}</div>
+                                </div>
+                                <div className="text-[10px] text-gray-400 text-right">
+                                    {new Date(order.orderDate).toLocaleDateString()}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {orders.length === 0 && (
+                        <div className="p-12 text-center text-gray-400">
+                            No purchase orders yet.
+                        </div>
+                    )}
                 </div>
             )}
 

@@ -120,27 +120,27 @@ export default function FinancePage() {
             {activeTab === 'closing' && (
                 <div className="space-y-6 animate-in">
                     {/* Summary Cards */}
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
                         <div className="glass-card p-4 rounded-xl bg-blue-50 border border-blue-100">
-                            <div className="text-xs text-blue-600 mb-1">Total Sales</div>
-                            <div className="text-2xl font-bold text-blue-700">₹{todaySales}</div>
-                            <div className="text-xs text-blue-500">{todayOrders.length} orders</div>
+                            <div className="text-[10px] md:text-xs text-blue-600 mb-1">Total Sales</div>
+                            <div className="text-xl md:text-2xl font-bold text-blue-700">₹{todaySales}</div>
+                            <div className="text-[10px] text-blue-500">{todayOrders.length} orders</div>
                         </div>
                         <div className="glass-card p-4 rounded-xl bg-green-50 border border-green-100">
-                            <div className="text-xs text-green-600 mb-1">💵 Cash In</div>
-                            <div className="text-2xl font-bold text-green-700">₹{todayCash}</div>
+                            <div className="text-[10px] md:text-xs text-green-600 mb-1">💵 Cash In</div>
+                            <div className="text-xl md:text-2xl font-bold text-green-700">₹{todayCash}</div>
                         </div>
                         <div className="glass-card p-4 rounded-xl bg-purple-50 border border-purple-100">
-                            <div className="text-xs text-purple-600 mb-1">💳 Online</div>
-                            <div className="text-2xl font-bold text-purple-700">₹{todayOnline}</div>
+                            <div className="text-[10px] md:text-xs text-purple-600 mb-1">💳 Online</div>
+                            <div className="text-xl md:text-2xl font-bold text-purple-700">₹{todayOnline}</div>
                         </div>
                         <div className="glass-card p-4 rounded-xl bg-red-50 border border-red-100">
-                            <div className="text-xs text-red-600 mb-1">💸 Expenses</div>
-                            <div className="text-2xl font-bold text-red-700">₹{totalExpenses}</div>
+                            <div className="text-[10px] md:text-xs text-red-600 mb-1">💸 Expenses</div>
+                            <div className="text-xl md:text-2xl font-bold text-red-700">₹{totalExpenses}</div>
                         </div>
-                        <div className="glass-card p-4 rounded-xl bg-yellow-50 border border-yellow-100">
-                            <div className="text-xs text-yellow-600 mb-1">🏦 Net Cash</div>
-                            <div className={`text-2xl font-bold ${netCash >= 0 ? 'text-green-700' : 'text-red-700'}`}>₹{netCash}</div>
+                        <div className="glass-card p-4 rounded-xl bg-yellow-50 border border-yellow-100 col-span-2 md:col-span-1">
+                            <div className="text-[10px] md:text-xs text-yellow-600 mb-1">🏦 Net Cash</div>
+                            <div className={`text-xl md:text-2xl font-bold ${netCash >= 0 ? 'text-green-700' : 'text-red-700'}`}>₹{netCash}</div>
                         </div>
                     </div>
 
@@ -269,36 +269,36 @@ NET CASH IN HAND: ₹${netCash}
                     </div>
 
                     {/* GST Breakup */}
-                    <div className="glass-card p-6 rounded-xl">
+                    <div className="glass-card p-4 md:p-6 rounded-xl overflow-x-auto">
                         <h3 className="font-bold text-lg mb-4">GST Breakup (CGST + SGST)</h3>
-                        <table className="w-full">
+                        <table className="w-full min-w-[300px]">
                             <thead className="bg-gray-50 text-xs uppercase text-gray-500">
                                 <tr>
-                                    <th className="p-4 text-left">Description</th>
-                                    <th className="p-4 text-right">Rate</th>
-                                    <th className="p-4 text-right">Amount</th>
+                                    <th className="p-3 md:p-4 text-left">Description</th>
+                                    <th className="p-3 md:p-4 text-right">Rate</th>
+                                    <th className="p-3 md:p-4 text-right">Amount</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-gray-100 text-sm">
                                 <tr>
-                                    <td className="p-4">Taxable Value</td>
-                                    <td className="p-4 text-right">-</td>
-                                    <td className="p-4 text-right font-medium">₹{baseAmount}</td>
+                                    <td className="p-3 md:p-4">Taxable Value</td>
+                                    <td className="p-3 md:p-4 text-right">-</td>
+                                    <td className="p-3 md:p-4 text-right font-medium">₹{baseAmount}</td>
                                 </tr>
                                 <tr>
-                                    <td className="p-4">CGST</td>
-                                    <td className="p-4 text-right">2.5%</td>
-                                    <td className="p-4 text-right font-medium">₹{Math.round(gstAmount / 2)}</td>
+                                    <td className="p-3 md:p-4">CGST</td>
+                                    <td className="p-3 md:p-4 text-right">2.5%</td>
+                                    <td className="p-3 md:p-4 text-right font-medium">₹{Math.round(gstAmount / 2)}</td>
                                 </tr>
                                 <tr>
-                                    <td className="p-4">SGST</td>
-                                    <td className="p-4 text-right">2.5%</td>
-                                    <td className="p-4 text-right font-medium">₹{Math.round(gstAmount / 2)}</td>
+                                    <td className="p-3 md:p-4">SGST</td>
+                                    <td className="p-3 md:p-4 text-right">2.5%</td>
+                                    <td className="p-3 md:p-4 text-right font-medium">₹{Math.round(gstAmount / 2)}</td>
                                 </tr>
                                 <tr className="bg-gray-50 font-bold">
-                                    <td className="p-4">Total Tax</td>
-                                    <td className="p-4 text-right">5%</td>
-                                    <td className="p-4 text-right">₹{gstAmount}</td>
+                                    <td className="p-3 md:p-4">Total Tax</td>
+                                    <td className="p-3 md:p-4 text-right">5%</td>
+                                    <td className="p-3 md:p-4 text-right">₹{gstAmount}</td>
                                 </tr>
                             </tbody>
                         </table>

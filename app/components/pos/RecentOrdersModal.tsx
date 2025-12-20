@@ -8,9 +8,10 @@ interface RecentOrdersModalProps {
     onClose: () => void;
     orders: Order[];
     onPrintReceipt: (order: Order) => void;
+    onSettlePayment: (orderId: number, method: 'Cash' | 'Online') => void;
 }
 
-export default function RecentOrdersModal({ show, onClose, orders, onPrintReceipt }: RecentOrdersModalProps) {
+export default function RecentOrdersModal({ show, onClose, orders, onPrintReceipt, onSettlePayment }: RecentOrdersModalProps) {
     if (!show) return null;
 
     return (
@@ -31,7 +32,7 @@ export default function RecentOrdersModal({ show, onClose, orders, onPrintReceip
                                     <div className="flex gap-2 items-center mb-1">
                                         <span className="font-bold text-gray-800">#{order.id}</span>
                                         <span className={`text-[10px] px-2 py-0.5 rounded-full ${order.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                                                order.status === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                                            order.status === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
                                             }`}>{order.status}</span>
                                         <span className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleTimeString()}</span>
                                     </div>
@@ -43,15 +44,38 @@ export default function RecentOrdersModal({ show, onClose, orders, onPrintReceip
                                         {/* @ts-ignore */}
                                         {order.items?.map((i: any) => `${i.quantity}x ${i.name}`).join(', ')}
                                     </div>
+                                    {/* Unpaid Badge */}
+                                    {order.paymentStatus === 'Unpaid' && (
+                                        <div className="mt-1">
+                                            <span className="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Unpaid (Pay Later)</span>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex flex-col items-end gap-2">
                                     <div className="font-bold text-lg">₹{order.total}</div>
-                                    <button
-                                        onClick={() => onPrintReceipt(order)}
-                                        className="px-3 py-1 bg-white border shadow-sm rounded-lg text-xs font-semibold hover:bg-gray-50"
-                                    >
-                                        🖨 Print
-                                    </button>
+                                    <div className="flex gap-2">
+                                        {order.paymentStatus === 'Unpaid' && order.status !== 'Cancelled' && (
+                                            <button
+                                                onClick={() => {
+                                                    const method = prompt("Settle Payment via: Cash or Online?", "Cash");
+                                                    if (method) {
+                                                        // Normalize input slightly
+                                                        const cleanMethod = method.toLowerCase().includes('online') || method.toLowerCase().includes('upi') ? 'Online' : 'Cash';
+                                                        onSettlePayment(order.id, cleanMethod as 'Cash' | 'Online');
+                                                    }
+                                                }}
+                                                className="px-3 py-1 bg-green-500 text-white shadow-sm rounded-lg text-xs font-semibold hover:bg-green-600 animate-pulse"
+                                            >
+                                                ✅ Settle
+                                            </button>
+                                        )}
+                                        <button
+                                            onClick={() => onPrintReceipt(order)}
+                                            className="px-3 py-1 bg-white border shadow-sm rounded-lg text-xs font-semibold hover:bg-gray-50"
+                                        >
+                                            🖨 Print
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))

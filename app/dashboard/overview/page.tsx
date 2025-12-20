@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useDbOrders, useDbMenu, useDbCustomers } from '../../lib/db-hooks';
 import Link from 'next/link';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 export default function OverviewPage() {
+    const [showRevenue, setShowRevenue] = useState(false);
     const { orders, loading: ordersLoading } = useDbOrders();
     const { items, loading: menuLoading } = useDbMenu();
     const { customers, loading: customersLoading } = useDbCustomers();
@@ -53,11 +54,21 @@ export default function OverviewPage() {
                     📅 Today's Performance <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Live Database</span>
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="glass-card p-6 rounded-2xl bg-gradient-to-br from-green-50 to-white border-green-100">
-                        <div className="text-green-800 text-sm mb-1 font-bold uppercase tracking-wider">Today's Revenue</div>
-                        <div className="text-4xl font-bold text-green-700">₹{dailyStats.totalSales.toLocaleString()}</div>
+                    <div className="glass-card p-6 rounded-2xl bg-gradient-to-br from-green-50 to-white border-green-100 relative group cursor-pointer" onClick={() => setShowRevenue(!showRevenue)}>
+                        <div className="flex justify-between items-center mb-1">
+                            <div className="text-green-800 text-sm font-bold uppercase tracking-wider">Today's Revenue</div>
+                            <button className="text-green-600 hover:text-green-800 transition-colors">
+                                {showRevenue ? '👁️' : '🙈'}
+                            </button>
+                        </div>
+                        <div className="text-4xl font-bold text-green-700">
+                            {showRevenue ? `₹${dailyStats.totalSales.toLocaleString()}` : '₹ •••••'}
+                        </div>
                         <div className="text-green-600 text-xs mt-2 font-medium">
-                            Cash: ₹{dailyStats.cashSales.toLocaleString()} • Online: ₹{dailyStats.onlineSales.toLocaleString()}
+                            {showRevenue ?
+                                `Cash: ₹${dailyStats.cashSales.toLocaleString()} • Online: ₹${dailyStats.onlineSales.toLocaleString()}` :
+                                'Tap to reveal details'
+                            }
                         </div>
                     </div>
                     <div className="glass-card p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-white border-blue-100">
@@ -165,32 +176,32 @@ export default function OverviewPage() {
                 </div>
 
                 {/* Widget 5: Recent Activity (Live Feed) */}
-                <div className="glass-card p-6 rounded-2xl animate-in md:col-span-2 lg:col-span-2" style={{ animationDelay: '0.5s' }}>
+                <div className="glass-card p-4 md:p-6 rounded-2xl animate-in md:col-span-2 lg:col-span-2" style={{ animationDelay: '0.5s' }}>
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="font-bold text-[var(--brand-dark)] flex items-center gap-2">📡 Recent Activity</h3>
                         <Link href="/dashboard/orders" className="text-xs text-[var(--brand-primary)] font-bold hover:underline">View All</Link>
                     </div>
                     <div className="space-y-3">
                         {orders.slice(0, 5).map(order => (
-                            <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-white hover:shadow-sm transition-all">
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg ${order.type === 'DineIn' ? 'bg-orange-100 text-orange-600' :
+                            <div key={order.id} className="flex items-center justify-between p-2 md:p-3 bg-gray-50 rounded-xl border border-gray-100 hover:bg-white hover:shadow-sm transition-all">
+                                <div className="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
+                                    <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-sm md:text-lg shrink-0 ${order.type === 'DineIn' ? 'bg-orange-100 text-orange-600' :
                                         order.type === 'Takeaway' ? 'bg-blue-100 text-blue-600' : 'bg-green-100 text-green-600'
                                         }`}>
                                         {order.type === 'DineIn' ? '🍽️' : order.type === 'Takeaway' ? '🛍️' : '🛵'}
                                     </div>
-                                    <div>
-                                        <div className="font-bold text-sm text-gray-800">
-                                            {order.customer} <span className="text-xs font-normal text-gray-500">#{order.id}</span>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="font-bold text-xs md:text-sm text-gray-800 truncate">
+                                            {order.customer} <span className="text-[10px] md:text-xs font-normal text-gray-500">#{order.id}</span>
                                         </div>
-                                        <div className="text-xs text-gray-500">
+                                        <div className="text-[10px] md:text-xs text-gray-500 truncate">
                                             {order.items.length} items • {order.type} • {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="font-bold text-sm text-gray-800">₹{order.total}</div>
-                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                <div className="text-right shrink-0">
+                                    <div className="font-bold text-xs md:text-sm text-gray-800">₹{order.total}</div>
+                                    <span className={`text-[8px] md:text-[10px] px-1.5 md:px-2 py-0.5 rounded-full font-bold uppercase ${order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
                                         order.status === 'Completed' ? 'bg-green-100 text-green-700' :
                                             order.status === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
                                         }`}>

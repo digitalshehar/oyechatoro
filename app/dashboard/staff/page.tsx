@@ -54,21 +54,68 @@ export default function StaffPage() {
 
     return (
         <div className="p-4 md:p-8 max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8 animate-in">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 animate-in gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-[var(--brand-dark)]">Staff Management</h1>
-                    <p className="text-[var(--text-muted)]">Manage team access and roles</p>
+                    <h1 className="text-2xl md:text-3xl font-bold text-[var(--brand-dark)]">Staff Management</h1>
+                    <p className="text-sm md:text-base text-[var(--text-muted)]">Manage team access and roles</p>
                 </div>
                 <button
                     onClick={openAddModal}
-                    className="flex items-center gap-2 px-6 py-3 bg-[var(--brand-primary)] text-white font-bold rounded-xl shadow-lg shadow-orange-200 hover:opacity-90 transition-opacity"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-[var(--brand-primary)] text-white font-bold rounded-xl shadow-lg shadow-orange-200 hover:opacity-90 transition-opacity whitespace-nowrap"
                 >
                     <span>+ Add Staff</span>
                 </button>
             </div>
 
-            {/* Staff List */}
-            <div className="glass-card rounded-2xl overflow-hidden animate-in" style={{ animationDelay: '0.1s' }}>
+            {/* Staff Card View (Mobile) */}
+            <div className="md:hidden grid gap-4 animate-in">
+                {users.map((user) => (
+                    <div key={user.id} className="glass-card p-4 rounded-2xl border border-gray-100 bg-white">
+                        <div className="flex justify-between items-start mb-3">
+                            <div>
+                                <div className="font-bold text-gray-800 text-lg">{user.name}</div>
+                                <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold mt-1 ${user.role === 'Admin' ? 'bg-purple-100 text-purple-700' :
+                                    user.role === 'Manager' ? 'bg-blue-100 text-blue-700' :
+                                        'bg-gray-100 text-gray-700'
+                                    }`}>
+                                    {user.role}
+                                </span>
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => openEditModal(user)}
+                                    className="p-2 text-blue-500 bg-blue-50 rounded-lg transition-colors"
+                                    title="Edit User"
+                                >
+                                    ✏️
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        if (confirm(`Remove ${user.name}? This cannot be undone.`)) deleteUser(user.id);
+                                    }}
+                                    className="p-2 text-red-500 bg-red-50 rounded-lg transition-colors"
+                                    title="Remove Access"
+                                >
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                        <div className="space-y-2 border-t border-dashed border-gray-100 pt-3 mt-1">
+                            <div className="text-sm text-gray-600 flex items-center gap-2">
+                                <span className="opacity-50">📧</span> {user.email}
+                            </div>
+                            {user.phone && (
+                                <div className="text-sm text-gray-600 flex items-center gap-2">
+                                    <span className="opacity-50">📞</span> {user.phone}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Staff List (Desktop) */}
+            <div className="hidden md:block glass-card rounded-2xl overflow-hidden animate-in" style={{ animationDelay: '0.1s' }}>
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-100">

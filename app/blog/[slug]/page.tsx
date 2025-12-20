@@ -152,6 +152,32 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         }))
     } : null;
 
+    // Schema: Recipe (Rich Results)
+    const recipeSchema = post.isRecipe ? {
+        '@context': 'https://schema.org',
+        '@type': 'Recipe',
+        name: post.title,
+        image: post.image,
+        author: {
+            '@type': 'Person',
+            name: post.author
+        },
+        datePublished: post.createdAt,
+        description: post.excerpt,
+        prepTime: post.recipeDetails?.prepTime ? `PT${post.recipeDetails.prepTime.replace(/\D/g, '')}M` : undefined,
+        cookTime: post.recipeDetails?.cookTime ? `PT${post.recipeDetails.cookTime.replace(/\D/g, '')}M` : undefined,
+        recipeYield: post.recipeDetails?.servings,
+        recipeIngredient: post.recipeDetails?.ingredients,
+        nutrition: post.recipeDetails?.calories ? {
+            '@type': 'NutritionInformation',
+            calories: post.recipeDetails.calories
+        } : undefined,
+        recipeInstructions: post.content.split('## Instructions')[1]?.split('##')[0]?.split('\n').filter((l: string) => l.trim().startsWith('- ')).map((l: string) => ({
+            '@type': 'HowToStep',
+            text: l.replace('- ', '').trim()
+        }))
+    } : null;
+
     const shareUrl = `https://oyechatoro.com/blog/${slug}`;
     const shareText = `Check out this delicious story: ${post.title}`;
 
@@ -162,6 +188,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }} />
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
                 {faqSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />}
+                {recipeSchema && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(recipeSchema) }} />}
 
                 <article className="max-w-5xl mx-auto px-4 pt-4 animate-in">
                     {/* Immersive Hero */}

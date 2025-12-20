@@ -15,21 +15,34 @@ export async function GET(request: NextRequest) {
         const search = searchParams.get('search');
         const limit = parseInt(searchParams.get('limit') || '100');
 
+        // Data Isolation: Filter customers who have ordered from this store
+        const storeId = (session.user as any).storeId;
+        const where: any = {};
+
+        if (search) {
+            where.OR = [
+                { name: { contains: search, mode: 'insensitive' } },
+                { phone: { contains: search } },
+            ];
+        }
+
+        if (storeId) {
+            where.orders = {
+                some: { storeId: storeId } // Only customers who have ordered from this store
+            };
+        }
+
         const customers = await prisma.customer.findMany({
-            where: search ? {
-                OR: [
-                    { name: { contains: search, mode: 'insensitive' } },
-                    { phone: { contains: search } },
-                ],
-            } : undefined,
+            where,
             orderBy: { lastVisit: 'desc' },
             take: limit,
         });
 
         return NextResponse.json(customers);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching customers:', error);
-        return NextResponse.json({ error: 'Failed to fetch customers' }, { status: 500 });
+        console.error('Debug Info:', { storeId: (request as any).headers?.get('storeId') }); // Just hypothetical
+        return NextResponse.json({ error: error.message || 'Failed to fetch customers', details: error }, { status: 500 });
     }
 }
 

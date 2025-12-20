@@ -21,10 +21,10 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
     metadataBase: new URL('https://oyechatoro.com'),
     title: {
-        default: 'Restaurant in Abu Road | Oye Chatoro - Best Pure Veg Food',
-        template: '%s | Oye Chatoro - Restaurant in Abu Road'
+        default: 'Best Restaurant & Fast Food in Abu Road | Oye Chatoro - Pure Veg',
+        template: '%s | Best Restaurants & Fast Food in Abu Road - Oye Chatoro'
     },
-    description: 'Restaurant in Abu Road - Oye Chatoro is the best 100% pure vegetarian restaurant. Fresh pizzas, pastas, chaats, burgers, momos & street food. Near Mount Abu. Order online or dine-in at Abu Central Mall. FSSAI Licensed.',
+    description: 'Looking for the best restaurant and fast food in Abu Road? Oye Chatoro is the top-rated choice for 100% pure veg pizza, pasta, burgers, and street food. Discover why we are among the best restaurants in Abu Road.',
     keywords: [
         // Primary Keywords - Abu Road
         'best restaurant in Abu Road',
@@ -126,6 +126,10 @@ export const metadata: Metadata = {
     },
     alternates: {
         canonical: 'https://oyechatoro.com',
+        languages: {
+            'en-IN': 'https://oyechatoro.com/menu',
+            'hi-IN': 'https://oyechatoro.com/menu?lang=hi',
+        },
     },
 };
 
@@ -147,12 +151,12 @@ export default function RootLayout({
             {
                 '@type': 'Restaurant',
                 '@id': 'https://oyechatoro.com',
-                name: 'Oye Chatoro - Best Restaurant in Abu Road',
-                description: 'Oye Chatoro is the best restaurant in Abu Road serving famous food like pizza, pasta, and chaat. Located near Abu Road Railway Station and Mount Abu.',
+                name: 'Oye Chatoro - Best Restaurant & Fast Food in Abu Road',
+                description: 'Oye Chatoro is the best restaurant and fast food junction in Abu Road serving famous pizza, pasta, burgers and chaat. Located near Abu Road Railway Station.',
                 url: 'https://oyechatoro.com',
                 telephone: '+91-9509913792',
-                priceRange: '₹₹',
-                servesCuisine: ['Indian', 'Italian', 'Street Food'],
+                servesCuisine: ['North Indian', 'Italian', 'Fast Food', 'Street Food', 'Beverages'],
+                priceRange: '₹₹ (200-500 per person)',
                 address: {
                     '@type': 'PostalAddress',
                     streetAddress: 'Abu Central Mall, G-5, Riico Check Post Road',
@@ -165,10 +169,16 @@ export default function RootLayout({
                 openingHoursSpecification: {
                     '@type': 'OpeningHoursSpecification',
                     dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                    opens: '17:00',
+                    opens: '11:00',
                     closes: '23:00'
                 },
-                aggregateRating: { '@type': 'AggregateRating', ratingValue: '5.0', reviewCount: '30' }
+                aggregateRating: {
+                    '@type': 'AggregateRating',
+                    ratingValue: '4.8',
+                    reviewCount: '150',
+                    bestRating: '5',
+                    worstRating: '1'
+                }
             },
             {
                 '@type': 'WebSite',

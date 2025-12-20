@@ -50,6 +50,11 @@ app.prepare().then(() => {
             io.emit('status-updated', { orderId, status });
         });
 
+        socket.on('update-order', (order) => {
+            console.log('Order updated:', order.id);
+            io.emit('order-updated', order);
+        });
+
         socket.on('disconnect', () => {
             console.log('Client disconnected:', socket.id);
         });

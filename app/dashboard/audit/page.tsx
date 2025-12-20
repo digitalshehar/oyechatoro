@@ -41,7 +41,8 @@ const AuditPage = () => {
                 </div>
 
                 <div className="glass-card rounded-2xl overflow-hidden border border-gray-100 bg-white/60">
-                    <div className="overflow-x-auto">
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100 text-left">
@@ -68,9 +69,9 @@ const AuditPage = () => {
                                             </td>
                                             <td className="p-4">
                                                 <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${log.action.includes('CREATE') ? 'bg-green-100 text-green-700' :
-                                                        log.action.includes('UPDATE') ? 'bg-blue-100 text-blue-700' :
-                                                            log.action.includes('DELETE') ? 'bg-red-100 text-red-700' :
-                                                                'bg-gray-100 text-gray-700'
+                                                    log.action.includes('UPDATE') ? 'bg-blue-100 text-blue-700' :
+                                                        log.action.includes('DELETE') ? 'bg-red-100 text-red-700' :
+                                                            'bg-gray-100 text-gray-700'
                                                     }`}>
                                                     {log.action}
                                                 </span>
@@ -86,6 +87,42 @@ const AuditPage = () => {
                                 )}
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Mobile Card View */}
+                    <div className="md:hidden divide-y divide-gray-100 bg-white">
+                        {filteredLogs.length === 0 ? (
+                            <div className="p-8 text-center text-gray-400">No logs found</div>
+                        ) : (
+                            filteredLogs.map((log) => (
+                                <div key={log.id} className="p-4 space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                                                {new Date(log.timestamp).toLocaleString()}
+                                            </span>
+                                            <span className="font-bold text-gray-800 text-sm">{log.userId || 'System'}</span>
+                                        </div>
+                                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${log.action.includes('CREATE') ? 'bg-green-100 text-green-700' :
+                                            log.action.includes('UPDATE') ? 'bg-blue-100 text-blue-700' :
+                                                log.action.includes('DELETE') ? 'bg-red-100 text-red-700' :
+                                                    'bg-gray-100 text-gray-700'
+                                            }`}>
+                                            {log.action}
+                                        </span>
+                                    </div>
+                                    <div className="text-sm">
+                                        <span className="text-gray-500">Entity:</span> <span className="font-medium text-gray-700">{log.entity}</span>
+                                        <span className="text-xs text-gray-400 ml-1">({log.entityId})</span>
+                                    </div>
+                                    {log.details && (
+                                        <div className="bg-gray-50 p-2 rounded-lg border border-gray-100 font-mono text-[10px] text-gray-600 break-all overflow-hidden max-h-20 overflow-y-auto">
+                                            {JSON.stringify(log.details, null, 2)}
+                                        </div>
+                                    )}
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </div>

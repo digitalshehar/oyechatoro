@@ -19,11 +19,17 @@ export async function GET(request: NextRequest) {
         else if (period === 'month') startDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
         else if (period === 'year') startDate = new Date(startDate.getFullYear(), 0, 1);
 
+        const storeId = (session.user as any).storeId;
+        const where: any = {
+            createdAt: { gte: startDate },
+            status: { not: 'Cancelled' }
+        };
+        if (storeId) {
+            where.storeId = storeId;
+        }
+
         const orders = await prisma.order.findMany({
-            where: {
-                createdAt: { gte: startDate },
-                status: { not: 'Cancelled' }
-            },
+            where,
             select: {
                 total: true,
                 createdAt: true,

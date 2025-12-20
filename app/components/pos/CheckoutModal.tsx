@@ -13,8 +13,8 @@ interface CheckoutModalProps {
     parcelAmount: number;
     taxAmount: number;
     tipAmount: number;
-    paymentMethod: 'Cash' | 'UPI' | 'Card';
-    setPaymentMethod: (v: 'Cash' | 'UPI' | 'Card') => void;
+    paymentMethod: 'Cash' | 'Online';
+    setPaymentMethod: (v: 'Cash' | 'Online') => void;
     amountTendered: number;
     setAmountTendered: (v: number) => void;
     changeAmount: number;
@@ -59,10 +59,10 @@ export default function CheckoutModal({
                                 <span className="text-orange-600">₹{cartTotal}</span>
                             </div>
                         </div>
-                        <div className="grid grid-cols-3 gap-2 mb-4">
-                            {(['Cash', 'UPI', 'Card'] as const).map(m => (
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                            {(['Cash', 'Online'] as const).map(m => (
                                 <button key={m} onClick={() => setPaymentMethod(m)} className={`py-3 rounded-xl font-semibold transition-all ${paymentMethod === m ? 'bg-orange-500 text-white' : 'bg-gray-100'}`}>
-                                    {m === 'Cash' && '💵'} {m === 'UPI' && '📱'} {m === 'Card' && '💳'} {m}
+                                    {m === 'Cash' && '💵'} {m === 'Online' && '🌐'} {m}
                                 </button>
                             ))}
                         </div>

@@ -5,6 +5,8 @@ import path from 'path';
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'shift-logs.json');
 
+import { auth } from '../../../../auth';
+
 // Helper ensure data
 async function getLogs() {
     try {
@@ -23,6 +25,10 @@ async function saveLogs(logs: any[]) {
 
 export async function GET() {
     try {
+        const session = await auth();
+        if (!session || !['Chef', 'Admin', 'Manager'].includes((session.user as any).role)) {
+            return new NextResponse('Unauthorized', { status: 403 });
+        }
         const logs = await getLogs();
         return NextResponse.json(logs);
     } catch (e) {

@@ -23,7 +23,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
                 try {
                     // @ts-ignore
                     const staff = await prisma.staff.findFirst({
-                        where: { email }
+                        where: { email },
+                        include: { store: { select: { id: true, name: true } } }
                     });
 
                     if (staff && (staff as any).password) {
@@ -34,6 +35,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
                                 name: staff.name,
                                 email: (staff as any).email,
                                 role: staff.role,
+                                storeId: staff.storeId,
+                                storeName: (staff as any).store?.name || 'Head Office',
                             };
                         }
                     }
@@ -54,8 +57,12 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
                             };
                         }
                     }
-                } catch (error) {
-                    console.error('Auth error:', error);
+                } catch (error: any) {
+                    console.error('[Auth.ts] Critical error in authorize callback:', {
+                        message: error.message,
+                        stack: error.stack,
+                        email: credentials?.email
+                    });
                     return null;
                 }
 
