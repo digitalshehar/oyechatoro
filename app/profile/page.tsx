@@ -21,9 +21,17 @@ export default function ProfilePage() {
     const [newAddress, setNewAddress] = useState({ label: '', text: '' });
     const [isAddingAddress, setIsAddingAddress] = useState(false);
 
-    if (loading || !user) {
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/login?callbackUrl=/profile');
+        }
+    }, [loading, user, router]);
+
+    if (loading) {
         return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin text-4xl">🥘</div></div>;
     }
+
+    if (!user) return null;
 
     const myOrders = orders
         .filter((o: any) => (user && user.id && o.userId === user.id) || (user && o.customer === user.name))

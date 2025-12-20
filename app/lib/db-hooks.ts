@@ -418,9 +418,12 @@ export function useDbMenu() {
     const [categories, setCategories] = useState<MenuCategory[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const [error, setError] = useState<string | null>(null);
+
     const fetchMenu = useCallback(async () => {
         try {
             setLoading(true);
+            setError(null);
             const [itemsRes, catsRes] = await Promise.all([
                 fetchWithRetry(`${API_BASE}/menu`, { cache: 'no-store' }),
                 fetchWithRetry(`${API_BASE}/menu/categories`, { cache: 'no-store' }),
@@ -437,8 +440,9 @@ export function useDbMenu() {
             ]);
             setItems(Array.isArray(itemsData) ? itemsData : []);
             setCategories(Array.isArray(catsData) ? catsData : []);
-        } catch (err) {
+        } catch (err: any) {
             console.error('useDbMenu error:', err);
+            setError(err.message || 'Failed to load menu');
         } finally {
             setLoading(false);
         }
@@ -508,7 +512,7 @@ export function useDbMenu() {
         fetchMenu();
     };
 
-    return { items, categories, loading, refetch: fetchMenu, saveItem, updateItem: saveItem, deleteItem, saveCategory, deleteCategory };
+    return { items, categories, loading, error, refetch: fetchMenu, saveItem, updateItem: saveItem, deleteItem, saveCategory, deleteCategory };
 }
 
 // ==================== BLOG API HOOKS ====================

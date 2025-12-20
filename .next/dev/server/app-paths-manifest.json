@@ -52,5 +52,6 @@
   "/login/page": "app/login/page.js",
   "/menu/page": "app/menu/page.js",
   "/page": "app/page.js",
+  "/profile/page": "app/profile/page.js",
   "/sitemap.xml/route": "app/sitemap.xml/route.js"
 }

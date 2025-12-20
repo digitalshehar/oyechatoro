@@ -12,10 +12,22 @@ import OffersCarousel from '../components/OffersCarousel';
 
 export default function MenuPage() {
     const router = useRouter();
-    const { categories, items } = useDbMenu();
+    const { categories, items, loading: menuLoading, error: menuError } = useDbMenu();
     const { settings } = useSettings();
     const { cart, addToCart, removeFromCart, clearCart, updateQuantity } = useDbCart(); // Use Global Cart
     const [isCartOpen, setIsCartOpen] = useState(false);
+
+    // --- Error UI ---
+    if (menuError) {
+        return (
+            <div className="min-h-screen bg-[var(--bg-light)] flex flex-col items-center justify-center p-4 text-center">
+                <div className="text-4xl mb-4">⚠️</div>
+                <h1 className="text-xl font-bold text-[var(--brand-dark)] mb-2">Unavailable</h1>
+                <p className="text-gray-500 mb-6">{menuError}</p>
+                <button onClick={() => window.location.reload()} className="btn btn-primary px-8">Retry</button>
+            </div>
+        );
+    }
     const [showToast, setShowToast] = useState(false);
     const [activeSection, setActiveSection] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
