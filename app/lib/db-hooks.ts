@@ -275,18 +275,22 @@ export function useDbOrders() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchOrders = useCallback(async () => {
+    const fetchOrders = useCallback(async (isBackground = false) => {
         try {
-            setLoading(true);
+            if (!isBackground) setLoading(true);
             const res = await fetch(`${API_BASE}/orders`, { cache: 'no-store' });
             if (!res.ok) throw new Error('Failed to fetch orders');
             const data = await res.json();
-            setOrders(data);
+            setOrders(prev => {
+                // Optimization: Only update if data actually changed (basic json comparison for now or just trust React diffing)
+                // Actually to avoid 'animate-in' re-triggering due to parent re-renders, we just need to avoid setLoading toggles.
+                return data;
+            });
             setError(null);
         } catch (err: any) {
             setError(err.message);
         } finally {
-            setLoading(false);
+            if (!isBackground) setLoading(false);
         }
     }, []);
 
@@ -315,7 +319,7 @@ export function useDbOrders() {
         socket.on('order-updated', handleOrderUpdate);
 
         // Keep polling as backup/sync, fast polling for serverless (3s)
-        const interval = setInterval(fetchOrders, 3000);
+        const interval = setInterval(() => fetchOrders(true), 3000);
 
         return () => {
             clearInterval(interval);
