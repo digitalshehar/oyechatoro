@@ -60,6 +60,7 @@ export default function TicketCard({
     const lowerNote = noteText.toLowerCase();
 
     const isAllergy = lowerNote.includes('allergy') || lowerNote.includes('allergic') || lowerNote.includes('peanut') || lowerNote.includes('nuts');
+    const isPriority = lowerNote.includes('priority') || lowerNote.includes('urgent') || lowerNote.includes('fast') || !!order.trainDetails;
     const isJain = lowerNote.includes('jain') || (order.dietary && order.dietary.includes('Jain'));
     const isVegan = lowerNote.includes('vegan') || (order.dietary && order.dietary.includes('Vegan'));
     const isGlutenFree = lowerNote.includes('gluten free') || lowerNote.includes('gf');
@@ -168,6 +169,13 @@ export default function TicketCard({
                 </div>
             )}
 
+            {isPriority && (
+                <div className={`${tvMode ? 'py-3 text-2xl' : 'py-1.5 text-sm'} bg-red-600 text-white text-center font-black animate-pulse border-b border-red-700 uppercase tracking-widest flex items-center justify-center gap-2`}>
+                    🔥 HIGH PRIORITY 🔥
+                    {!!order.trainDetails && <span className="bg-white text-red-600 px-2 py-0.5 rounded text-[10px]">TRAIN</span>}
+                </div>
+            )}
+
             {aiSafety?.detected && (
                 <div className={`text-white p-3 border-b text-center ${tvMode ? 'text-xl' : 'text-sm'} ${aiSafety.severity === 'High' ? 'bg-red-600 animate-pulse' : 'bg-purple-600'}`}>
                     <div className="font-black flex items-center justify-center gap-2">
@@ -246,25 +254,95 @@ export default function TicketCard({
                     const isRelevant = stationFilter === 'all' || itemCat === stationFilter;
                     const opacityClass = isRelevant ? 'opacity-100' : 'opacity-20 grayscale';
 
+                    const isItemReady = item.isReady === true;
+
                     return (
-                        <div key={idx} className={`${tvMode ? 'p-4' : 'p-3'} bg-white border border-gray-100 rounded-xl shadow-sm flex justify-between items-center group transition-all hover:border-indigo-200`}>
+                        <div key={idx} className={`
+                            ${tvMode ? 'p-4' : 'p-3'} 
+                            bg-white border transition-all rounded-xl shadow-sm flex justify-between items-center group
+                            ${isItemReady ? 'bg-green-50 border-green-200' : 'border-gray-100 hover:border-indigo-200'}
+                            ${opacityClass}
+                        `}>
                             <div className="flex items-center gap-3">
-                                <span className={`${tvMode ? 'w-10 h-10 text-xl' : 'w-7 h-7 text-xs'} flex items-center justify-center bg-indigo-600 text-white font-black rounded-lg shadow-indigo-100 shadow-md`}>
-                                    {item.quantity}
-                                </span>
-                                <span className={`${tvMode ? 'text-xl' : 'text-sm'} font-bold text-gray-800`}>{item.name}</span>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => {
+                                            if (isHistory || tvMode) return;
+                                            const newItems = [...items];
+                                            newItems[idx] = { ...newItems[idx], isReady: !isItemReady };
+
+                                            // Update Order
+                                            onUpdateStatus(order.id, { items: newItems });
+
+                                            // AUTO-READY TICKET LOGIC: If all items ready, mark whole order Ready
+                                            const allReady = newItems.every((i: any) => i.isReady === true);
+                                            // Only auto-ready if it's currently in Cooking state or Pending
+                                            if (allReady && (order.status === 'Cooking' || order.status === 'Pending')) {
+                                                onUpdateStatus(order.id, { items: newItems, status: 'Ready' });
+                                            }
+                                        }}
+                                        className={`
+                                            ${tvMode ? 'w-10 h-10 text-xl' : 'w-7 h-7 text-xs'} 
+                                            flex items-center justify-center font-black rounded-lg shadow-md transition-all
+                                            ${isItemReady ? 'bg-green-500 text-white' : 'bg-indigo-600 text-white hover:scale-110 active:scale-95'}
+                                        `}
+                                    >
+                                        {isItemReady ? '✓' : item.quantity}
+                                    </button>
+                                    {!isHistory && !tvMode && item.id && (
+                                        <button
+                                            onClick={async () => {
+                                                if (confirm(`Mark "${item.name}" as OUT OF STOCK (86)?`)) {
+                                                    try {
+                                                        const res = await fetch(`/api/menu/${item.id}`, {
+                                                            method: 'PATCH',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({
+                                                                status: 'Inactive'
+                                                            })
+                                                        });
+                                                        if (res.ok) alert(`${item.name} is now 86'd (Inactive)`);
+                                                        else alert('Failed to update stock status.');
+                                                    } catch (e) {
+                                                        console.error(e);
+                                                    }
+                                                }
+                                            }}
+                                            className="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-400 hover:text-red-600 rounded-lg text-[10px] font-black border border-gray-200 transition-all active:scale-90"
+                                            title="86 (Out of Stock)"
+                                        >
+                                            86
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex flex-col flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className={`${tvMode ? 'text-xl' : 'text-sm'} font-bold ${isItemReady ? 'text-green-700 line-through' : 'text-gray-800'}`}>
+                                            {item.name}
+                                        </span>
+                                        {/* Inline dietary indicators */}
+                                        <div className="flex gap-1">
+                                            {item.name.toLowerCase().includes('jain') && <span className="text-[10px] bg-green-100 text-green-700 px-1 rounded font-black">J</span>}
+                                            {item.name.toLowerCase().includes('vegan') && <span className="text-[10px] bg-green-100 text-green-800 px-1 rounded font-black">V</span>}
+                                        </div>
+                                    </div>
+                                    {item.note && <span className="text-[10px] text-red-500 font-bold uppercase italic">{item.note}</span>}
+                                </div>
                             </div>
-                            {!isHistory && !tvMode && (
-                                <span className="ml-2 relative inline-block align-middle">
-                                    <ItemTimer id={`${order.id}-${idx}`} />
-                                </span>
+
+                            {!isHistory && !tvMode && !isItemReady && (
+                                <div className="flex items-center gap-2">
+                                    <span className="relative inline-block align-middle">
+                                        <ItemTimer id={`${order.id}-${idx}`} />
+                                    </span>
+                                </div>
                             )}
-                            {item.modifiers && item.modifiers.length > 0 && (
-                                <div className={`text-sm font-normal ${tvMode ? 'text-gray-400' : 'text-gray-500'}`}>
+
+                            {item.modifiers && item.modifiers.length > 0 && !isItemReady && (
+                                <div className={`text-xs font-normal ${tvMode ? 'text-gray-400' : 'text-gray-500'}`}>
                                     {item.modifiers.map((m: any) => `+ ${m.name}`).join(', ')}
                                 </div>
                             )}
-                            {item.note && <div className="text-sm font-normal text-red-600 bg-red-50 px-2 py-1 rounded mt-1 italic">Note: {item.note}</div>}
                         </div>
                     );
                 })}

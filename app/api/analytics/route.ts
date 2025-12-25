@@ -5,141 +5,180 @@ import { auth } from '@/auth';
 export async function GET(request: NextRequest) {
     try {
         const session = await auth();
-        // Analytics likely Admin/Manager only
-        if (!session || (session.user as any)?.role === 'Staff') {
+        // Strict Role Check - Cast to any to avoid TS error
+        const user = session?.user as any;
+        if (!user?.role || !['Admin', 'Manager', 'Chef'].includes(user.role)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const searchParams = request.nextUrl.searchParams;
-        const period = searchParams.get('period') || '7d';
+        const { searchParams } = new URL(request.url);
+        const period = searchParams.get('period') || 'today';
 
         let startDate = new Date();
-        if (period === '7d') startDate.setDate(startDate.getDate() - 7);
-        else if (period === '30d') startDate.setDate(startDate.getDate() - 30);
-        else if (period === 'month') startDate = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-        else if (period === 'year') startDate = new Date(startDate.getFullYear(), 0, 1);
+        const now = new Date();
 
-        const storeId = (session.user as any).storeId;
-        const where: any = {
-            createdAt: { gte: startDate },
-            status: { not: 'Cancelled' }
-        };
-        if (storeId) {
-            where.storeId = storeId;
+        // Determine Date Range
+        if (period === 'today') {
+            startDate.setHours(0, 0, 0, 0);
+        } else if (period === 'week') {
+            startDate.setDate(now.getDate() - 7);
+            startDate.setHours(0, 0, 0, 0);
+        } else if (period === 'month') {
+            startDate.setMonth(now.getMonth() - 1);
+            startDate.setHours(0, 0, 0, 0);
+        } else {
+            // All time (or reasonable default like year)
+            startDate = new Date(0); // 1970
         }
 
+        // Fetch Orders with Items
         const orders = await prisma.order.findMany({
-            where,
+            where: {
+                createdAt: { gte: startDate },
+            },
             select: {
+                id: true,
                 total: true,
                 createdAt: true,
-                items: true
-            }
+                items: true,
+                type: true,
+                paymentMethod: true,
+            },
+            orderBy: { createdAt: 'asc' }
         });
 
-        const menuItems = await prisma.menuItem.findMany({
-            include: { category: true }
-        });
+        // --- Aggregation Logic ---
 
-        // --- Aggregation ---
-        const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
+        // 1. Summary Cards
+        const totalRevenue = orders.reduce((acc, order) => acc + order.total, 0);
         const totalOrders = orders.length;
         const avgOrderValue = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
 
-        // Revenue Trend (Daily)
-        const trendMap = new Map<string, number>();
-        orders.forEach(o => {
-            const date = new Date(o.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-            trendMap.set(date, (trendMap.get(date) || 0) + o.total);
-        });
-        // Fill gaps? Maybe simplified for now.
-        const revenueTrend = Array.from(trendMap.entries()).map(([date, amount]) => ({ date, amount }));
-
-        // Peak Hours
-        const hoursMap = new Array(24).fill(0);
-        orders.forEach(o => {
-            const h = new Date(o.createdAt).getHours();
-            hoursMap[h]++;
-        });
-        const peakHours = hoursMap.map((count, hour) => ({ hour, count }));
-
-        // Item Sales & Menu Engineering
-        const itemStats = new Map<string, { count: number, revenue: number }>();
-
-        orders.forEach(o => {
-            const items = o.items as any[]; // JSON
+        // 2. Efficiently fetch all recipes for items in these orders
+        const allOrderedItemIds = new Set<string>();
+        orders.forEach(order => {
+            const items = order.items as any[];
             if (Array.isArray(items)) {
                 items.forEach(item => {
-                    const existing = itemStats.get(item.name) || { count: 0, revenue: 0 };
-                    existing.count += item.quantity || 1;
-                    existing.revenue += (item.price || 0) * (item.quantity || 1);
-                    itemStats.set(item.name, existing);
+                    if (item.menuItemId) allOrderedItemIds.add(item.menuItemId);
                 });
             }
         });
 
-        // Top Items
-        const topItems = Array.from(itemStats.entries())
-            .map(([name, stats]) => ({ name, sales: stats.count, revenue: stats.revenue, pct: 0 }))
-            .sort((a, b) => b.sales - a.sales)
-            .slice(0, 5);
+        const menuItemsWithRecipes = await prisma.menuItem.findMany({
+            where: { id: { in: Array.from(allOrderedItemIds) } },
+            select: { id: true, recipe: true, name: true, price: true }
+        });
 
-        const maxSales = topItems[0]?.sales || 1;
-        topItems.forEach(i => i.pct = Math.round((i.sales / maxSales) * 100));
+        // Fetch all inventory items for costs
+        const inventoryItems = await prisma.inventoryItem.findMany({
+            select: { id: true, costPerUnit: true }
+        });
+        const inventoryCostMap = new Map(inventoryItems.map(i => [i.id, i.costPerUnit || 0]));
 
-        // Menu Engineering (Stars, Plowhorses, etc)
-        const engineeringItems = menuItems.map(m => {
-            const stats = itemStats.get(m.name) || { count: 0, revenue: 0 };
-            const cost = m.costPrice || (m.price * 0.3); // Mock cost if missing (30%)
-            const profit = m.price - cost;
-            const totalProfit = profit * stats.count;
+        // Calculate cost per MenuItem
+        const menuCostMap = new Map<string, number>();
+        menuItemsWithRecipes.forEach(mi => {
+            let cost = 0;
+            if (mi.recipe && Array.isArray(mi.recipe)) {
+                (mi.recipe as any[]).forEach(ing => {
+                    const unitCost = inventoryCostMap.get(ing.inventoryItemId) || 0;
+                    cost += (ing.quantity || 0) * unitCost;
+                });
+            }
+            menuCostMap.set(mi.id, cost);
+        });
+
+        // 3. Trends and Stats
+        const trendMap: Record<string, number> = {};
+        const hoursMap: Record<number, number> = {};
+        const itemStats: Record<string, { count: number, revenue: number, cost: number }> = {};
+
+        orders.forEach(order => {
+            const date = new Date(order.createdAt);
+            const dateKey = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            trendMap[dateKey] = (trendMap[dateKey] || 0) + order.total;
+
+            const hour = date.getHours();
+            hoursMap[hour] = (hoursMap[hour] || 0) + 1;
+
+            const items = order.items as any[];
+            if (Array.isArray(items)) {
+                items.forEach(item => {
+                    const name = item.name || 'Unknown';
+                    const qty = item.quantity || 1;
+                    const price = item.price || 0;
+                    const totalItemRev = price * qty;
+
+                    // Use actual cost from map or fallback to 30% if recipe missing
+                    const itemCostPerUnit = menuCostMap.get(item.menuItemId);
+                    const totalItemCost = itemCostPerUnit !== undefined ? (itemCostPerUnit * qty) : (totalItemRev * 0.3);
+
+                    if (!itemStats[name]) itemStats[name] = { count: 0, revenue: 0, cost: 0 };
+                    itemStats[name].count += qty;
+                    itemStats[name].revenue += totalItemRev;
+                    itemStats[name].cost += totalItemCost;
+                });
+            }
+        });
+
+        // Format outputs
+        const revenueTrend = Object.entries(trendMap).map(([date, amount]) => ({ date, amount }));
+        const peakHours = Object.entries(hoursMap).map(([hour, count]) => ({
+            hour: `${hour}:00`,
+            count
+        })).sort((a, b) => parseInt(a.hour) - parseInt(b.hour));
+
+        const allItems = Object.entries(itemStats).map(([name, stats]) => ({
+            name,
+            sales: stats.count,
+            revenue: stats.revenue,
+            profit: stats.revenue - stats.cost,
+        }));
+
+        const topItems = [...allItems].sort((a, b) => b.revenue - a.revenue).slice(0, 5).map(i => ({
+            ...i,
+            pct: totalRevenue > 0 ? Math.round((i.revenue / totalRevenue) * 100) : 0
+        }));
+
+        // Menu Engineering
+        const avgSales = allItems.reduce((acc, i) => acc + i.sales, 0) / (allItems.length || 1);
+        const avgProfit = allItems.reduce((acc, i) => acc + i.profit, 0) / (allItems.length || 1);
+
+        const engineeringItems = allItems.map(item => {
+            let category = 'Puzzle';
+            if (item.sales >= avgSales && item.profit >= avgProfit) category = 'Star';
+            else if (item.sales >= avgSales && item.profit < avgProfit) category = 'Plowhorse';
+            else if (item.sales < avgSales && item.profit >= avgProfit) category = 'Puzzle';
+            else category = 'Dog';
 
             return {
-                id: m.id,
-                name: m.name,
-                category: m.category ? 'Food' : 'Food', // Simplified
-                sales: stats.count,
-                cost,
-                revenue: stats.revenue,
-                profit: Math.round(profit),
-                totalProfit,
-                popularity: stats.count
+                name: item.name,
+                popularity: item.sales,
+                profit: item.profit,
+                revenue: item.revenue,
+                sales: item.sales,
+                category
             };
         });
 
-        // Classification
-        const avgPopularity = engineeringItems.reduce((sum, i) => sum + i.sales, 0) / (engineeringItems.length || 1);
-        const avgProfit = engineeringItems.reduce((sum, i) => sum + i.profit, 0) / (engineeringItems.length || 1);
-
-        const classifiedItems = engineeringItems.map(i => {
-            const highPop = i.sales >= avgPopularity;
-            const highProf = i.profit >= avgProfit;
-            let cat = '';
-            if (highPop && highProf) cat = 'Star';
-            else if (highPop && !highProf) cat = 'Plowhorse';
-            else if (!highPop && highProf) cat = 'Puzzle';
-            else cat = 'Dog';
-            return { ...i, category: cat };
+        const paymentMethods: Record<string, number> = {};
+        orders.forEach(order => {
+            const method = order.paymentMethod || 'Unknown';
+            paymentMethods[method] = (paymentMethods[method] || 0) + 1;
         });
-
-        const menuEngineering = {
-            items: classifiedItems,
-            stars: classifiedItems.filter(i => i.category === 'Star'),
-            plowhorses: classifiedItems.filter(i => i.category === 'Plowhorse'),
-            puzzles: classifiedItems.filter(i => i.category === 'Puzzle'),
-            dogs: classifiedItems.filter(i => i.category === 'Dog'),
-        };
 
         return NextResponse.json({
             summary: { totalRevenue, totalOrders, avgOrderValue },
             revenueTrend,
             peakHours,
             topItems,
-            menuEngineering
+            menuEngineering: { items: engineeringItems },
+            paymentData: Object.entries(paymentMethods).map(([name, value]) => ({ name, value }))
         });
 
     } catch (error) {
-        console.error('Error fetching analytics:', error);
+        console.error('Analytics Error:', error);
         return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 });
     }
 }

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useFavorites, useOffers } from './lib/storage';
 import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart, useDbReviews, useDbCms, Review } from './lib/db-hooks';
-import MobileNav from './components/MobileNav';
+
 import OffersCarousel from './components/OffersCarousel';
 import { Footer } from './components/home';
 
@@ -59,10 +59,6 @@ function RecentBlogPosts() {
         </div>
     );
 }
-
-// Types
-// Types
-// Review type now imported from db-hooks
 
 // Category Icons Map
 const CATEGORY_ICONS: Record<string, string> = {
@@ -176,7 +172,6 @@ export default function Home() {
     }, []);
 
     // Menu Filter - Show only 8 items on homepage
-    // Filter items first
     const activeItems = useMemo(() => {
         return dbItems
             .filter(item => item.status === 'Active' && item.veg)
@@ -209,7 +204,6 @@ export default function Home() {
     const handleDirectOrder = async () => {
         if (cart.length === 0) return;
 
-        // Validate mobile number
         if (!customerMobile || customerMobile.length < 10) {
             alert('Please enter a valid 10-digit mobile number');
             return;
@@ -233,7 +227,6 @@ export default function Home() {
                 body: JSON.stringify(orderData)
             });
 
-            // Success UX
             alert('✅ Order Placed Successfully! We will contact you shortly.');
             clearCart();
             setIsCartOpen(false);
@@ -251,7 +244,6 @@ export default function Home() {
             return;
         }
 
-        // 1. Submit to API (Background)
         try {
             const orderData = {
                 customer: user ? user.name : 'WhatsApp Customer',
@@ -273,7 +265,6 @@ export default function Home() {
             console.error(e);
         }
 
-        // 2. Construct WhatsApp Message
         let message = "New Order from Website:\n\n";
         cart.forEach(item => {
             message += `- ${item.quantity}x ${item.name} (₹${item.price * item.quantity})\n`;
@@ -282,12 +273,10 @@ export default function Home() {
         message += `\n📱 Mobile: ${customerMobile}`;
         message += `\n💳 Payment: ${paymentMethod}`;
 
-        // 3. Redirect to WhatsApp
         const phone = '919509913792';
         const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
 
-        // 4. Clear Cart
         clearCart();
         setIsCartOpen(false);
     };
@@ -318,6 +307,7 @@ export default function Home() {
                                 alt="Oye Chatoro - Best Restaurant & Pure Veg Food in Abu Road"
                                 fill
                                 className="object-contain drop-shadow-lg"
+                                sizes="48px"
                                 priority
                             />
                         </div>
@@ -347,17 +337,15 @@ export default function Home() {
                         <button onClick={() => { setIsCartOpen(true); setIsMobileMenuOpen(false); }} className="btn btn-primary md:hidden w-full mt-4">Cart ({cartCount})</button>
                         <a href="https://wa.me/919509913792" className="btn btn-primary hidden md:inline-flex shadow-lg shadow-orange-200 hover:shadow-orange-300 transform hover:-translate-y-0.5 transition-all" target="_blank">Order Now 🚀</a>
                     </nav>
-                    <button className="mobile-menu-btn md:hidden" aria-label="Menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-                        <span className="text-2xl">☰</span>
+                    <button className="mobile-menu-btn md:hidden z-50 relative" aria-label="Menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                        <span className="text-2xl">{isMobileMenuOpen ? '✕' : '☰'}</span>
                     </button>
                 </div>
             </header>
 
             <main>
                 {/* Hero Section */}
-                {/* Hero Section - Global Shudh Desi Style */}
                 <section id="home" className={`hero min-h-[70vh] md:min-h-[85vh] flex items-center relative overflow-hidden ${visibleSections.has('home') ? 'animate-in' : ''}`}>
-                    {/* Background Pattern */}
                     <div className="absolute inset-0 bg-[#fff7ed] opacity-50 z-0">
                         <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#991b1b 1px, transparent 1px)', backgroundSize: '30px 30px', opacity: 0.05 }}></div>
                     </div>
@@ -386,7 +374,13 @@ export default function Home() {
                                 <div className="flex -space-x-4">
                                     {[1, 2, 3, 4].map(i => (
                                         <div key={i} className="w-12 h-12 rounded-full border-4 border-white shadow-md overflow-hidden">
-                                            <Image src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 5}`} alt="User" width={48} height={48} />
+                                            <Image
+                                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 5}`}
+                                                alt="User"
+                                                width={48}
+                                                height={48}
+                                                unoptimized
+                                            />
                                         </div>
                                     ))}
                                 </div>
@@ -468,7 +462,6 @@ export default function Home() {
                 </section>
 
                 {/* Menu Section */}
-                {/* Menu Section - Global Shudh Desi Style */}
                 <section id="menu" className={`section menu-section py-12 md:py-20 bg-gray-50 ${visibleSections.has('menu') ? 'animate-in' : ''}`}>
                     <div className="container">
                         <div className="text-center mb-12">
@@ -857,8 +850,6 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-
-            <MobileNav />
         </>
     );
 }

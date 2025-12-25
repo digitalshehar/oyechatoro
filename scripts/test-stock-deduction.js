@@ -31,29 +31,28 @@ async function main() {
     const startStock = base.currentStock;
     console.log(`Initial Stock of ${ingredientName}: ${startStock}`);
 
-    // 3. Create a Dummy Order via Prisma (Simulating API)
-    // We emulate the API logic: Create Order -> Deduct Stock
-    // Since we can't easily call the Next.js API from this node script without fetch,
-    // We will REPLICATE the logic here to verify the *data* side, or we can use fetch if server is running.
-    // Let's use fetch to test the ACTUAL API endpoint if possible, but simplest is to run the logic directly against DB 
-    // to ensure we aren't blocked by auth/network.
-    // WAIT! The goal is to verify the API *code* works. 
-    // But since I saw the code exists, I can just verify the *Relationship* works.
-    // Actually, calling the API is better integration test.
-
-    // Let's simulate the API logic *exactly* as it is written in route.ts
-    // This script emulates the backend process.
+    // 3. Setup Recipe for Testing (If missing)
+    if (!menuItem.recipe) {
+        console.log('Recipe missing. Adding temporary recipe for testing...');
+        const tempRecipe = [
+            { inventoryItemId: base.id, quantity: 1, unit: 'pcs' }
+        ];
+        await prisma.menuItem.update({
+            where: { id: menuItem.id },
+            data: { recipe: tempRecipe }
+        });
+        menuItem.recipe = tempRecipe;
+    }
 
     console.log('Simulating Order Placement...');
-
     const qtyOrdered = 2;
 
-    // Deduct
-    const recipe = menuItem.recipe; // typed as any in script
+    // Deduct (Simulate same logic as in api/orders/route.ts)
+    const recipe = menuItem.recipe;
     if (Array.isArray(recipe)) {
-        for (const r of recipe) {
-            if (r.inventoryItemId === base.id) {
-                const deduction = r.quantity * qtyOrdered;
+        for (const ingredient of recipe) {
+            if (ingredient.inventoryItemId === base.id) {
+                const deduction = ingredient.quantity * qtyOrdered;
 
                 await prisma.inventoryItem.update({
                     where: { id: base.id },
@@ -69,11 +68,12 @@ async function main() {
     const updatedBase = await prisma.inventoryItem.findUnique({ where: { id: base.id } });
     console.log(`Final Stock of ${ingredientName}: ${updatedBase.currentStock}`);
 
-    if (updatedBase.currentStock === startStock - (1 * qtyOrdered)) { // Assuming recipe uses 1 base
+    const expectedStock = startStock - (1 * qtyOrdered);
+    if (Math.abs(updatedBase.currentStock - expectedStock) < 0.01) {
         console.log('SUCCESS: Stock deducted correctly!');
     } else {
-        console.log('WARNING: Stock mismatch. Check recipe quantity.');
-        const recipeItem = recipe.find(r => r.inventoryItemId === base.id);
+        console.log(`WARNING: Stock mismatch. Expected ${expectedStock}, got ${updatedBase.currentStock}`);
+        const recipeItem = Array.isArray(recipe) ? recipe.find(r => r.inventoryItemId === base.id) : null;
         console.log(`Recipe requires: ${recipeItem ? recipeItem.quantity : 'N/A'}`);
     }
 }

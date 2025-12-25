@@ -81,11 +81,11 @@ export default function KitchenPage() {
             source = allOrders.filter(o => o.status === 'Pending' || o.status === 'Cooking');
         }
 
-        // Sorting: Active = Oldest First (FIFO), History = Newest First
+        // Sorting: Newest First (LIFO) as per user request
         source = source.sort((a, b) => {
             const timeA = new Date(a.createdAt).getTime();
             const timeB = new Date(b.createdAt).getTime();
-            return viewMode === 'history' ? timeB - timeA : timeA - timeB;
+            return timeB - timeA;
         });
 
         if (orderTypeFilter !== 'all') {
@@ -117,6 +117,27 @@ export default function KitchenPage() {
 
         return source;
     }, [allOrders, historyOrders, viewMode, orderTypeFilter, stationFilter, categories, menuItems]);
+
+    // Calculate Average Prep Time (from history)
+    const avgPrepTime = useMemo(() => {
+        if (historyOrders.length === 0) return 0;
+        const times = historyOrders.map(o => {
+            const start = new Date(o.createdAt).getTime();
+            const end = new Date(o.updatedAt).getTime();
+            return (end - start) / 60000;
+        });
+        const avg = times.reduce((a, b) => a + b, 0) / times.length;
+        return Math.round(avg);
+    }, [historyOrders]);
+
+    // Initial fetch of history for stats
+    useEffect(() => {
+        fetch('/api/orders?status=Completed&limit=20')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) setHistoryOrders(data);
+            });
+    }, []);
 
     // Enhanced Sound Helper with Voice
     const playSound = (type: 'new' | 'update' = 'new') => {
@@ -311,7 +332,8 @@ export default function KitchenPage() {
                         onLogout: () => console.log('logout'), categories: categories.map(c => c.name),
                         newOrderCount: allOrders.filter(o => o.status === 'Pending' || updatedOrderIds.has(o.id)).length,
                         onTestSound: () => playSound('new'),
-                        hasHighAllergy: allOrders.some(o => (o.status === 'Pending' || o.status === 'Cooking') && ((o.notes || '').toLowerCase().includes('allergy') || (o.notes || '').toLowerCase().includes('allergic')))
+                        hasHighAllergy: allOrders.some(o => (o.status === 'Pending' || o.status === 'Cooking') && ((o.notes || '').toLowerCase().includes('allergy') || (o.notes || '').toLowerCase().includes('allergic'))),
+                        avgPrepTime
                     }}
                 />
             )}

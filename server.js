@@ -3,11 +3,14 @@ import { parse } from 'url';
 import next from 'next';
 import { Server } from 'socket.io';
 
+// Force disable Turbopack to avoid Windows symlink issues
+process.env.NEXT_TURBO = '0';
+
 const dev = process.env.NODE_ENV !== 'production';
-const hostname = 'localhost';
+const hostname = process.env.HOSTNAME || '0.0.0.0';
 const port = parseInt(process.env.PORT || '3000', 10);
 
-const app = next({ dev, hostname, port });
+const app = next({ dev, hostname, port, webpack: true });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
@@ -30,9 +33,9 @@ app.prepare().then(() => {
         }
     });
 
-    const io = new Server(server);
+    const serverIo = new Server(server);
 
-    io.on('connection', (socket) => {
+    serverIo.on('connection', (socket) => {
         console.log('Client connected:', socket.id);
 
         socket.on('join-room', (room) => {
@@ -42,17 +45,17 @@ app.prepare().then(() => {
 
         socket.on('new-order', (order) => {
             console.log('New Order received:', order.id);
-            io.emit('order-received', order);
+            serverIo.emit('order-received', order);
         });
 
         socket.on('update-status', ({ orderId, status }) => {
             console.log(`Order ${orderId} status updated to ${status}`);
-            io.emit('status-updated', { orderId, status });
+            serverIo.emit('status-updated', { orderId, status });
         });
 
         socket.on('update-order', (order) => {
             console.log('Order updated:', order.id);
-            io.emit('order-updated', order);
+            serverIo.emit('order-updated', order);
         });
 
         socket.on('disconnect', () => {

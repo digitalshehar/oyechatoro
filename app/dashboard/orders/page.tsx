@@ -272,7 +272,12 @@ const OrdersPage = () => {
                                                     <button onClick={() => setSettlingOrderId(order.id)} className="p-2 md:p-3 bg-orange-600 text-white rounded-xl font-medium animate-pulse text-sm" title="Settle">💰</button>
                                                 )}
                                             </div>
-                                            {order.status === 'Pending' && <button onClick={() => updateOrder(order.id, { status: 'Cooking' })} className="px-3 md:px-6 py-2 md:py-3 bg-blue-600 text-white rounded-xl font-bold text-xs md:text-base whitespace-nowrap">Accept</button>}
+                                            {order.status === 'Pending' && (
+                                                <div className="flex gap-1">
+                                                    <button onClick={() => updateOrder(order.id, { status: 'Cooking' })} className="px-3 md:px-6 py-2 md:py-3 bg-blue-600 text-white rounded-xl font-bold text-xs md:text-base whitespace-nowrap">Accept</button>
+                                                    <button onClick={() => { if (confirm('Are you sure you want to REJECT this order?')) updateOrder(order.id, { status: 'Cancelled' }); }} className="p-2 md:p-3 bg-red-100 text-red-600 hover:bg-red-600 hover:text-white rounded-xl font-medium transition-all text-sm" title="Reject Order">✕</button>
+                                                </div>
+                                            )}
                                             {order.status === 'Cooking' && <button onClick={() => updateOrder(order.id, { status: 'Ready' })} className="px-3 md:px-6 py-2 md:py-3 bg-orange-500 text-white rounded-xl font-bold text-xs md:text-base whitespace-nowrap">Ready</button>}
                                             {order.status === 'Ready' && (
                                                 <div className="flex gap-1">

@@ -60,55 +60,37 @@ export default function SocialPlannerPage() {
     const generatePlan = async () => {
         setGenerating(true);
         try {
-            // In a real scenario, this would call an API that runs the generate_weekly_content logic
-            // For now, we'll simulate it by calling the social API for 7 days
-            const days = [
-                { day: 'Day 1', topic: 'Maharaja Pizza Special', type: 'Product Showcase' },
-                { day: 'Day 2', topic: 'Authentic Rajasthani Chaat', type: 'Food Porn' },
-                { day: 'Day 3', topic: 'Hygienic Live Kitchen', type: 'Behind the Scenes' },
-                { day: 'Day 4', topic: 'Customer Love at Oye Chatoro', type: 'UGC' },
-                { day: 'Day 5', topic: 'Best Restaurant in Abu Road', type: 'Local SEO' },
-                { day: 'Day 6', topic: 'Weekend Family Vibes', type: 'Lifestyle' },
-                { day: 'Day 7', topic: 'Midnight Cravings Satisfied', type: 'Engagement' }
-            ];
+            const res = await fetch('/api/marketing/social/generate-week', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
 
-            const newCalendar: CalendarDay[] = [];
-            for (const day of days) {
-                const res = await fetch('/api/seo/ai/social', {
+            if (data.days && Array.isArray(data.days)) {
+                setCalendar(data.days);
+
+                // Convert to Markdown
+                let md = '# 📅 Weekly Social Media Planner\n\n';
+                data.days.forEach((d: CalendarDay) => {
+                    md += `## ${d.day}\n`;
+                    md += `- **Topic**: ${d.topic}\n`;
+                    md += `- **Type**: ${d.type}\n`;
+                    md += `- **AI Caption**: ${d.caption}\n`;
+                    md += `- **Image Prompt**: ${d.imagePrompt}\n\n`;
+                });
+                setMarkdown(md);
+
+                // Save to file
+                await fetch('/api/seo/ai/social/calendar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contentTitle: day.topic, type: day.type })
+                    body: JSON.stringify({ content: md })
                 });
-                const data = await res.json();
-                newCalendar.push({
-                    ...day,
-                    caption: data.captions?.[0] || 'Caption generation failed',
-                    imagePrompt: data.imagePrompt || 'Prompt generation failed'
-                });
+            } else {
+                throw new Error('Invalid plan format');
             }
-
-            // Convert to Markdown
-            let md = '# 📅 Weekly Social Media Planner\n\n';
-            newCalendar.forEach(d => {
-                md += `## ${d.day}\n`;
-                md += `- **Topic**: ${d.topic}\n`;
-                md += `- **Type**: ${d.type}\n`;
-                md += `- **AI Caption**: ${d.caption}\n`;
-                md += `- **Image Prompt**: ${d.imagePrompt}\n\n`;
-            });
-
-            setMarkdown(md);
-            setCalendar(newCalendar);
-
-            // Save to file
-            await fetch('/api/seo/ai/social/calendar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: md })
-            });
-
         } catch (e) {
-            alert('Generation failed');
+            alert('Generation failed: ' + (e as Error).message);
         } finally {
             setGenerating(false);
         }

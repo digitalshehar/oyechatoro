@@ -5,7 +5,9 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useDbMenu, MenuItem, useDbSettings as useSettings, addServiceRequest, useDbCart, useDbOffers, getSocket } from '../lib/db-hooks';
+import { useDbMenu, MenuItem, useDbSettings as useSettings, addServiceRequest, useDbOffers, getSocket } from '../lib/db-hooks';
+import { useDbCart } from '@/app/lib/db-hooks';
+import { translateToHindi } from '@/app/lib/local-translator';
 
 import OffersCarousel from '../components/OffersCarousel';
 
@@ -162,25 +164,24 @@ export default function MenuPage() {
 
         const finalTotal = cartTotal - discountAmount;
 
-        try {
-            const orderData = {
-                items: cart.map(item => ({
-                    id: item.menuItemId,
-                    name: item.name,
-                    quantity: item.quantity,
-                    price: item.price
-                })),
-                total: finalTotal,
-                type: 'DineIn',
-                table: tableNumber || undefined,
-                customer: customerName || (tableNumber ? `Table ${tableNumber}` : 'Digital Menu Customer'),
-                mobile: customerPhone || undefined,
-                paymentStatus: 'Unpaid',
-                paymentMethod: 'Cash',
-                discount: appliedOffer ? { code: appliedOffer.code, amount: discountAmount } : null,
-                status: 'Pending'
-            };
+        const orderData = {
+            items: cart.map(item => ({
+                menuItemId: item.menuItemId,
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price
+            })),
+            total: finalTotal,
+            type: 'DineIn',
+            tableId: tableNumber || undefined,
+            customerName: customerName || (tableNumber ? `Table ${tableNumber}` : 'Digital Menu Customer'),
+            customerPhone: customerPhone || undefined,
+            paymentMethod: 'Cash',
+            discount: appliedOffer ? discountAmount : 0,
+            notes: appliedOffer ? `Coupon: ${appliedOffer.code}` : undefined
+        };
 
+        try {
             const res = await fetch('/api/orders', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -204,7 +205,10 @@ export default function MenuPage() {
             }
         } catch (e) {
             console.error('Failed to submit order:', e);
-            alert('Something went wrong. Please call waiter.');
+            const msg = lang === 'hi'
+                ? 'कुछ तकनीकी समस्या आई है। कृपया सहायता के लिए हमारे स्टाफ को बुलाएं।'
+                : 'Something went wrong. Please ask our staff for assistance.';
+            alert(msg);
         }
     };
 
@@ -233,19 +237,19 @@ export default function MenuPage() {
         try {
             const orderData = {
                 items: cart.map(item => ({
-                    id: item.menuItemId,
+                    menuItemId: item.menuItemId,
                     name: item.name,
                     quantity: item.quantity,
                     price: item.price
                 })),
                 total: finalTotal,
                 type: 'DineIn',
-                table: tableNumber || undefined,
-                customer: customerName || 'WhatsApp Order',
-                mobile: customerPhone || undefined,
-                paymentStatus: 'Unpaid',
+                tableId: tableNumber || undefined,
+                customerName: customerName || 'WhatsApp Order',
+                customerPhone: customerPhone || undefined,
                 paymentMethod: 'Cash',
-                status: 'Pending'
+                discount: appliedOffer ? discountAmount : 0,
+                notes: appliedOffer ? `Coupon: ${appliedOffer.code}` : undefined
             };
             const res = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
             if (res.ok) {
@@ -382,17 +386,7 @@ export default function MenuPage() {
                     <nav ref={navRef} className="flex overflow-x-auto px-6 pb-4 gap-3 no-scrollbar scroll-smooth snap-x">
                         <div className="flex mx-auto gap-3">
                             {categories.map((cat, i) => {
-                                const getHindiCat = (name: string) => {
-                                    if (name.includes('Pizza')) return 'पिज्जा';
-                                    if (name.includes('Burger')) return 'बर्गर';
-                                    if (name.includes('Chaat')) return 'चाट';
-                                    if (name.includes('Beverages')) return 'कोल्ड ड्रिंक्स';
-                                    if (name.includes('Sandwich')) return 'सैंडविच';
-                                    if (name.includes('Chinese')) return 'चाइनीज़';
-                                    if (name.includes('Pasta')) return 'पास्ता';
-                                    if (name.includes('Momos')) return 'मोमोज';
-                                    return name;
-                                };
+                                const hindiName = (cat.translations as any)?.hi?.name || translateToHindi(cat.name);
                                 return (
                                     <button
                                         key={cat.id}
@@ -403,7 +397,7 @@ export default function MenuPage() {
                                             : 'glass text-white/70 border-white/5 hover:text-white hover:bg-white/10'
                                             }`}
                                     >
-                                        {lang === 'hi' ? getHindiCat(cat.name) : cat.name}
+                                        {lang === 'hi' ? hindiName : cat.name}
                                     </button>
                                 );
                             })}
@@ -432,7 +426,9 @@ export default function MenuPage() {
                             <section key={cat.id} id={cat.id} className="mb-12 scroll-mt-52">
                                 <div className="flex items-center gap-4 mb-6" style={{ animationDelay: `${catIndex * 0.1}s` }}>
                                     <div className="h-px flex-1 bg-gradient-to-r from-transparent via-orange-500/30 to-transparent" />
-                                    <h2 className="text-2xl font-black gradient-text uppercase tracking-wider">{cat.name}</h2>
+                                    <h2 className="text-2xl font-black gradient-text uppercase tracking-wider">
+                                        {lang === 'hi' ? (cat.translations as any)?.hi?.name || translateToHindi(cat.name) : cat.name}
+                                    </h2>
                                     <span className="glass px-3 py-1 rounded-full text-xs font-bold text-orange-400">{catItems.length}</span>
                                     <div className="h-px flex-1 bg-gradient-to-r from-transparent via-orange-500/30 to-transparent" />
                                 </div>
@@ -482,35 +478,13 @@ export default function MenuPage() {
                                                             <Link href={`/menu/${item.slug}`}>
                                                                 <h3 className="font-bold text-base mb-1 text-white leading-tight hover:text-orange-500 transition-colors cursor-pointer">
                                                                     {lang === 'hi' ? (
-                                                                        item.translations?.hi?.name ||
-                                                                        item.name.replace(/Pizza/gi, 'पिज्जा')
-                                                                            .replace(/Burger/gi, 'बर्गर')
-                                                                            .replace(/Chaat/gi, 'चाट')
-                                                                            .replace(/Sandwich/gi, 'सैंडविच')
-                                                                            .replace(/Pasta/gi, 'पास्ता')
-                                                                            .replace(/Momos/gi, 'मोमोज')
-                                                                            .replace(/Special/gi, 'स्पेशल')
-                                                                            .replace(/Hot/gi, 'हॉट')
-                                                                            .replace(/Veg/gi, 'वेज')
-                                                                            .replace(/Paneer/gi, 'पनीर')
-                                                                            .replace(/Cheese/gi, 'चीज़')
-                                                                            .replace(/Garlic/gi, 'गार्लिक')
-                                                                            .replace(/Corn/gi, 'कॉर्न')
-                                                                            .replace(/Fried/gi, 'फ्राइड')
-                                                                            .replace(/Rice/gi, 'राइस')
-                                                                            .replace(/Noodles/gi, 'नूडल्स')
-                                                                            .replace(/Masala/gi, 'मसाला')
+                                                                        (item.translations as any)?.hi?.name || translateToHindi(item.name)
                                                                     ) : item.name}
                                                                 </h3>
                                                             </Link>
                                                             <p className="text-xs text-white/40 mb-2">
                                                                 {lang === 'hi' ? (
-                                                                    item.translations?.hi?.description ||
-                                                                    (item.description || '').replace(/Delicious/gi, 'स्वादिष्ट')
-                                                                        .replace(/Fresh/gi, 'ताज़ा')
-                                                                        .replace(/Served with/gi, 'के साथ परोसा गया')
-                                                                        .replace(/Pizza/gi, 'पिज्जा')
-                                                                        .replace(/Burger/gi, 'बर्गर')
+                                                                    (item.translations as any)?.hi?.description || translateToHindi(item.description || "")
                                                                 ) : item.description}
                                                             </p>
                                                         </div>

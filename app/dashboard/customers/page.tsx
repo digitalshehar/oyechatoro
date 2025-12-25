@@ -23,11 +23,15 @@ export default function CustomersPage() {
 
     // Filter Logic
     const filteredCustomers = useMemo(() => {
-        return customers.filter(c =>
-            c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            c.phone.includes(searchTerm)
-        );
-    }, [customers, searchTerm]);
+        return customers.filter(c => {
+            if (searchTerm.startsWith('segment:')) {
+                const targetSeg = searchTerm.split(':')[1];
+                return customerSegments[c.id] === targetSeg;
+            }
+            return c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                c.phone.includes(searchTerm);
+        });
+    }, [customers, searchTerm, customerSegments]);
 
     // Stats Calculation
     const stats = useMemo(() => {
@@ -111,7 +115,7 @@ export default function CustomersPage() {
                     </h1>
                     <p className="text-gray-500 mt-1">Manage relationships & track loyalty</p>
                 </div>
-                <div className="flex gap-3 w-full md:w-auto">
+                <div className="flex flex-wrap gap-3 w-full md:w-auto">
                     {selectedIds.size > 0 && (
                         <div className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl animate-in fade-in slide-in-from-right-4">
                             <span className="font-bold text-sm">{selectedIds.size} Selected</span>
@@ -127,17 +131,27 @@ export default function CustomersPage() {
                     <button
                         onClick={handleAISegment}
                         disabled={isSegmenting}
-                        className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all ${isSegmenting ? 'bg-gray-100 text-gray-400' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-100'}`}
+                        className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all ${isSegmenting ? 'bg-gray-100 text-gray-400' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-100 shadow-sm'}`}
                     >
-                        {isSegmenting ? <span className="animate-spin">🔄</span> : '🪄'} {isSegmenting ? 'Segmenting...' : 'AI Segment'}
+                        {isSegmenting ? <span className="animate-spin text-lg">🪄</span> : '🪄'} {isSegmenting ? 'Segmenting...' : 'AI Segment'}
                     </button>
-                    <div className="relative flex-1 md:w-72">
+                    {/* Churn Risk Filter Shortcut */}
+                    <button
+                        onClick={() => {
+                            if (searchTerm === 'segment:Churn Risk') setSearchTerm('');
+                            else setSearchTerm('segment:Churn Risk');
+                        }}
+                        className={`px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition-all border ${searchTerm === 'segment:Churn Risk' ? 'bg-red-600 text-white border-red-600 shadow-lg scale-105' : 'bg-red-50 text-red-700 border-red-100 hover:bg-red-100'}`}
+                    >
+                        🚨 Churn Risks
+                    </button>
+                    <div className="relative flex-1 md:w-64">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
                         <input
                             type="text"
                             placeholder="Search name or phone..."
                             className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition-all shadow-sm"
-                            value={searchTerm}
+                            value={searchTerm.startsWith('segment:') ? '' : searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
                     </div>
@@ -449,22 +463,26 @@ export default function CustomersPage() {
                                 <button
                                     onClick={() => handleGenerateOffer(selectedCustomer)}
                                     disabled={isGeneratingOffer}
-                                    className="w-full py-3 bg-indigo-50 text-indigo-700 font-bold rounded-xl border-2 border-dashed border-indigo-200 hover:bg-indigo-100 transition-all flex items-center justify-center gap-2"
+                                    className={`w-full py-3 font-bold rounded-xl border-2 border-dashed transition-all flex items-center justify-center gap-2 ${customerSegments[selectedCustomer.id] === 'Churn Risk'
+                                        ? 'bg-red-50 text-red-700 border-red-200 hover:bg-red-100'
+                                        : 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100'}`}
                                 >
                                     {isGeneratingOffer ? <span className="animate-spin text-xl">✨</span> : '🎁'}
-                                    {isGeneratingOffer ? 'Analyzing taste profile...' : 'Generate Smart Offer'}
+                                    {isGeneratingOffer ? 'Analyzing taste profile...' : customerSegments[selectedCustomer.id] === 'Churn Risk' ? 'Generate Retention Offer 🚨' : 'Generate Smart Offer'}
                                 </button>
                             ) : (
-                                <div className="bg-indigo-900 rounded-2xl p-5 text-white animate-in zoom-in-95">
+                                <div className={`${customerSegments[selectedCustomer.id] === 'Churn Risk' ? 'bg-red-900 shadow-red-200' : 'bg-indigo-900 shadow-indigo-200'} rounded-2xl p-5 text-white animate-in zoom-in-95 shadow-xl`}>
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-2xl">🪄</span>
+                                            <span className="text-2xl">{customerSegments[selectedCustomer.id] === 'Churn Risk' ? '🎈' : '🪄'}</span>
                                             <div>
-                                                <div className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest">Recommended Dish</div>
+                                                <div className={`text-[10px] font-bold uppercase tracking-widest ${customerSegments[selectedCustomer.id] === 'Churn Risk' ? 'text-red-300' : 'text-indigo-300'}`}>
+                                                    {customerSegments[selectedCustomer.id] === 'Churn Risk' ? 'Retention Strategy' : 'Recommended Dish'}
+                                                </div>
                                                 <div className="font-bold text-lg leading-tight">{currentOffer.dish}</div>
                                             </div>
                                         </div>
-                                        <button onClick={() => setCurrentOffer(null)} className="text-indigo-400 hover:text-white">✕</button>
+                                        <button onClick={() => setCurrentOffer(null)} className="text-white/50 hover:text-white">✕</button>
                                     </div>
                                     <div className="bg-white/10 p-4 rounded-xl text-sm italic mb-4 border border-white/10 backdrop-blur-sm">
                                         "{currentOffer.message}"

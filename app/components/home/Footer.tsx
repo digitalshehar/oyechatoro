@@ -40,12 +40,11 @@ const Footer = memo(function Footer({ year }: FooterProps) {
                         </ul>
                     </div>
                     <div className="col-span-1">
-                        <h4 className="font-bold text-gray-900 mb-6 font-poppins">Local Favorites</h4>
+                        <h4 className="font-bold text-gray-900 mb-6 font-poppins">Legal</h4>
                         <ul className="space-y-4 text-sm">
-                            <li><Link href="/menu" className="text-gray-500 hover:text-[var(--brand-primary)]">Best Restaurant & Fast Food in Abu Road</Link></li>
-                            <li><Link href="/menu" className="text-gray-500 hover:text-[var(--brand-primary)]">Best Restaurants in Abu Road</Link></li>
-                            <li><Link href="/menu" className="text-gray-500 hover:text-[var(--brand-primary)]">Pure Veg Food Abu Road</Link></li>
-                            <li><Link href="/menu" className="text-gray-500 hover:text-[var(--brand-primary)]">Fast Food Abu Road</Link></li>
+                            <li><Link href="/privacy-policy" className="text-gray-500 hover:text-[var(--brand-primary)]">Privacy Policy</Link></li>
+                            <li><Link href="/return-policy" className="text-gray-500 hover:text-[var(--brand-primary)]">Return & Refund</Link></li>
+                            <li><Link href="/shipping-policy" className="text-gray-500 hover:text-[var(--brand-primary)]">Shipping Policy</Link></li>
                         </ul>
                     </div>
                 </div>

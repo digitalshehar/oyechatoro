@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import { auth } from '@/auth';
 import { logAudit } from '@/app/lib/audit';
+import { translateToHindi } from '@/app/lib/local-translator';
+import { translateContent } from '@/app/lib/seo-utils';
+import { menuItemSchema } from '@/app/lib/validations/menu';
+import { z } from 'zod';
 
 // GET all menu items - PUBLIC
 export async function GET(request: NextRequest) {
@@ -52,50 +56,12 @@ export async function GET(request: NextRequest) {
                 ...(isTrain && { isTrainMenu: true }),
             },
             include: { category: true },
-            orderBy: { name: 'asc' },
+            orderBy: { order: 'asc' },
         });
 
         return NextResponse.json(items);
     } catch (error) {
         console.error('API Error:', error);
         return NextResponse.json({ error: String(error) }, { status: 500 });
-    }
-}
-
-// POST create menu item - Protected
-export async function POST(request: NextRequest) {
-    try {
-        const session = await auth();
-        if (!session) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
-        const body = await request.json();
-
-        const item = await prisma.menuItem.create({
-            data: {
-                name: body.name,
-                price: body.price,
-                description: body.description,
-                veg: body.veg ?? true,
-                status: body.status || 'Active',
-                image: body.image,
-                isDigitalMenu: body.isDigitalMenu ?? true,
-                isTrainMenu: body.isTrainMenu ?? false,
-                isFeatured: body.isFeatured ?? false,
-                costPrice: body.costPrice,
-                recipe: body.recipe,
-                tags: body.tags || [],
-                categoryId: body.categoryId,
-                slug: body.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') + '-' + Math.floor(Math.random() * 1000),
-            },
-        });
-
-        await logAudit('CREATE_MENU_ITEM', 'MenuItem', item.id, { name: item.name });
-
-        return NextResponse.json(item, { status: 201 });
-    } catch (error) {
-        console.error('Error creating menu item:', error);
-        return NextResponse.json({ error: 'Failed to create menu item' }, { status: 500 });
     }
 }

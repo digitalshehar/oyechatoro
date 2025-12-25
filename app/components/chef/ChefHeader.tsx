@@ -20,11 +20,12 @@ interface ChefHeaderProps {
     newOrderCount?: number;
     onTestSound?: () => void;
     hasHighAllergy?: boolean;
+    avgPrepTime?: number;
 }
 
 export default function ChefHeader({
     soundEnabled, setSoundEnabled, setIsTVMode, setShowPrepModal, setShowWasteModal,
-    viewMode, setViewMode, filter, setFilter, stationFilter, setStationFilter, displayedCount, onLogout, categories = [], newOrderCount = 0, onTestSound, hasHighAllergy = false
+    viewMode, setViewMode, filter, setFilter, stationFilter, setStationFilter, displayedCount, onLogout, categories = [], newOrderCount = 0, onTestSound, hasHighAllergy = false, avgPrepTime = 0
 }: ChefHeaderProps) {
     return (
         <div className="sticky top-0 z-20 bg-gray-50/95 backdrop-blur-sm pb-4 pt-2 -mx-2 px-2 md:mx-0 md:px-0 md:static md:bg-transparent md:p-0 md:mb-6">
@@ -97,6 +98,10 @@ export default function ChefHeader({
                     </div>
                 </div>
                 <div className="hidden md:flex items-center gap-4">
+                    <div className="text-right flex flex-col items-center">
+                        <div className="text-2xl font-bold">{avgPrepTime || '--'}</div>
+                        <div className="text-[8px] text-gray-400 uppercase font-black">Avg Prep (m)</div>
+                    </div>
                     <div className="text-right">
                         <div className="text-2xl font-bold">{displayedCount}</div>
                         <div className="text-xs text-gray-400 uppercase">Count</div>

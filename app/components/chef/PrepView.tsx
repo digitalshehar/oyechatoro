@@ -139,7 +139,11 @@ export default function PrepView({ currentStation = 'all' }: PrepViewProps) {
             {/* Task List */}
             <div className="space-y-3">
                 {tasks
-                    .filter(t => currentStation === 'all' || !t.station || t.station === 'all' || t.station.toLowerCase() === currentStation.toLowerCase())
+                    .filter(t => {
+                        if (currentStation === 'all') return true;
+                        if (!t.station || t.station.toLowerCase() === 'all') return true;
+                        return t.station.toLowerCase() === currentStation.toLowerCase();
+                    })
                     .map(task => (
                         <div
                             key={task.id}
@@ -154,9 +158,14 @@ export default function PrepView({ currentStation = 'all' }: PrepViewProps) {
                                 onChange={() => toggleTask(task.id)}
                                 className="w-6 h-6 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
                             />
-                            <span className={`flex-1 text-lg ${task.completed ? 'line-through text-gray-500' : 'font-bold text-gray-800'}`}>
-                                {task.text}
-                            </span>
+                            <div className="flex-1 flex flex-col">
+                                <span className={`text-lg ${task.completed ? 'line-through text-gray-500' : 'font-bold text-gray-800'}`}>
+                                    {task.text}
+                                </span>
+                                {task.station && task.station !== 'all' && (
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{task.station} Station</span>
+                                )}
+                            </div>
                             <button
                                 onClick={() => deleteTask(task.id)}
                                 className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"

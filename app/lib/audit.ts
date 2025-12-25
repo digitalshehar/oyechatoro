@@ -12,7 +12,8 @@ export type AuditAction =
     | 'CREATE_POST'
     | 'UPDATE_POST'
     | 'DELETE_POST'
-    | 'UPDATE_CUSTOMER';
+    | 'UPDATE_CUSTOMER'
+    | 'LOG_WASTAGE';
 
 export async function logAudit(
     action: AuditAction,

@@ -7,7 +7,7 @@ export async function GET() {
     try {
         const categories = await prisma.menuCategory.findMany({
             include: { items: true },
-            orderBy: { name: 'asc' },
+            orderBy: { order: 'asc' },
         });
 
         return NextResponse.json(categories);
@@ -28,7 +28,10 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         const category = await prisma.menuCategory.create({
-            data: { name: body.name },
+            data: {
+                name: body.name,
+                order: body.order || 0
+            },
         });
 
         return NextResponse.json(category, { status: 201 });

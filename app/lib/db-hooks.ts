@@ -31,10 +31,25 @@ const fetchWithRetry = async (url: string, options: RequestInit = {}, retries = 
 
 // ==================== TYPES ====================
 
+
+export interface OrderItem {
+    id?: string;
+    menuItemId?: string;
+    name: string;
+    price: number;
+    quantity: number;
+    note?: string;
+    notes?: string;
+    modifiers?: { name: string; price: number }[];
+    isReady?: boolean;
+    image?: string;
+}
+
 export interface Order {
     id: number;
     customer: string;
-    items: any[];
+    items: OrderItem[];
+
     total: number;
     status: 'Pending' | 'Cooking' | 'Ready' | 'Completed' | 'Cancelled';
     type: 'DineIn' | 'Takeaway' | 'Delivery';
@@ -823,7 +838,7 @@ export function useDbInventory() {
             const res = await fetch(`${API_BASE}/inventory/wastage`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ itemId: id, quantity: qty, reason })
+
             });
 
             if (res.ok) {
@@ -1342,7 +1357,6 @@ export function useDbCart() {
             const res = await fetch(`${API_BASE}/cart/items/${itemId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ quantity })
             });
             if (res.ok) {
                 // Optimistic update or refetch

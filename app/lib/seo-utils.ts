@@ -38,7 +38,7 @@ export const getGeminiSeoCopy = async (prompt: string, apiKey: string) => {
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const fullPrompt = `You are the expert social media manager for "Oye Chatoro", a popular fast-food brand in Abu Road, India. 
         Brand Voice: Energetic, fun, Hinglish (Hindi + English), appetizing, and engaging.
@@ -74,7 +74,7 @@ export const generateBlogPostContent = async (topic: string, apiKey: string) => 
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const prompt = `You are a professional food blogger and SEO expert writing for "Oye Chatoro", the best fast-food joint in Abu Road.
         Brand Voice: Friendly, slightly desi (Hinglish where appropriate), helpful, and very appetizing.
@@ -126,7 +126,7 @@ export const generateReviewResponse = async (reviewText: string, rating: number,
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const prompt = `You are the manager of "Oye Chatoro", a popular fast-food restaurant in Abu Road.
         Brand Voice: Warm, appreciative (for good reviews), professional yet humble (for bad reviews), and personalized.
@@ -154,7 +154,7 @@ export const analyzeReviewSentiment = async (reviews: string[], apiKey: string) 
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const prompt = `You are a business consultant for "Oye Chatoro" (Fast Food Restaurant, Abu Road).
         Analyze the following customer reviews and provide a strategic summary.
@@ -204,7 +204,7 @@ export async function analyzeBusinessPerformance(data: any, apiKey: string) {
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -235,7 +235,7 @@ export async function getInventoryPredictions(inventory: any[], orders: any[], a
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -262,7 +262,7 @@ export async function analyzeWastage(logs: any[], apiKey: string) {
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -281,12 +281,15 @@ export async function analyzeCustomerSegments(customers: any[], apiKey: string) 
 
     const prompt = `
     Analyze this list of customers and segment them into groups: "VIP", "Loyal", "Churn Risk", "New", and "Hibernating".
-    Base it on:
-    - VIP: High totalSpent (>2000) and high totalOrders.
-    - Loyal: Frequent orders but moderate spending.
-    - Churn Risk: High totalSpent/Orders but no visit in >30 days.
-    - New: Recent visit but low totalOrders.
-    - Hibernating: Low frequency and no visit in >60 days.
+    
+    Segmentation Rules:
+    - VIP: High totalSpent (>5000) OR (>2000 AND >10 orders).
+    - Loyal: Frequent orders (>5) but moderate spending, visited in the last 15 days.
+    - Churn Risk: (VIP or Loyal) but NO visit in the last 20-30 days. These are people we are about to lose.
+    - New: First visit was in the last 7 days.
+    - Hibernating: Low frequency AND no visit in >60 days.
+    
+    Current Date: ${new Date().toLocaleDateString()}
 
     Return a JSON object where keys are customer IDs and values are strings (the segment name).
 
@@ -295,7 +298,7 @@ export async function analyzeCustomerSegments(customers: any[], apiKey: string) 
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -327,7 +330,7 @@ export async function generatePersonalizedOffer(customer: any, menu: any[], apiK
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -370,7 +373,7 @@ export async function getDynamicPricingSuggestions(menuItems: any[], orders: any
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -402,7 +405,7 @@ export async function translateContent(content: { name: string, description?: st
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
@@ -439,7 +442,7 @@ export async function detectAllergens(note: string, apiKey: string) {
     while (attempts < 3) {
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: 'v1' });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" }, { apiVersion: 'v1' });
 
             const result = await model.generateContent(prompt);
             const response = await result.response;
@@ -478,7 +481,7 @@ export async function getPrepForecasting(items: any[], orders: any[], apiKey: st
     while (attempts < 3) {
         try {
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
             const result = await model.generateContent(prompt);
             const response = await result.response;
