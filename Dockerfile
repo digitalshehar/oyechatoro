@@ -9,9 +9,8 @@ RUN npm install
 
 # Copy source and build
 COPY . .
-# We need NEXT_PUBLIC_ env vars at build time if any exist
-# RUN npm run build
-# Using a slightly safer build command
+# Use dummy URL for build-time prisma generation so it doesn't try to connect to Neon
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN npx prisma generate && npx next build --webpack
 
 # Stage 2: Runner
