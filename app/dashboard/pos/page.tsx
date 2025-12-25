@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useDbMenu, useDbOrders, useDbCustomers, MenuItem, Order, Customer } from '../../lib/db-hooks';
 import { useDbSettings as useSettings } from '../../lib/db-hooks';
 import ModifierModal from '../../components/pos/ModifierModal';
-import CheckoutModal from '../../components/pos/CheckoutModal';
-import SalesModal from '../../components/pos/SalesModal';
+import CheckoutModalComponent from '../../components/pos/CheckoutModal';
+import SalesModalComponent from '../../components/pos/SalesModal';
 import OnlineOrderModal from '../../components/pos/OnlineOrderModal';
 import RecentOrdersModal from '../../components/pos/RecentOrdersModal';
 import CustomerSearchModal from '../../components/pos/CustomerSearchModal';
@@ -354,44 +354,30 @@ export default function POSPage() {
                 </div>
             )}
 
-            <CheckoutModal show={showCheckout} onClose={() => setShowCheckout(false)} cartTotal={cartTotal} onConfirm={handleCheckout} />
-            <SalesModal show={showSalesModal} onClose={() => setShowSalesModal(false)} {...todaySales} />
+            <CheckoutModalComponent
+                show={showCheckout}
+                onClose={() => setShowCheckout(false)}
+                cartTotal={cartTotal}
+                onConfirm={handleCheckout}
+                showSuccess={showSuccess}
+                cartCount={cartCount}
+                subtotal={subtotal}
+                discountAmount={discountAmount}
+                parcelAmount={parcelAmount}
+                tipAmount={tipAmount}
+                paymentMethod={paymentMethod}
+                setPaymentMethod={setPaymentMethod}
+                amountTendered={amountTendered}
+                setAmountTendered={setAmountTendered}
+                taxAmount={0}
+                changeAmount={changeAmount}
+                onPayLater={handlePayLater}
+            />
+            <SalesModalComponent show={showSalesModal} onClose={() => setShowSalesModal(false)} totalRevenue={todaySales.totalRevenue} cashAmount={todaySales.cashAmount} upiAmount={todaySales.upiAmount} totalOrders={todaySales.totalOrders} />
         </div>
     );
 }
 
-function CheckoutModal({ show, onClose, cartTotal, onConfirm }: any) {
-    if (!show) return null;
-    return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
-                <h2 className="text-2xl font-bold mb-6 pt-2">Complete Payment</h2>
-                <div className="text-4xl font-black text-center mb-8 text-orange-500">₹{cartTotal}</div>
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                    <button onClick={onConfirm} className="p-4 bg-gray-800 text-white rounded-xl font-bold">CASH</button>
-                    <button onClick={onConfirm} className="p-4 border-2 border-gray-800 rounded-xl font-bold">ONLINE/UPI</button>
-                </div>
-                <button onClick={onClose} className="w-full py-3 text-gray-500 font-bold">Cancel</button>
-            </div>
-        </div>
-    );
-}
 
-function SalesModal({ show, onClose, totalRevenue, cashAmount, upiAmount, totalOrders }: any) {
-    if (!show) return null;
-    return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-                <h2 className="text-2xl font-bold mb-6">Today's Sales</h2>
-                <div className="space-y-4">
-                    <div className="flex justify-between font-bold text-lg"><span>Total Sales</span><span>₹{totalRevenue}</span></div>
-                    <div className="flex justify-between text-gray-600"><span>Cash</span><span>₹{cashAmount}</span></div>
-                    <div className="flex justify-between text-gray-600"><span>Online</span><span>₹{upiAmount}</span></div>
-                    <hr />
-                    <div className="flex justify-between text-gray-600"><span>Total Orders</span><span>{totalOrders}</span></div>
-                </div>
-                <button onClick={onClose} className="w-full mt-8 py-4 bg-gray-100 rounded-xl font-bold">Close</button>
-            </div>
-        </div>
-    );
-}
+
+
