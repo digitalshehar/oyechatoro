@@ -59,7 +59,7 @@ export default function POSPage() {
     const [customerName, setCustomerName] = useState('');
     const [customerPhone, setCustomerPhone] = useState('');
     const [showCheckout, setShowCheckout] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'UPI' | 'Card'>('Cash');
+    const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Online'>('Cash');
     const [showSuccess, setShowSuccess] = useState(false);
 
     // Existing Features State
