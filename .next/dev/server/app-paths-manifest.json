@@ -1,3 +1,14 @@
 {
-  "/page": "app/page.js"
+  "/api/menu/route": "app/api/menu/route.js",
+  "/api/menu/categories/route": "app/api/menu/categories/route.js",
+  "/api/orders/route": "app/api/orders/route.js",
+  "/api/inventory/logs/route": "app/api/inventory/logs/route.js",
+  "/api/inventory/route": "app/api/inventory/route.js",
+  "/api/customers/route": "app/api/customers/route.js",
+  "/dashboard/pos/page": "app/dashboard/pos/page.js",
+  "/menu/page": "app/menu/page.js",
+  "/blog/[slug]/page": "app/blog/[slug]/page.js",
+  "/dashboard/kitchen/page": "app/dashboard/kitchen/page.js",
+  "/dashboard/menu/page": "app/dashboard/menu/page.js",
+  "/dashboard/overview/page": "app/dashboard/overview/page.js"
 }

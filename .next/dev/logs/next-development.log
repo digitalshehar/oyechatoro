@@ -50,3 +50,364 @@
 [02:23:00.783] Browser WARN    Image with src "https://images.unsplash.com/photo-1546069901-ba9599a7e63c" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
 [02:23:00.783] Browser WARN    Image with src "/images/menu/chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
 [02:23:00.783] Browser WARN    Image with src "/images/menu/basket_chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:06:54.527] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[05:10:59.108] Browser ERROR   ./app/page.tsx
+Error:   × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\page.tsx:948:1]
+ 945 │                 </div>
+ 946 │ 
+ 947 │                 <MobileNav />
+ 948 │             </>
+     ·               ─
+ 949 │             );
+ 950 │ }
+     ╰────
+  × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\page.tsx:949:1]
+ 946 │ 
+ 947 │                 <MobileNav />
+ 948 │             </>
+ 949 │             );
+     ·             ─
+ 950 │ }
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/page.tsx
+[05:11:48.486] Browser ERROR   uncaughtError: ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\page.tsx:948:1]
+ 945 │                 </div>
+ 946 │ 
+ 947 │                 <MobileNav />
+ 948 │             </>
+     ·               ─
+ 949 │             );
+ 950 │ }
+     ╰────
+  × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\page.tsx:949:1]
+ 946 │ 
+ 947 │                 <MobileNav />
+ 948 │             </>
+ 949 │             );
+     ·             ─
+ 950 │ }
+     ╰────
+
+
+Caused by:
+    Syntax Error
+[05:11:48.768] Browser ERROR   ./app/page.tsx
+Error:   × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\page.tsx:953:1]
+ 950 │                 </div>
+ 951 │ 
+ 952 │                 <MobileNav />
+ 953 │             </>
+     ·               ─
+ 954 │             );
+ 955 │ }
+     ╰────
+  × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\page.tsx:954:1]
+ 951 │ 
+ 952 │                 <MobileNav />
+ 953 │             </>
+ 954 │             );
+     ·             ─
+ 955 │ }
+     ╰────
+
+Caused by:
+    Syntax Error
+[05:12:12.606] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[05:12:13.791] Browser WARN    Image with src "/logowhite.PNG" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[05:12:13.791] Browser WARN    Image with src "/logowhite.PNG" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:12:13.791] Browser WARN    Image with src "/fssai.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:12:41.923] Browser WARN    Image with src "/images/menu/chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:12:41.923] Browser WARN    Image with src "/images/menu/basket_chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:12:43.861] Browser WARN    Image with src "/images/menu/kachori.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:12:47.259] Browser WARN    Image with src "https://images.unsplash.com/photo-1546069901-ba9599a7e63c" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:13:02.716] Browser ERROR   ./app/dashboard/pos/page.tsx
+Error:   × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\dashboard\pos\page.tsx:727:1]
+ 724 │                                 <select
+ 725 │                                     value={selectedStaff}
+ 726 │                                     onChange={handleStaffChange}
+ 727 │                             </button>
+     ·                             ─
+ 728 │                         </div>
+ 729 │                     </div>
+ 729 │                 </div>
+     ╰────
+  × Unterminated regexp literal
+     ╭─[E:\oyechatorocomingsoon\app\dashboard\pos\page.tsx:727:1]
+ 724 │                                 <select
+ 725 │                                     value={selectedStaff}
+ 726 │                                     onChange={handleStaffChange}
+ 727 │                             </button>
+     ·                              ────────
+ 728 │                         </div>
+ 729 │                     </div>
+ 729 │                 </div>
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/dashboard/pos/page.tsx
+[05:13:04.920] Browser ERROR   ./app/dashboard/pos/page.tsx
+Error:   × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\dashboard\pos\page.tsx:727:1]
+ 724 │                                 <select
+ 725 │                                     value={selectedStaff}
+ 726 │                                     onChange={handleStaffChange}
+ 727 │                             </button>
+     ·                             ─
+ 728 │                         </div>
+ 729 │                     </div>
+ 729 │                 </div>
+     ╰────
+  × Unterminated regexp literal
+     ╭─[E:\oyechatorocomingsoon\app\dashboard\pos\page.tsx:727:1]
+ 724 │                                 <select
+ 725 │                                     value={selectedStaff}
+ 726 │                                     onChange={handleStaffChange}
+ 727 │                             </button>
+     ·                              ────────
+ 728 │                         </div>
+ 729 │                     </div>
+ 729 │                 </div>
+     ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/dashboard/pos/page.tsx
+[05:13:10.213] Browser ERROR   uncaughtError: ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\dashboard\pos\page.tsx:727:1]
+ 724 │                                 <select
+ 725 │                                     value={selectedStaff}
+ 726 │                                     onChange={handleStaffChange}
+ 727 │                             </button>
+     ·                             ─
+ 728 │                         </div>
+ 729 │                     </div>
+ 729 │                 </div>
+     ╰────
+  × Unterminated regexp literal
+     ╭─[E:\oyechatorocomingsoon\app\dashboard\pos\page.tsx:727:1]
+ 724 │                                 <select
+ 725 │                                     value={selectedStaff}
+ 726 │                                     onChange={handleStaffChange}
+ 727 │                             </button>
+     ·                              ────────
+ 728 │                         </div>
+ 729 │                     </div>
+ 729 │                 </div>
+     ╰────
+
+
+Caused by:
+    Syntax Error
+[05:13:10.375] Browser ERROR   ./app/dashboard/pos/page.tsx
+Error:   × Expression expected
+     ╭─[E:\oyechatorocomingsoon\app\dashboard\pos\page.tsx:727:1]
+ 724 │                                 <select
+ 725 │                                     value={selectedStaff}
+ 726 │                                     onChange={handleStaffChange}
+ 727 │                             </button>
+     ·                             ─
+ 728 │                         </div>
+ 729 │                     </div>
+ 729 │                 </div>
+     ╰────
+  × Unterminated regexp literal
+     ╭─[E:\oyechatorocomingsoon\app\dashboard\pos\page.tsx:727:1]
+ 724 │                                 <select
+ 725 │                                     value={selectedStaff}
+ 726 │                                     onChange={handleStaffChange}
+ 727 │                             </button>
+     ·                              ────────
+ 728 │                         </div>
+ 729 │                     </div>
+ 729 │                 </div>
+     ╰────
+
+Caused by:
+    Syntax Error
+[05:13:40.394] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[05:13:40.964] Browser WARN    Image with src "/logowhite.PNG" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[05:15:00.313] Browser WARN    Image with src "/logowhite.PNG" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:15:00.313] Browser WARN    Image with src "/fssai.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:15:45.200] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[05:15:45.508] Browser WARN    Image with src "/logowhite.PNG" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[05:15:45.975] Browser WARN    Image with src "/logowhite.PNG" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:15:46.092] Browser WARN    Image with src "/fssai.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:15:46.454] Browser WARN    Image with src "https://images.unsplash.com/photo-1546069901-ba9599a7e63c" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:15:46.454] Browser WARN    Image with src "/images/menu/kachori.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:15:46.454] Browser WARN    Image with src "/images/menu/chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:19:02.319] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[05:19:37.374] Browser ERROR   {}
+[05:21:22.920] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+
+Import trace for requested module:
+./app/components/MobileNav.tsx
+./app/components/layout/SiteLayout.tsx
+[05:21:49.108] Browser ERROR   uncaughtError: ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:21:49.774] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:21:49.774] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
+[05:22:30.849] Browser ERROR   uncaughtError: ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:22:30.939] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:22:30.939] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
+[05:22:31.785] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:22:31.785] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
+[05:22:32.665] Browser ERROR   uncaughtError: ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:22:32.767] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:22:32.767] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
+[05:22:32.781] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:22:32.781] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
+[05:23:24.797] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+
+Import trace for requested module:
+./app/components/MobileNav.tsx
+./app/components/layout/SiteLayout.tsx
+[05:23:24.797] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
+[05:23:28.038] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+
+Import trace for requested module:
+./app/components/MobileNav.tsx
+./app/components/layout/SiteLayout.tsx
+[05:23:28.038] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
