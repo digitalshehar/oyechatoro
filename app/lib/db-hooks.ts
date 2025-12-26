@@ -854,8 +854,9 @@ export function useDbInventory() {
     // Derived state for backward compatibility if UI uses wastageLogs specifically
     const wastageLogs = stockLogs.filter(l => l.type === 'WASTAGE');
 
-    return { inventory, loading, error, addItem, updateItem, deleteItem, stockLogs, wastageLogs, recordWastage, refetch: fetchInventory };
+    return { inventory, stockLogs, loading, error, addItem, fetchInventory };
 }
+
 
 // ==================== ANALYTICS API HOOKS ====================
 

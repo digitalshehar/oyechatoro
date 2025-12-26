@@ -411,3 +411,110 @@ Module not found: Can't resolve './components/MobileNav'
   11 |     const { posts, loading } = useDbBlog();
 
 https://nextjs.org/docs/messages/module-not-found
+[05:23:49.515] Browser ERROR   uncaughtError: ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:23:49.621] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:23:49.621] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
+[05:25:09.470] Browser ERROR   uncaughtError: ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:25:09.576] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+[05:25:09.576] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
+[05:26:29.767] Browser ERROR   ./app/components/MobileNav.tsx
+Error: 
+
+Caused by:
+    0: Failed to read source code from E:\oyechatorocomingsoon\app\components\MobileNav.tsx
+    1: The system cannot find the file specified. (os error 2)
+
+Import trace for requested module:
+./app/components/MobileNav.tsx
+./app/components/layout/SiteLayout.tsx
+[05:26:29.767] Browser ERROR   ./app/page.tsx:8:1
+Module not found: Can't resolve './components/MobileNav'
+   6 | import { useFavorites, useOffers } from './lib/storage';
+   7 | import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+>  8 | import MobileNav from './components/MobileNav';
+     | ^
+   9 |
+  10 | function RecentBlogPosts() {
+  11 |     const { posts, loading } = useDbBlog();
+
+https://nextjs.org/docs/messages/module-not-found
+[05:26:53.385] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[05:26:57.232] Browser WARN    Image with src "/logowhite.PNG" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:26:57.232] Browser WARN    Image with src "/fssai.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:27:12.150] Browser WARN    Image with src "https://images.unsplash.com/photo-1546069901-ba9599a7e63c" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:27:17.772] Browser WARN    Image with src "/images/menu/kachori.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:27:17.772] Browser WARN    Image with src "/images/menu/chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:27:17.772] Browser WARN    Image with src "/images/menu/basket_chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[05:34:17.773] Browser ERROR   ./app/lib/db-hooks.ts
+Module parse failed: Identifier 'useDbReviews' has already been declared (1447:16)
+| }
+| // ==================== REVIEWS API HOOKS ====================
+> export function useDbReviews(fallbackReviews = []) {
+|     const [reviews, setReviews] = useState([]);
+|     const [loading, setLoading] = useState(true);
+
+Import trace for requested module:
+./app/lib/db-hooks.ts
+./app/page.tsx
+[05:34:18.770] Browser ERROR   ./app/lib/db-hooks.ts
+Module parse failed: Identifier 'useDbReviews' has already been declared (1447:16)
+| }
+| // ==================== REVIEWS API HOOKS ====================
+> export function useDbReviews(fallbackReviews = []) {
+|     const [reviews, setReviews] = useState([]);
+|     const [loading, setLoading] = useState(true);
+
+Import trace for requested module:
+./app/lib/db-hooks.ts
+./app/page.tsx
+[05:34:31.355] Browser ERROR   ./app/lib/db-hooks.ts
+Module parse failed: Identifier 'useDbReviews' has already been declared (1447:16)
+| }
+| // ==================== REVIEWS API HOOKS ====================
+> export function useDbReviews(fallbackReviews = []) {
+|     const [reviews, setReviews] = useState([]);
+|     const [loading, setLoading] = useState(true);
+
+Import trace for requested module:
+./app/lib/db-hooks.ts
+./app/page.tsx
