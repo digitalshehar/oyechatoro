@@ -43,3 +43,10 @@
 [01:23:02.776] Browser WARN    Image with src "/images/menu/basket_chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
 [01:23:02.776] Browser WARN    Image with src "/images/menu/chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
 [01:23:04.785] Browser WARN    Image with src "https://images.unsplash.com/photo-1546069901-ba9599a7e63c" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[02:22:55.337] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:22:58.684] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[02:23:00.783] Browser WARN    Image with src "/logowhite.PNG" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[02:23:00.783] Browser WARN    Image with src "/fssai.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[02:23:00.783] Browser WARN    Image with src "https://images.unsplash.com/photo-1546069901-ba9599a7e63c" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[02:23:00.783] Browser WARN    Image with src "/images/menu/chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[02:23:00.783] Browser WARN    Image with src "/images/menu/basket_chaat.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes

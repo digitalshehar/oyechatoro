@@ -4,10 +4,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useFavorites, useOffers } from './lib/storage';
-import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart, useDbReviews, useDbCms, Review } from './lib/db-hooks';
-
-import OffersCarousel from './components/OffersCarousel';
-import { Footer } from './components/home';
+import { useDbCustomer, useDbMenu, useDbBlog, MenuItem, useDbCart } from './lib/db-hooks';
+import MobileNav from './components/MobileNav';
 
 function RecentBlogPosts() {
     const { posts, loading } = useDbBlog();
@@ -58,6 +56,17 @@ function RecentBlogPosts() {
             ))}
         </div>
     );
+}
+
+// Types
+// Types
+interface Review {
+    id: string;
+    name: string;
+    avatar: string | null;
+    rating: number;
+    comment: string;
+    date: string | Date; // API returns string, we might convert
 }
 
 // Category Icons Map
@@ -113,8 +122,7 @@ export default function Home() {
     const [activeCategory, setActiveCategory] = useState('cat_chaat');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
-
-    // UI State
+    const [reviews, setReviews] = useState<Review[]>([]);
     const [year, setYear] = useState(2024);
     const [scrollY, setScrollY] = useState(0);
     const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set());
@@ -127,13 +135,27 @@ export default function Home() {
     const { favorites, toggleFavorite } = useFavorites();
     const { offers } = useOffers();
     const { items: dbItems, categories: dbCategories, loading } = useDbMenu();
-    const { reviews } = useDbReviews(FALLBACK_REVIEWS);
-    const { content: cms } = useDbCms('home');
 
     const activeOffers = offers.filter(o => o.status === 'Active');
 
     useEffect(() => {
         setYear(new Date().getFullYear());
+
+        // Fetch reviews from API
+        fetch('/api/reviews')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setReviews(data);
+                } else {
+                    console.error('Failed to load reviews');
+                    setReviews(FALLBACK_REVIEWS); // Fallback if API fails
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                setReviews(FALLBACK_REVIEWS);
+            });
 
         const handleScroll = () => {
             setScrollY(window.scrollY);
@@ -172,10 +194,9 @@ export default function Home() {
     }, []);
 
     // Menu Filter - Show only 8 items on homepage
+    // Filter items first
     const activeItems = useMemo(() => {
-        return dbItems
-            .filter(item => item.status === 'Active' && item.veg)
-            .sort((a, b) => a.price - b.price);
+        return dbItems.filter(item => item.status === 'Active' && item.veg);
     }, [dbItems]);
 
     const allFilteredMenu = useMemo(() => {
@@ -201,18 +222,20 @@ export default function Home() {
     const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-    const handleDirectOrder = async () => {
+    const checkout = async () => {
         if (cart.length === 0) return;
 
+        // Validate mobile number
         if (!customerMobile || customerMobile.length < 10) {
             alert('Please enter a valid 10-digit mobile number');
             return;
         }
 
+        // 1. Submit to API so it appears in Dashboard
         try {
             const orderData = {
                 customer: user ? user.name : 'Online Customer',
-                items: cart.map(i => ({ id: i.menuItemId, name: i.name, quantity: i.quantity, price: i.price })),
+                items: cart.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
                 total: cartTotal,
                 type: 'Delivery',
                 mobile: customerMobile,
@@ -226,57 +249,25 @@ export default function Home() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)
             });
-
-            alert('✅ Order Placed Successfully! We will contact you shortly.');
-            clearCart();
-            setIsCartOpen(false);
+            console.log('✅ Order submitted to dashboard');
         } catch (e) {
             console.error('Failed to submit order:', e);
-            alert('Something went wrong. Please try again or use WhatsApp.');
-        }
-    };
-
-    const handleWhatsAppOrder = async () => {
-        if (cart.length === 0) return;
-
-        if (!customerMobile || customerMobile.length < 10) {
-            alert('Please enter a valid 10-digit mobile number');
-            return;
         }
 
-        try {
-            const orderData = {
-                customer: user ? user.name : 'WhatsApp Customer',
-                items: cart.map(i => ({ id: i.menuItemId, name: i.name, quantity: i.quantity, price: i.price })),
-                total: cartTotal,
-                type: 'Delivery',
-                mobile: customerMobile,
-                paymentMethod: paymentMethod === 'COD' ? 'Cash' : paymentMethod === 'UPI' ? 'UPI' : 'Online',
-                paymentStatus: 'Unpaid',
-                status: 'Pending'
-            };
-
-            fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
-        } catch (e) {
-            console.error(e);
-        }
-
+        // 2. Construct WhatsApp Message
         let message = "New Order from Website:\n\n";
         cart.forEach(item => {
             message += `- ${item.quantity}x ${item.name} (₹${item.price * item.quantity})\n`;
         });
         message += `\n*Total: ₹${cartTotal}*`;
         message += `\n📱 Mobile: ${customerMobile}`;
-        message += `\n💳 Payment: ${paymentMethod}`;
 
+        // 3. Redirect to WhatsApp
         const phone = '919509913792';
         const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
 
+        // 4. Clear Cart
         clearCart();
         setIsCartOpen(false);
     };
@@ -304,10 +295,9 @@ export default function Home() {
                         <div className="relative w-12 h-12 mr-2 transform group-hover:rotate-12 transition-transform duration-300">
                             <Image
                                 src="/logowhite.PNG"
-                                alt="Oye Chatoro - Best Restaurant & Pure Veg Food in Abu Road"
+                                alt="Oye Chatoro"
                                 fill
                                 className="object-contain drop-shadow-lg"
-                                sizes="48px"
                                 priority
                             />
                         </div>
@@ -337,15 +327,17 @@ export default function Home() {
                         <button onClick={() => { setIsCartOpen(true); setIsMobileMenuOpen(false); }} className="btn btn-primary md:hidden w-full mt-4">Cart ({cartCount})</button>
                         <a href="https://wa.me/919509913792" className="btn btn-primary hidden md:inline-flex shadow-lg shadow-orange-200 hover:shadow-orange-300 transform hover:-translate-y-0.5 transition-all" target="_blank">Order Now 🚀</a>
                     </nav>
-                    <button className="mobile-menu-btn md:hidden z-50 relative" aria-label="Menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-                        <span className="text-2xl">{isMobileMenuOpen ? '✕' : '☰'}</span>
+                    <button className="mobile-menu-btn md:hidden" aria-label="Menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                        <span className="text-2xl">☰</span>
                     </button>
                 </div>
             </header>
 
             <main>
                 {/* Hero Section */}
+                {/* Hero Section - Global Shudh Desi Style */}
                 <section id="home" className={`hero min-h-[70vh] md:min-h-[85vh] flex items-center relative overflow-hidden ${visibleSections.has('home') ? 'animate-in' : ''}`}>
+                    {/* Background Pattern */}
                     <div className="absolute inset-0 bg-[#fff7ed] opacity-50 z-0">
                         <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#991b1b 1px, transparent 1px)', backgroundSize: '30px 30px', opacity: 0.05 }}></div>
                     </div>
@@ -356,14 +348,16 @@ export default function Home() {
                                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                                 100% Pure Vegetarian
                             </span>
-                            <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6 text-gray-900" dangerouslySetInnerHTML={{ __html: cms.heroTitle || 'Best Restaurant in <br/> Abu Road.' }}>
+                            <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6 text-gray-900">
+                                <span className="text-[#991b1b]">Best Restaurant</span> in <br />
+                                Abu Road.
                             </h1>
                             <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-lg font-medium">
-                                {cms.heroDesc || "Experience the Abu Road famous food. From spicy Chaats to rich Thalis, we serve tradition on a plate."}
+                                Experience the <strong>Abu Road famous food</strong>. From spicy Chaats to rich Thalis, we serve tradition on a plate.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4">
-                                <a href={cms.ctaLink || "#menu"} className="btn btn-primary text-lg px-8 py-4 rounded-full shadow-xl shadow-red-900/20 hover:shadow-2xl hover:scale-105 transition-all text-center">
-                                    {cms.ctaText || "Order Now 🥘"}
+                                <a href="#menu" className="btn btn-primary text-lg px-8 py-4 rounded-full shadow-xl shadow-red-900/20 hover:shadow-2xl hover:scale-105 transition-all text-center">
+                                    Order Now 🥘
                                 </a>
                                 <a href="#offers" className="btn btn-outline text-lg px-8 py-4 rounded-full border-2 hover:bg-red-50 transition-all text-center">
                                     View Offers %
@@ -374,13 +368,7 @@ export default function Home() {
                                 <div className="flex -space-x-4">
                                     {[1, 2, 3, 4].map(i => (
                                         <div key={i} className="w-12 h-12 rounded-full border-4 border-white shadow-md overflow-hidden">
-                                            <Image
-                                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 5}`}
-                                                alt="User"
-                                                width={48}
-                                                height={48}
-                                                unoptimized
-                                            />
+                                            <Image src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 5}`} alt="User" width={48} height={48} />
                                         </div>
                                     ))}
                                 </div>
@@ -431,10 +419,10 @@ export default function Home() {
                     <div className="container">
                         <div className="features-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                             {[
-                                { icon: '🥗', title: cms.feature1Title || 'Fresh Ingredients', desc: cms.feature1Desc || 'Locally sourced, farm-fresh veggies daily.' },
-                                { icon: '🔥', title: cms.feature2Title || 'Live Kitchen', desc: cms.feature2Desc || 'Watch your food being prepared with love.' },
-                                { icon: '⭐', title: cms.feature3Title || 'Top Rated', desc: cms.feature3Desc || 'Rated 5 Stars by our lovely customers.' },
-                                { icon: '⚡', title: cms.feature4Title || 'Fast Service', desc: cms.feature4Desc || 'Quick bites to satisfy your cravings instantly.' }
+                                { icon: '🥗', title: 'Fresh Ingredients', desc: 'Locally sourced, farm-fresh veggies daily.' },
+                                { icon: '🔥', title: 'Live Kitchen', desc: 'Watch your food being prepared with love.' },
+                                { icon: '⭐', title: 'Top Rated', desc: 'Rated 5 Stars by our lovely customers.' },
+                                { icon: '⚡', title: 'Fast Service', desc: 'Quick bites to satisfy your cravings instantly.' }
                             ].map((feature, idx) => (
                                 <div key={idx} className="feature-card glass-card p-6 md:p-8 rounded-3xl border border-gray-100 hover:border-orange-200 transition-all duration-300 group">
                                     <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform duration-300 shadow-sm">
@@ -457,16 +445,73 @@ export default function Home() {
                             <p className="section-subtitle text-xl text-gray-500">Limited time deals curated just for you</p>
                         </div>
 
-                        <OffersCarousel theme="light" />
+                        {/* Desktop Grid View */}
+                        <div className="hidden md:grid offers-grid grid-cols-3 gap-8">
+                            {activeOffers.map((offer, index) => (
+                                <div key={offer.id} className="offer-card glass-card p-8 rounded-3xl relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border border-white/50" style={{ animationDelay: `${index * 0.1}s` }}>
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-400 to-red-500 opacity-10 rounded-bl-full group-hover:scale-150 transition-transform duration-500"></div>
+                                    <div className="offer-badge bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold inline-block mb-4 shadow-md">{offer.discount} OFF</div>
+                                    <h3 className="offer-title text-3xl font-black mb-2 text-gray-800">{offer.code}</h3>
+                                    <p className="offer-desc text-gray-600 mb-6">{offer.description || 'Special discount'}</p>
+                                    <div className="offer-footer flex justify-between items-center border-t pt-4 border-gray-100">
+                                        <span className="offer-validity text-xs font-bold text-gray-400">Valid: {offer.expiry}</span>
+                                        <a href="https://wa.me/919509913792" className="btn btn-sm btn-primary rounded-xl px-4 py-2 text-sm shadow-lg shadow-orange-100">Claim Now →</a>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Mobile Story-Style View */}
+                        <div className="md:hidden overflow-x-auto snap-x snap-mandatory -mx-4 px-4 pb-8 no-scrollbar">
+                            <div className="flex gap-4 w-max">
+                                {activeOffers.map((offer, index) => (
+                                    <div
+                                        key={offer.id}
+                                        className={`snap-center flex-shrink-0 w-[280px] h-[400px] rounded-3xl p-8 flex flex-col justify-between text-white shadow-2xl relative overflow-hidden bg-gradient-to-br ${offer.bgColor || 'from-orange-500 to-red-600'}`}
+                                        style={{ animationDelay: `${index * 0.1}s` }}
+                                    >
+                                        {/* Decorative circles */}
+                                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
+                                        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+
+                                        <div className="relative z-10">
+                                            <div className="inline-block bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold mb-6 border border-white/20">
+                                                🔥 TRENDING
+                                            </div>
+                                            <div className="text-6xl font-black mb-4 drop-shadow-lg tracking-tighter">{offer.discount}</div>
+                                            <h3 className="text-3xl font-bold mb-2 leading-tight">{offer.code}</h3>
+                                            <p className="text-white/90 text-sm leading-relaxed font-medium">{offer.description || 'Special discount just for you!'}</p>
+                                        </div>
+
+                                        <div className="relative z-10">
+                                            <a
+                                                href="https://wa.me/919509913792"
+                                                className="block w-full bg-white text-gray-900 text-center font-bold py-4 rounded-2xl shadow-xl hover:scale-105 transition-transform active:scale-95"
+                                            >
+                                                Order Now 🚀
+                                            </a>
+                                            <p className="text-white/60 text-xs mt-4 text-center font-medium">Valid until {offer.expiry}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {activeOffers.length === 0 && (
+                            <div className="text-center py-12 text-gray-400 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+                                <p className="text-lg font-medium">No active offers right now. Check back soon! 🎁</p>
+                            </div>
+                        )}
                     </div>
                 </section>
 
                 {/* Menu Section */}
+                {/* Menu Section - Global Shudh Desi Style */}
                 <section id="menu" className={`section menu-section py-12 md:py-20 bg-gray-50 ${visibleSections.has('menu') ? 'animate-in' : ''}`}>
                     <div className="container">
                         <div className="text-center mb-12">
                             <span className="text-[#991b1b] font-bold tracking-wider uppercase text-sm mb-2 block">Our Menu</span>
-                            <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-900">Best Restaurants & Fast Food in Abu Road 🍽️</h2>
+                            <h2 className="text-4xl md:text-5xl font-black mb-4 text-gray-900">Explore Categories 🍽️</h2>
                             <p className="text-xl text-gray-500">Select a category to view delicious options</p>
                         </div>
 
@@ -626,7 +671,7 @@ export default function Home() {
                 <section id="blog" className="section py-12 md:py-24 bg-white">
                     <div className="container">
                         <div className="section-header text-center mb-16">
-                            <h2 className="section-title text-4xl font-black mb-4">Abu Road Food & Travel Guide 🥘</h2>
+                            <h2 className="section-title text-4xl font-black mb-4">Stories from the Kitchen 🥘</h2>
                             <p className="section-subtitle text-xl text-gray-500">Food culture, recipes, and local guides.</p>
                         </div>
 
@@ -645,7 +690,7 @@ export default function Home() {
                 <section id="contact" className={`section py-12 md:py-24 bg-gray-50 ${visibleSections.has('contact') ? 'animate-in' : ''}`}>
                     <div className="container">
                         <div className="section-header text-center mb-16">
-                            <h2 className="section-title text-4xl font-black mb-4">{cms.contactTitle || "Visit the Best Restaurant in Abu Road 📍"}</h2>
+                            <h2 className="section-title text-4xl font-black mb-4">Visit the Best Restaurant in Abu Road 📍</h2>
                             <p className="section-subtitle text-xl text-gray-500">We are waiting to serve you!</p>
                         </div>
 
@@ -656,7 +701,7 @@ export default function Home() {
                                     <div className="space-y-4 text-gray-600">
                                         <p className="flex gap-3">
                                             <span className="text-xl">📍</span>
-                                            <span>{cms.address || "Abu Central Mall, G-5, Riico Check Post Road, Abu Road, Rajasthan 307026 (Near Abu Road Railway Station)"}</span>
+                                            <span>Abu Central Mall, G-5, Riico Check Post Road, Abu Road, Rajasthan 307026 (Near Abu Road Railway Station)</span>
                                         </p>
                                         <p className="flex gap-3">
                                             <span className="text-xl">🕒</span>
@@ -684,24 +729,58 @@ export default function Home() {
                         </div>
                     </div>
                 </section>
-
-                {/* Local Guide Section for SEO */}
-                <section className="py-12 bg-white border-t border-gray-50">
-                    <div className="container px-4">
-                        <div className="max-w-4xl mx-auto text-center">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Why Oye Chatoro is the Best Restaurant & Fast Food in Abu Road</h2>
-                            <p className="text-gray-600 leading-relaxed mb-6">
-                                If you are searching for the <strong>best restaurants in Abu Road</strong> or the perfect place for <strong>best fast food in Abu Road</strong>, Oye Chatoro is your ultimate destination. Located conveniently at Abu Central Mall, we are known as the <strong>best restaurant in Abu Road</strong> for high-quality pizzas, burgers, and authentic Indian street food.
-                            </p>
-                            <p className="text-gray-600 leading-relaxed">
-                                Whether you're visiting Mount Abu or traveling through the Abu Road railway station, our doors are open to serve any foodie looking for <strong>restaurants in Abu Road</strong> that offer hygiene, taste, and a great ambiance. Come and experience why locals rank us among the <strong>top restaurants in Abu Road</strong>.
-                            </p>
-                        </div>
-                    </div>
-                </section>
             </main>
 
-            <Footer year={year} />
+            <footer className="footer bg-white border-t border-gray-100 pt-20 pb-32 md:pb-10">
+                <div className="container">
+                    <div className="grid md:grid-cols-4 gap-12 mb-16">
+                        <div className="col-span-1 md:col-span-2">
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="relative w-10 h-10">
+                                    <Image src="/logowhite.PNG" alt="Logo" fill className="object-contain" />
+                                </div>
+                                <span className="text-2xl font-black text-gray-900">Oye Chatoro</span>
+                            </div>
+                            <p className="text-gray-500 leading-relaxed max-w-sm">
+                                Authentic Indian Vegetarian Street Food in Abu Road. Fresh, Hygienic, and Delicious. Serving happiness since 2024.
+                            </p>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-gray-900 mb-6">Quick Links</h4>
+                            <ul className="space-y-4">
+                                {['Home', 'Menu', 'Reviews', 'Contact'].map(item => (
+                                    <li key={item}><a href={`#${item.toLowerCase()}`} className="text-gray-500 hover:text-[var(--brand-primary)] transition-colors">{item}</a></li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-gray-900 mb-6">Connect</h4>
+                            <ul className="space-y-4">
+                                <li><a href="https://www.instagram.com/oyechatoro_/" target="_blank" className="text-gray-500 hover:text-pink-600 transition-colors flex items-center gap-2">📸 Instagram</a></li>
+
+                                <li><a href="https://share.google/i1ls8jxzjEOxQ5gd8" target="_blank" className="text-gray-500 hover:text-green-600 transition-colors flex items-center gap-2">🗺️ Google Maps</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="border-t border-gray-100 pt-8 text-center text-gray-400 text-sm">
+                        <p>&copy; <span id="year">{year}</span> Oye Chatoro. All rights reserved. • Website by Akshay Tiwari</p>
+                        <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 opacity-90 hover:opacity-100 transition-opacity">
+                            <div className="relative w-24 h-12 md:w-28 md:h-14">
+                                <Image
+                                    src="/fssai.png"
+                                    alt="FSSAI"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                            <div className="text-center md:text-left">
+                                <p className="text-xs uppercase font-bold text-gray-500 tracking-wider mb-1">License No.</p>
+                                <p className="font-mono text-lg font-bold text-gray-800 tracking-wide">22225023000513</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
 
             {/* Cart UI */}
             <div className="cart-floating-btn shadow-2xl shadow-orange-500/50 hover:scale-110 transition-transform active:scale-95" onClick={() => setIsCartOpen(true)}>
@@ -779,77 +858,54 @@ export default function Home() {
                             </div>
                         </div>
                     )}
-                    <div className="cart-footer p-6 border-t border-gray-100 bg-gray-50/50">
+                    <div className="cart-footer p-6 border-t border-gray-100 bg-gray-50">
                         {/* Mobile Number Input */}
-                        <div className="mb-6">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block">📱 Your Mobile Number</label>
-                            <div className="relative group">
-                                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold group-focus-within:text-[var(--brand-primary)] transition-colors">+91</span>
-                                <input
-                                    type="tel"
-                                    placeholder="Enter 10 digits"
-                                    value={customerMobile}
-                                    onChange={(e) => setCustomerMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                    className="w-full pl-14 pr-4 py-4 rounded-2xl border-2 border-gray-100 focus:border-[var(--brand-primary)] focus:bg-white focus:outline-none text-lg font-black tracking-widest transition-all shadow-sm"
-                                    maxLength={10}
-                                />
-                            </div>
+                        <div className="mb-4">
+                            <label className="text-sm font-bold text-gray-700 mb-2 block">📱 Mobile Number *</label>
+                            <input
+                                type="tel"
+                                placeholder="Enter 10-digit mobile number"
+                                value={customerMobile}
+                                onChange={(e) => setCustomerMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[var(--brand-primary)] focus:outline-none text-lg font-medium"
+                                maxLength={10}
+                            />
                             {customerMobile && customerMobile.length < 10 && (
-                                <p className="text-[10px] text-red-500 mt-2 font-bold uppercase tracking-tight ml-1 animate-pulse">Enter complete 10 digits</p>
+                                <p className="text-xs text-red-500 mt-1">Please enter 10 digits</p>
                             )}
                         </div>
-
                         {/* Payment Method Selection */}
-                        <div className="mb-8">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 block">💳 Payment Method</label>
-                            <div className="grid grid-cols-3 gap-3">
-                                {[
-                                    { id: 'COD', label: 'Cash', icon: '💵' },
-                                    { id: 'UPI', label: 'UPI', icon: '📲' },
-                                    { id: 'Online', label: 'Card', icon: '💳' }
-                                ].map((method) => (
+                        <div className="mb-4">
+                            <label className="text-sm font-bold text-gray-700 mb-2 block">Payment Method</label>
+                            <div className="grid grid-cols-3 gap-2">
+                                {['COD', 'UPI', 'Online'].map((method) => (
                                     <button
-                                        key={method.id}
-                                        onClick={() => setPaymentMethod(method.id as any)}
-                                        className={`py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 transition-all flex flex-col items-center gap-1 ${paymentMethod === method.id
-                                            ? 'border-[var(--brand-primary)] bg-orange-50 text-[var(--brand-primary)] shadow-md shadow-orange-100 scale-105'
-                                            : 'border-white bg-white text-gray-400 hover:border-gray-200'}`}
+                                        key={method}
+                                        onClick={() => setPaymentMethod(method as any)}
+                                        className={`py-2 rounded-lg text-sm font-bold border-2 transition-all ${paymentMethod === method ? 'border-[var(--brand-primary)] bg-orange-50 text-[var(--brand-primary)]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
                                     >
-                                        <span className="text-lg">{method.icon}</span>
-                                        {method.label}
+                                        {method}
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="flex justify-between items-center mb-8 px-2">
-                            <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Grand Total</span>
-                            <span className="text-3xl font-black text-gray-900">₹{cartTotal}</span>
+                        <div className="flex justify-between items-center mb-6">
+                            <span className="text-lg font-bold text-gray-900">Total Amount</span>
+                            <span className="text-3xl font-black text-[var(--brand-primary)]">₹{cartTotal}</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <button
-                                onClick={handleWhatsAppOrder}
-                                disabled={!customerMobile || customerMobile.length < 10}
-                                className="py-4 rounded-2xl border-2 border-[#25D366] text-[#25D366] font-black uppercase tracking-widest text-[10px] flex flex-col items-center justify-center gap-1 hover:bg-green-50 transition-all active:scale-95 disabled:grayscale disabled:opacity-50"
-                            >
-                                <span className="text-xl">📲</span>
-                                WhatsApp
-                            </button>
-                            <button
-                                onClick={handleDirectOrder}
-                                disabled={!customerMobile || customerMobile.length < 10}
-                                className="bg-[var(--brand-primary)] text-white py-4 rounded-2xl shadow-xl shadow-orange-100 hover:shadow-2xl hover:translate-y-[-2px] transition-all flex flex-col items-center justify-center gap-1 active:scale-95 disabled:opacity-50"
-                            >
-                                <span className="text-xs font-black uppercase tracking-widest">Order Now</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm">Place It</span>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>
-                                </div>
-                            </button>
-                        </div>
+                        <button
+                            onClick={checkout}
+                            className="btn btn-primary w-full py-4 text-xl rounded-xl shadow-xl shadow-orange-200 hover:shadow-2xl hover:translate-y-[-2px] transition-all flex items-center justify-center gap-3"
+                        >
+                            <span>Place Order</span>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>
+                        </button>
                     </div>
                 </div>
             </div>
+
+            <MobileNav />
         </>
     );
 }

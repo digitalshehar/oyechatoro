@@ -15,6 +15,7 @@ RUN npx prisma generate && npx next build --webpack
 
 # Stage 2: Runner
 FROM node:22-alpine AS runner
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 ENV NODE_ENV=production
